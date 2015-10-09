@@ -1,0 +1,21 @@
+{
+	"resources": [
+        {
+            "name": "ci-ops",
+            "flavor": "m1.medium",
+            "count": "1",
+            "image": "RHEL-6.7-Server-x86_64-released"
+        }
+    ],
+    "sites": [
+        {
+            "site": "qeos",
+            "project": "rhsm-jenkins",
+            "username": "ent-ci-jenkins",
+            "password": "ent-ci-jenkins",
+            "keypair": "ent-ci",
+            "networks": ["rhsm-jenkins-1"],
+            "region": ""
+        }
+    ]
+}

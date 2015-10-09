@@ -1,7 +1,6 @@
 *.pyc
 *.crt
 *.log
-*.json
 *.idea
 *.properties
 *.props
