@@ -1,6 +1,7 @@
 {
     "resources": [
         {
+	    "job_group": "Entitlement-QA",
             "recipesets": [
                 {
                     "family": "RedHatEnterpriseLinux7",
