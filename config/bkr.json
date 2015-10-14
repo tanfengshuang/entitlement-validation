@@ -4,9 +4,9 @@
 	    "job_group": "Entitlement-QA",
             "recipesets": [
                 {
-                    "name": "RHEL-7.2-20150904.0",
-                    "arch": "X86_64",
-                    "variant": "Server",
+                    "name": "NAME",
+                    "arch": "ARCH",
+                    "variant": "VARIANT",
                     "keyvalue": ["DISKSPACE>=20000"],
                     "hostrequire": ["arch=X86_64", "memory>=2000"],
                     "bkr_data": {
