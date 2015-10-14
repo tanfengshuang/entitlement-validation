@@ -4,7 +4,7 @@
 	    "job_group": "Entitlement-QA",
             "recipesets": [
                 {
-                    "family": "RedHatEnterpriseLinux7",
+                    "name": "RHEL-7.2-20150904.0",
                     "arch": "X86_64",
                     "variant": "Server",
                     "keyvalue": ["DISKSPACE>=20000"],
