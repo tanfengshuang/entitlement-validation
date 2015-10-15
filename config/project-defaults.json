@@ -14,7 +14,7 @@
             "username": "ent-ci-jenkins",
             "password": "ent-ci-jenkins",
             "keypair": "ent-ci",
-            "networks": ["rhsm-jenkins-1"],
+            "networks": ["rhsm-jenkins"],
             "region": ""
         }
     ]
