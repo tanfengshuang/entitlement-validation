@@ -10,11 +10,11 @@
     "sites": [
         {
             "site": "qeos",
-            "project": "entitlement-jenkins",
-            "username": "ent-jenkins",
-            "password": "ent-jenkins",
-            "keypair": "ent-key",
-            "networks": ["entitlement-jenkins-1"],
+            "project": "rhsm-jenkins",
+            "username": "ent-ci-jenkins",
+            "password": "ent-ci-jenkins",
+            "keypair": "ent-ci",
+            "networks": ["rhsm-jenkins"],
             "region": ""
         }
     ]
