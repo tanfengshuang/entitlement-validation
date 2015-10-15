@@ -1,7 +1,7 @@
 {
     "resources": [
         {
-	    "job_group": "Entitlement-QA",
+	    "job_group": "jenkins-ci",
             "recipesets": [
                 {
                     "name": "NAME",
