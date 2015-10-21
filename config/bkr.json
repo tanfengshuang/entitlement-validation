@@ -10,8 +10,8 @@
                     "keyvalue": ["DISKSPACE>=20000"],
                     "hostrequire": ["arch=X86_64", "memory>=2000"],
                     "bkr_data": {
-                        "role": "Server",
-                        "name": "AppServer"
+                        "role": "Slave",
+                        "name": "SlaveMachine"
                     }
                 }
             ]
