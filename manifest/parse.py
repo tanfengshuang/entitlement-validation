@@ -8,6 +8,7 @@ import commands
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel7.2/rhel-7.2-snapshot1-qa-cdn.json
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
 
+baseinfo_file = "baseinfo.properties"
 manifest_file = "manifest.properties"
 MANIFEST_PATH = "MANIFEST.json"
 MANIFEST_URL = open(manifest_file, 'r').read().split("\n")[0]
@@ -48,7 +49,13 @@ if "cdn" in content.keys():
     # ready to write testing properties files
     # ['Server_ppc64le', 'ComputeNode_x86_64', 'Server_aarch64', 'Server_ppc64', 'Client_x86_64', 'Server_s390x', 'Server_x86_64', 'Workstation_x86_64']
     for file in platforms:
-        with open("{0}.properties".format(file), 'w') as f:
-            f.write(file)
+        variant = file.split("_")[0]
+        arch = file.split("_")[1]
+        ret, output1 = commands.getstatusoutput("cp {0} {1}.properties".format(baseinfo_file, file))
+        print "copy the content of file {0} to {1}.properties".format(baseinfo_file, file)
+        with open("{0}.properties".format(file), 'a+') as f:
+            f.write("VARIANT={0}\n".format(variant))
+            f.write("ARCH={0}".format(arch))
+            print "write variant and arch into {0}.properties".format(file)
 elif "rhn" in content.keys():
     pass
