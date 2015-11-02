@@ -22,6 +22,9 @@ print cmd
 ret, output1 = commands.getstatusoutput(cmd)
 if ret == 0:
     print "download manifest successfully."
+else:
+    print "Failed to download manifest!"
+    exit(1)
 
 # open MANIFEST.json
 content = json.load(open(MANIFEST_PATH, 'r'))
@@ -43,14 +46,21 @@ if "cdn" in content.keys():
                 variant = "Workstation"
             if variant == "computenode":
                 variant = "ComputeNode"
-            platforms.append("{0}_{1}".format(variant, basearch))
+            platforms.append("{0}-{1}".format(variant, basearch))
+    # ['Server-ppc64le', 'ComputeNode-x86_64', 'Server-aarch64', 'Server-ppc64', 'Client-x86_64', 'Server-s390x', 'Server-x86_64', 'Workstation-x86_64']
     platforms = list(set(platforms))
     print "Need to do testing on:", platforms
     # ready to write testing properties files
-    # ['Server_ppc64le', 'ComputeNode_x86_64', 'Server_aarch64', 'Server_ppc64', 'Client_x86_64', 'Server_s390x', 'Server_x86_64', 'Workstation_x86_64']
+    # *.properties file content
+    # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+    # DISTRO=RHEL-7.2-20150904.0
+    # CDN=QA
+    # CANDLEPIN=Stage
+    # VARIANT=Server
+    # ARCH=i386
     for file in platforms:
-        variant = file.split("_")[0]
-        arch = file.split("_")[1]
+        variant = file.split("-")[0]
+        arch = file.split("-")[1]
         ret, output1 = commands.getstatusoutput("cp {0} {1}.properties".format(baseinfo_file, file))
         print "copy the content of file {0} to {1}.properties".format(baseinfo_file, file)
         with open("{0}.properties".format(file), 'a+') as f:
