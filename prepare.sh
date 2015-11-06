@@ -30,7 +30,7 @@ fi
 
 prepare_cdn() {
     # trying to get beaker ip
-    get_ip
+    #get_ip
 
     # write testing parameters to environment.py
     echo "writing testing parameters into file environment.py"
