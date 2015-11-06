@@ -137,10 +137,26 @@ def parse_cdn():
         ret, output = commands.getstatusoutput("ls | grep properties")
         if output != "":
             for file in output.split("\n"):
+                output = commands.getoutput("cat %s | grep PID | awk -F'=' '{print $2}'" % file)
+                if output != "":
+                    # merge several PIDs into one line, such as, merge the following lines to PID=90,83,69
+                    # PID=90
+                    # PID=83
+                    # PID=69
+                    content = "cat {0} | grep -v PID".format(file)
+                    #tmp_file = "{0}.bk".format(file)
+                    #os.rename(file, "{0}".format(tmp_file))
+                    PID_info = output.replace('\n', ',')
+                    with open("{0}".format(file), 'w') as f1:
+                        #f1.write(commands.getoutput("cat {0} | grep -v PID".format(tmp_file)))
+                        f1.write(content)
+                        f1.write("\nPID={0}\n".format(PID_info))
                 with open("{0}".format(file), 'a+') as f1:
+                    # write $baseinfo_file content to *.properties
                     with open("{0}".format(baseinfo_file), 'r') as f2:
                         base_info = f2.read()
                         f1.write(base_info)
+
 
 def pasee_rhn():
     download_manifest()
