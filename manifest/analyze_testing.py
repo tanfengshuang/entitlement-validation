@@ -47,8 +47,8 @@ class AnalyzeCDN(object):
         PIDs, VARIANTs = self.__get_pid_variant()
 
         # parse MANIFEST.json to get test platforms
-        platforms = {}
         if "cdn" in self.content.keys():
+            platforms = {}
             for pid in self.content["cdn"]["products"]:
                 arches = []
                 for repo_path in self.content["cdn"]["products"][pid]["Repo Paths"]:
@@ -117,13 +117,14 @@ class AnalyzeCDN(object):
                         # PID=69
                         PID_info = commands.getoutput("cat %s | grep PID | awk -F'=' '{print $2}'" % file).replace('\n', ',')
                         with open("{0}".format(file), 'w') as f1:
+                            # write non-PID lines
                             f1.write(commands.getoutput("cat {0} | grep -v PID".format(file)))
+                            # write PID lines to one line - PID=90,83,69
                             f1.write("PID={0}\n".format(PID_info))
                     with open("{0}".format(file), 'a+') as f1:
                         # write $baseinfo_file content to *.properties
                         with open("{0}".format(self.baseinfo_file), 'r') as f2:
-                            base_info = f2.read()
-                            f1.write(base_info)
+                            f1.write(f2.read())
         else:
             print "No CDN part in provided manifest!"
 
@@ -153,10 +154,10 @@ class AnalyzeCDN(object):
                 VARIANTs = f.read().split('\n')[0]
         return PIDs, VARIANTs
 
-    def __check_arches(self, VARIANTs, PIDs):
+    def __check_arches(self, VARIANTs, VTs):
         variants = []
         for v in VARIANTs.split(","):
-            if v in PIDs:
+            if v in VTs:
                 variants.append(v)
             else:
                 print "Warning: variant {0} is not in manifest!".format(v)
@@ -165,6 +166,7 @@ class AnalyzeCDN(object):
 
 class AnalyzeRHN(object):
     def __init__(self):
+        self.channel_file = "channel.txt"
         self.variant_file = "variant.txt"
         self.baseinfo_file = "baseinfo.txt"
         self.MANIFEST_PATH = "MANIFEST.json"
@@ -172,6 +174,9 @@ class AnalyzeRHN(object):
         self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_URL)
 
     def analyze_rhn(self):
+        # read PID and VARIANT from jenkins parameters
+        CHANNELs, VARIANTs = self.__get_channel_variant()
+
         # parse MANIFEST.json to get test platforms
         if "rhn" in self.content.keys():
             platforms = []
@@ -191,12 +196,50 @@ class AnalyzeRHN(object):
                 platforms.append("{0}-{1}".format(variant, arch))
             platforms = list(set(platforms))
             # ['Server_ppc64le', 'ComputeNode_x86_64', 'Server_aarch64', 'Server_ppc64', 'Client_x86_64', 'Server_s390x', 'Server_x86_64', 'Workstation_x86_64']
-            for file_content in platforms:
-                with open("{0}.properties".format(file), 'w') as f:
-                    f.write(file_content)
-        else:
-            print "No RHN part in provided manitest!"
+            print "Variants and arches list in manifest:", platforms
 
+            testing_platforms = []
+            if CHANNELs == "" and VARIANTs == "":
+                # ready to write testing properties files
+                # *.properties file content
+                # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+                # DISTRO=RHEL-7.2-20150904.0
+                # CDN=QA
+                # VARIANT=Server
+                # ARCH=i386
+                testing_platforms = platforms
+            elif CHANNELs != "":
+                pass
+            else:
+                # get the intersection of $platforms in manifest and $VARIANTs provided as parameter
+                testing_platforms = list(set(VARIANTs.split(",")).intersection(set(platforms)))
+            print "Need to do testing on:", testing_platforms
+
+            # generate properties used for triggering downstream jobs
+            for file_content in testing_platforms:
+                variant = file_content.split("-")[0]
+                arch = file_content.split("-")[1]
+                with open("{0}.properties".format(file_content), 'w') as f1:
+                    # write $variant to new properties file
+                    f1.write("VARIANT={0}\n".format(variant))
+                    # write $arch to new properties file
+                    f1.write("ARCH={0}\n".format(arch))
+                    # copy content of file $baseinfo_file to new properties file
+                    with open("{0}".format(self.baseinfo_file), 'r') as f2:
+                        f1.write(f2.read())
+        else:
+            print "No RHN part in provided manifest!"
+
+    def __get_channel_variant(self):
+        CHANNELs = ""
+        VARIANTs = ""
+        if os.path.exists(self.channel_file):
+            with open("{0}".format(self.channel_file), 'r') as f:
+                CHANNELs = f.read().split('\n')[0]
+        if os.path.exists(self.variant_file):
+            with open("{0}".format(self.variant_file), 'r') as f:
+                VARIANTs = f.read().split('\n')[0]
+        return CHANNELs, VARIANTs
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
