@@ -1,12 +1,16 @@
 - job-template:
-    name: 'entitlement-cdn-Server_x86_64'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-Server_x86_64'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
-            description:
+            description: 
+        - string:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -35,14 +39,18 @@
             description:
 
 - job-template:
-    name: 'entitlement-cdn-Server_i386'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-Server_i386'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
             description:
+        - string:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -71,50 +79,18 @@
             description:
 
 - job-template:
-    name: 'entitlement-cdn-Server_ppc'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-Server_ppc64'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
             description:
         - string:
-            name: Distro
-            default: RHEL-7.2-20150904.0
-            description:
-        - choice:
-            name: Variant
-            choices:
-              - Server
-            description:
-        - choice:
-            name: Arch
-            choices:
-              - ppc
-            description:
-        - choice:
-            name: CDN
-            choices:
-              - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
-            description:
-
-- job-template:
-    name: 'entitlement-cdn-Server_ppc64'
-    defaults: entitlement-testing-base
-    node: provision
-    parameters:
-        - string:
-            name: Manifest_url
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
-            description:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -143,14 +119,18 @@
             description:
 
 - job-template:
-    name: 'entitlement-cdn-Server_ppc64le'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-Server_ppc64le'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
             description:
+        - string:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -179,14 +159,18 @@
             description:
 
 - job-template:
-    name: 'entitlement-cdn-Server_aarch64'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-Server_aarch64'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
             description:
+        - string:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -215,14 +199,18 @@
             description:
 
 - job-template:
-    name: 'entitlement-cdn-Server_s390x'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-Server_s390x'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
             description:
+        - string:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -254,14 +242,18 @@
             description:
 
 - job-template:
-    name: 'entitlement-cdn-Client_x86_64'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-Client_x86_64'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
             description:
+        - string:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -290,14 +282,18 @@
             description:
 
 - job-template:
-    name: 'entitlement-cdn-Client_i386'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-Client_i386'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
             description:
+        - string:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -326,14 +322,18 @@
             description:
 
 - job-template:
-    name: 'entitlement-cdn-Workstation_x86_64'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-Workstation_x86_64'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
             description:
+        - string:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -362,14 +362,18 @@
             description:
 
 - job-template:
-    name: 'entitlement-cdn-Workstation_i386'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-Workstation_i386'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
             description:
+        - string:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -398,14 +402,18 @@
             description:
 
 - job-template:
-    name: 'entitlement-cdn-ComputeNode_x86_64'
-    defaults: entitlement-testing-base
+    name: 'EntitlementRHN-ComputeNode_x86_64'
+    defaults: entitlement-rhn-base
     node: provision
     parameters:
         - string:
-            name: Manifest_url
+            name: Manifest_URL
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
             description:
+        - string:
+            name: Product_ID
+            default: optional
+            description: 
         - string:
             name: Distro
             default: RHEL-7.2-20150904.0
@@ -434,23 +442,22 @@
             description:
 
 - job-group:
-    name: entitlement-cdn-jobs
+    name: EntitlementRHNJobs
     jobs:
-      - 'entitlement-cdn-Server_x86_64'
-      - 'entitlement-cdn-Server_i386'
-      - 'entitlement-cdn-Server_ppc'
-      - 'entitlement-cdn-Server_ppc64'
-      - 'entitlement-cdn-Server_ppc64le'
-      - 'entitlement-cdn-Server_aarch64'
-      - 'entitlement-cdn-Server_s390x'
-      - 'entitlement-cdn-Client_x86_64'
-      - 'entitlement-cdn-Client_i386'
-      - 'entitlement-cdn-Workstation_x86_64'
-      - 'entitlement-cdn-Workstation_i386'
-      - 'entitlement-cdn-ComputeNode_x86_64'
+      - 'EntitlementRHN-Server_x86_64'
+      - 'EntitlementRHN-Server_i386'
+      - 'EntitlementRHN-Server_ppc64'
+      - 'EntitlementRHN-Server_ppc64le'
+      - 'EntitlementRHN-Server_aarch64'
+      - 'EntitlementRHN-Server_s390x'
+      - 'EntitlementRHN-Client_x86_64'
+      - 'EntitlementRHN-Client_i386'
+      - 'EntitlementRHN-Workstation_x86_64'
+      - 'EntitlementRHN-Workstation_i386'
+      - 'EntitlementRHN-ComputeNode_x86_64'
 
 - project:
-   name: entitlement-cdn-jobs-project
+   name: EntitlementRHNJobsProject
    jobs:
-    - entitlement-cdn-jobs
+    - EntitlementRHNJobs
 

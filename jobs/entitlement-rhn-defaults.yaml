@@ -1,0 +1,96 @@
+- defaults:
+    name: entitlement-rhn-base
+    description: |
+        Purpose: Basic config for entitlement testing.
+    concurrent: true
+    scm:
+        - git:
+            url: 'http://git.app.eng.bos.redhat.com/git/ci-ops-central.git'
+            branches:
+                - origin/master
+            basedir: ci-ops-central
+        - git:
+            url: 'http://git.app.eng.bos.redhat.com/git/job-runner.git'
+            branches:
+                - origin/master
+            basedir: job-runner
+        - git:
+            url: 'https://github.com/tanfengshuang/entitlement-validation'
+            branches:
+                - origin/master
+            basedir: entitlement-validation
+    builders:
+        - shell: |
+            #!/bin/bash
+            sed -i "s/NAME/$DISTRO/g" $WORKSPACE/entitlement-validation/config/bkr.json
+            sed -i "s/VARIANT/$VARIANT/g" $WORKSPACE/entitlement-validation/config/bkr.json
+            sed -i "s/ARCH/$ARCH/g" $WORKSPACE/entitlement-validation/config/bkr.json
+            $WORKSPACE/ci-ops-central/bootstrap/provision_resources.sh --site=qeos --project_defaults=entitlement-validation/config/project-defaults \
+            --topology=entitlement-validation/config/bkr --ssh_keyfile=entitlement-validation/config/keys/id_rsa --name=$DISTRO_$VARIANT_$ARCH
+            STATUS=$?
+            if [ "$STATUS" == 0 ]
+            then
+                echo "Succeed to provison beaker system: $EXISTING_NODES"
+                echo "**************** env ****************"
+                env
+                echo "**************** env ****************"
+                echo "**************** RESOURCES.txt ****************"
+                cat RESOURCES.txt
+                echo "**************** RESOURCES.txt ****************"
+            else
+                echo "ERROR: Failed to provision beaker system!"
+                echo "EXISTING_NODES: $EXISTING_NODES"
+                echo "****************env****************"
+                env
+                echo "****************env****************"
+                echo "**************** RESOURCES.txt ****************"
+                cat RESOURCES.txt
+                echo "**************** RESOURCES.txt ****************"
+                #exit 1
+            fi
+
+            bash entitlement-validation/prepare.sh rhn
+            STATUS=$?
+            ech "# cat entitlement-validation/test_entitlement.py"
+            cat entitlement-validation/test_entitlement.py
+            echo "# ll  entitlement-validation/Tests"
+            ll  entitlement-validation/Tests
+            echo "# cat entitlement-validation/Tests/__init__.py"
+            cat entitlement-validation/Tests/__init__.py
+            if [ STATUS -eq 1]; then python entitlement-validation/test_entitlement.py; fi
+
+    publishers:
+      - archive:
+          artifacts: '*.txt, *.json, *.properties'
+          allow-empty: 'true'
+    wrappers:
+        - ansicolor
+        - workspace-cleanup
+        - timestamps
+
+- defaults:
+    name: entitlement-rhn-parameters
+    description: |
+        Purpose: Define the parameters used for entitlement testing.
+    concurrent: true
+    parameters:
+        - string:
+            name: manifest_url
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-7.2-20150904.0
+            description:
+        - choice:
+            name: CDN
+            choices:
+              - QA
+              - Prod
+            description:
+        - choice:
+            name: Candlepin
+            choices:
+              - Stage
+              - Prod
+            description:

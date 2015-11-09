@@ -1,5 +1,5 @@
 - defaults:
-    name: entitlement-testing-base
+    name: entitlement-cdn-base
     description: |
         Purpose: Basic config for entitlement testing.
     concurrent: true
@@ -37,7 +37,6 @@
                 echo "**************** RESOURCES.txt ****************"
                 cat RESOURCES.txt
                 echo "**************** RESOURCES.txt ****************"
-                python entitlement-validation/check_ip.py
             else
                 echo "ERROR: Failed to provision beaker system!"
                 echo "EXISTING_NODES: $EXISTING_NODES"
@@ -47,8 +46,21 @@
                 echo "**************** RESOURCES.txt ****************"
                 cat RESOURCES.txt
                 echo "**************** RESOURCES.txt ****************"
-                exit 1
+                #exit 1
             fi
+
+            bash entitlement-validation/prepare.sh cdn
+            STATUS=$?
+            ech "# cat entitlement-validation/test_entitlement.py"
+            cat entitlement-validation/test_entitlement.py
+            echo "# ll  entitlement-validation/Tests"
+            ll  entitlement-validation/Tests
+            echo "# cat entitlement-validation/Tests/__init__.py"
+            cat entitlement-validation/Tests/__init__.py
+            if [ STATUS -eq 1]; then python entitlement-validation/test_entitlement.py; fi
+
+            
+
     publishers:
       - archive:
           artifacts: '*.txt, *.json, *.properties'
@@ -59,7 +71,7 @@
         - timestamps
 
 - defaults:
-    name: entitlement-testing-parameters
+    name: entitlement-cdn-parameters
     description: |
         Purpose: Define the parameters used for entitlement testing.
     concurrent: true
