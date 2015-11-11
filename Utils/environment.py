@@ -7,6 +7,26 @@ cdn = "CDN"
 rhn = "RHN"
 candlepin = "CANDLEPIN"
 beaker_ip = "BEAKER_IP"
+beaker_username = "root"
+beaker_password = "QwAo2U6GRxyNPKiZaOCx"
+
+# baseurl hostname server_url
+cdn_baseurl = {
+    "QA": "https://cdn.qa.redhat.com",
+    "Prod": "https://cdn.redhat.com"
+}
+
+candlepin_hostname = {
+    "Stage": "subscription.rhn.redhat.com",
+    "Prod": "subscription.rhn.stage.redhat.com"
+}
+
+server_url = {
+    "QA": "https://xmlrpc.rhn.qa.redhat.com/XMLRPC",
+    "Live": "https://xmlrpc.rhn.redhat.com/XMLRPC"
+
+}
+
 
 # accounts used for testing
 account_rhn = {

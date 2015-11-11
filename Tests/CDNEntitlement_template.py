@@ -3,7 +3,7 @@ import unittest
 #from Utils.utils import *
 from Utils.environment import *
 
-class CDN_Entitlement_PID(unittest.TestCase):
+class CDNEntitlement_PID(unittest.TestCase):
 
     def setUp(self):
         print "Setup..."
@@ -19,7 +19,7 @@ class CDN_Entitlement_PID(unittest.TestCase):
         #
         #remove_non_redhat_repo(self.beaker_ip)
 
-    def test_CDN_Entitlement(self):
+    def testCDNEntitlement(self):
         print "test_CDN_Entitlement"
         #register(beaker_ip, self.username, self.password)
 

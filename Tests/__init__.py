@@ -1,1 +1,1 @@
-from RHN_Entitlement import RHN_Entitlement
+from RHNEntitlement import RHNEntitlement

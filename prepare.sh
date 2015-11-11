@@ -3,12 +3,16 @@
 environment_path="$WORKSPACE/entitlement-validation/Utils/environment.py"
 cdn_test_suite_path=$WORKSPACE/entitlement-validation/test_cdn.py
 test_case_path=$WORKSPACE/entitlement-validation/Tests/
-cdn_case_template=${test_case_path}CDN_Entitlement_template.py
+cdn_case_template=${test_case_path}CDNEntitlement_template.py
 init_file=${test_case_path}__init__.py
 
 usage() {
     echo "Usage: $0 cdn|CDN|rhn|RHN|sat|SAT"
     exit 1
+}
+
+install_kobo() {
+    # install kobo, kobo-rpmlib, koji
 }
 
 get_ip() {
@@ -50,8 +54,8 @@ prepare_cdn() {
     for pid in ${PID_array[@]}
     do
         echo "Ready to generate test case for PID $pid"
-        case_name=CDN_Entitlement_$pid
-        case_full_name=${test_case_path}CDN_Entitlement_$pid.py
+        case_name=CDNEntitlement_$pid
+        case_full_name=${test_case_path}CDNEntitlement_$pid.py
 
         # generate test case
         cp $cdn_case_template $case_full_name
@@ -61,7 +65,7 @@ prepare_cdn() {
         if [ "`cat $init_file | grep $case_name`" ==  "" ]; then echo "from $case_name import $case_name" >> $init_file; fi
 
         # and add test cases to test suite
-        line="suite.addTest(CDN_Entitlement_$pid('test_CDN_Entitlement'))"
+        line="suite.addTest(CDNEntitlement_$pid('testCDNEntitlement'))"
         if [ "`cat $cdn_test_suite_path | grep $case_name`" == "" ]; then sed -i "/suite = unittest.TestSuite()/a\    $line" $cdn_test_suite_path; fi
     done
 }
@@ -84,6 +88,8 @@ prepare_sat() {
 }
 
 if [ $# -eq 1 ] ; then
+    install_kobo
+
     param=$1
     case $param in
         cdn | CDN)
