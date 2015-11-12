@@ -13,6 +13,7 @@ usage() {
 
 install_kobo() {
     # install kobo, kobo-rpmlib, koji
+    echo "waiting..."
 }
 
 get_ip() {
