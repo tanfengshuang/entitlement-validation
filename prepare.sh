@@ -11,11 +11,6 @@ usage() {
     exit 1
 }
 
-install_kobo() {
-    # install kobo, kobo-rpmlib, koji
-    echo "waiting..."
-}
-
 get_ip() {
     ip_file="RESOURCES.txt"
     if [ -f "$ip_file" ]; then
@@ -35,7 +30,7 @@ fi
 
 prepare_cdn() {
     # trying to get beaker ip
-    #get_ip
+    get_ip
 
     # write testing parameters to environment.py
     echo "writing testing parameters into file environment.py"
@@ -73,7 +68,7 @@ prepare_cdn() {
 
 prepare_rhn() {
     # trying to get beaker ip
-    #get_ip
+    get_ip
 
     # write testing parameters to environment.py
     echo "writing testing parameters into file environment.py"
@@ -89,8 +84,6 @@ prepare_sat() {
 }
 
 if [ $# -eq 1 ] ; then
-    install_kobo
-
     param=$1
     case $param in
         cdn | CDN)
