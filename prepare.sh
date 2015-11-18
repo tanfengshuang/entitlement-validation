@@ -1,4 +1,5 @@
 #!/bin/sh
+WORKSPACE=/home/ftan/Code/new-entitlement
 
 environment_path="$WORKSPACE/entitlement-validation/Utils/environment.py"
 cdn_test_suite_path=$WORKSPACE/entitlement-validation/test_cdn.py
@@ -12,12 +13,12 @@ usage() {
 }
 
 get_ip() {
-    ip_file="RESOURCES.txt"
+    ip_file="$WORKSPACE/RESOURCES.txt"
     if [ -f "$ip_file" ]; then
-        BEAKER_IP=`cat $WORKSPACE/RESOURCES.txt | grep EXISTING_NODES  | awk -F '=' '{print $2}'`
+        BEAKER_IP=`cat $ip_file | grep EXISTING_NODES  | awk -F '=' '{print $2}'`
         if [ "$BEAKER_IP" != "" ]; then
-            if [ "`cat $environment_path | grep BEAKER_IP`" != "" ]; then sed -i "s/BEAKER_IP/$BEAKER_IP/g" >> $environment_path; fi
-            echo "Succeed to get the ip of beaker system: $BEAKER_IP"
+            if [ "`cat $environment_path | grep BEAKER_IP`" != "" ]; then sed -i "s/BEAKER_IP/$BEAKER_IP/g" $environment_path; fi
+            echo "Succeed to get and write ip($BEAKER_IP) into $environment_path."
         else
             echo "ERROR: Failed to get the ip of beaker system!"
             exit 1
