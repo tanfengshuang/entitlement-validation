@@ -1,5 +1,4 @@
 #!/bin/sh
-WORKSPACE=/home/ftan/Code/new-entitlement
 
 environment_path="$WORKSPACE/entitlement-validation/Utils/environment.py"
 cdn_test_suite_path=$WORKSPACE/entitlement-validation/test_cdn.py
