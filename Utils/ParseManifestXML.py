@@ -228,10 +228,10 @@ class CDNParseManifestXML(ParseManifestXMLBase):
 
 if __name__ == '__main__':
     manifest_url = "http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json"
-    rhn_manifest_json = os.path.join("manifest/rhn_test_manifest.json")
-    rhn_manifest_xml = os.path.join("manifest/rhn_test_manifest.xml")
-    cdn_manifest_json = os.path.join("manifest/rhn_test_manifest.json")
-    cdn_manifest_xml = os.path.join("manifest/rhn_test_manifest.xml")
+    rhn_manifest_json = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.json")
+    rhn_manifest_xml = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.xml")
+    cdn_manifest_json = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.json")
+    cdn_manifest_xml = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.xml")
     RHNParseManifestXML(manifest_url, rhn_manifest_json, rhn_manifest_xml).parse_json_to_xml()
-    RHNParseManifestXML(manifest_url, cdn_manifest_json, cdn_manifest_xml).parse_json_to_xml()
+    CDNParseManifestXML(manifest_url, cdn_manifest_json, cdn_manifest_xml).parse_json_to_xml()
 

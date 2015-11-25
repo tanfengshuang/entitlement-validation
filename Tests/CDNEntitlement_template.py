@@ -1,6 +1,7 @@
 import unittest
 
 #from Utils.utils import *
+from Utils.CDNVerification import CDNVerification
 from Utils.environment import *
 
 class CDNEntitlement_PID(unittest.TestCase):
@@ -13,8 +14,8 @@ class CDNEntitlement_PID(unittest.TestCase):
         self.variant = variant
         self.username, self.password, self.sku = self.__get_username_password(self.cdn, self.pid)
 
-        self.current_rel_version = get_os_release_version(self.beaker_ip)
-        self.current_arch = get_os_base_arch(self.beaker_ip)
+        self.current_rel_version = CDNVerification().get_os_release_version(self.beaker_ip)
+        self.current_arch = CDNVerification().get_os_base_arch(self.beaker_ip)
 
         #
         #remove_non_redhat_repo(self.beaker_ip)
