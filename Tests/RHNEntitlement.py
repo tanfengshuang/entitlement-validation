@@ -1,5 +1,4 @@
 import os
-import time
 import unittest
 import logging
 
@@ -10,51 +9,62 @@ from Utils.environment import *
 class RHNEntitlement(unittest.TestCase):
     def setUp(self):
         logging.info("--------------- Begin Init ---------------")
-        self.beaker_ip = beaker_ip
-        self.beaker_username = beaker_username
-        self.beaker_password = beaker_password
-        self.system_info = {
-            "ip": beaker_ip,
-            "username": beaker_username,
-            "password": beaker_password
-        }
-        self.rhn = rhn
-        self.variant = variant
-        self.arch = arch
-        self.manifest_url = manifest_url
-        self.manifest_json = os.path.join(os.getcwd(), "entitlement-validation/manifest/rhn_test_manifest.json")
-        self.manifest_xml = os.path.join(os.getcwd(), "entitlement-validation/manifest/rhn_test_manifest.xml")
+        try:
+            self.beaker_ip = beaker_ip
+            self.beaker_username = beaker_username
+            self.beaker_password = beaker_password
+            self.system_info = {
+                "ip": beaker_ip,
+                "username": beaker_username,
+                "password": beaker_password
+            }
+            self.rhn = rhn
+            self.variant = variant
+            self.arch = arch
+            self.manifest_url = manifest_url
+            self.manifest_json = os.path.join(os.getcwd(), "entitlement-validation/manifest/rhn_test_manifest.json")
+            self.manifest_xml = os.path.join(os.getcwd(), "entitlement-validation/manifest/rhn_test_manifest.xml")
 
-        self.username, self.password = self.__get_username_password()
-        self.server_url = self.__get_server_url()
+            self.username, self.password = self.__get_username_password()
+            self.server_url = self.__get_server_url()
 
-        self.current_rel_version = RHNVerification().get_os_release_version(self.system_info)
-        self.current_arch = RHNVerification().get_os_base_arch(self.system_info)
+            self.current_rel_version = RHNVerification().get_os_release_version(self.system_info)
+            self.current_arch = RHNVerification().get_os_base_arch(self.system_info)
 
-        RHNParseManifestXML(self.manifest_url, self.manifest_json, self.manifest_xml).parse_json_to_xml()
+            RHNParseManifestXML(self.manifest_url, self.manifest_json, self.manifest_xml).parse_json_to_xml()
 
-        RHNVerification().remove_non_redhat_repo(self.system_info)
+            RHNVerification().remove_non_redhat_repo(self.system_info)
+        except Exception, e:
+            logging.error(str(e))
+            logging.error("Test Failed - error happened when do content testing!")
+            exit(1)
         logging.info("--------------- End Init ---------------")
 
     def testRHNEntitlement(self):
         logging.info("--------------- Begin testRHNEntitlement --------------- ")
         testresult = True
-        # Register
-        testresult &= RHNVerification().register(self.system_info, self.username, self.password, self.server_url)
 
-        # Get all testing channels
-        channel_list = RHNVerification().get_channels_from_manifest(self.manifest_xml, self.current_arch, self.variant)
+        try:
+            # Register
+            testresult &= RHNVerification().register(self.system_info, self.username, self.password, self.server_url)
 
-        if '6.5' in self.current_rel_version or "5" not in self.current_rel_version:
-            testresult &= RHNVerification().verify_channels(self.system_info, self.manifest_xml, self.username, self.password, self.current_arch, self.variant)
+            # Get all testing channels
+            channel_list = RHNVerification().get_channels_from_manifest(self.manifest_xml, self.current_arch, self.variant)
 
-        for channel in channel_list:
-            if RHNVerification().add_channels(self.system_info, self.username, self.password, channel):
-                testresult &= RHNVerification().installation(self.system_info, self.manifest_xml, channel)
-                testresult &= RHNVerification().remove_channels(self.system_info, self.username, self.password, channel)
+            if '6.5' in self.current_rel_version or "5" not in self.current_rel_version:
+                testresult &= RHNVerification().verify_channels(self.system_info, self.manifest_xml, self.username, self.password, self.current_arch, self.variant)
 
-        if not testresult:
-            logging.error("Test Failed - Failed to do main rhn content test.")
+            for channel in channel_list:
+                if RHNVerification().add_channels(self.system_info, self.username, self.password, channel):
+                    testresult &= RHNVerification().installation(self.system_info, self.manifest_xml, channel)
+                    testresult &= RHNVerification().remove_channels(self.system_info, self.username, self.password, channel)
+
+            if not testresult:
+                logging.error("Test Failed - Failed to do main rhn content test.")
+                exit(1)
+        except Exception, e:
+            logging.error(str(e))
+            logging.error("Test Failed - error happened when do content testing!")
             exit(1)
 
         logging.info("--------------- End testRHNEntitlement --------------- ")
@@ -73,8 +83,13 @@ class RHNEntitlement(unittest.TestCase):
 
     def tearDown(self):
         logging.info("--------------- Begin tearDown ---------------")
-        RHNVerification().unregister(self.system_info)
-        RHNVerification().restore_non_redhat_repo(self.system_info)
+        try:
+            RHNVerification().unregister(self.system_info)
+            RHNVerification().restore_non_redhat_repo(self.system_info)
+        except Exception, e:
+            logging.error(str(e))
+            logging.error("Test Failed - error happened when do content testing!")
+            exit(1)
         logging.info("--------------- End tearDown ---------------")
 
 if __name__ == '__main__':
