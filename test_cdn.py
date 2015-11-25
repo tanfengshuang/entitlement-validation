@@ -24,14 +24,14 @@ def log_setting(variant, arch, rhn):
     nor.addHandler(filehandler)
 
 # Create our test suite.
-def test_suite():
+def cdn_suite():
     suite = unittest.TestSuite()
     return suite
 
 # Launch our test suite
 if __name__ == '__main__':
     log_setting(variant, arch, rhn)
-
-    suite = test_suite()
-    runner = unittest.TextTestRunner()
-    result = runner.run(suite)
+    cdn_suite()
+    #suite = test_suite()
+    #runner = unittest.TextTestRunner()
+    #result = runner.run(suite)
