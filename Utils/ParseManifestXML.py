@@ -21,7 +21,9 @@ class ParseManifestXMLBase(object):
     def downloade_manifest(self):
         if self.manifest_url != None:
             cmd = 'wget %s -O %s' % (self.manifest_url, self.manifest_json)
+            logging.info("#{0}".format(cmd))
             (ret, output) = commands.getstatusoutput(cmd)
+            logging.info(output)
             if ret == 0:
                 logging.info("It's successful to download manifest file")
                 return True
