@@ -19,7 +19,7 @@ class ParseManifestXMLBase(object):
         self.manifest_json = manifest_json
 
     def downloade_manifest(self):
-        if self.manifest_url != None:
+        if self.manifest_url != "":
             cmd = 'wget %s -O %s' % (self.manifest_url, self.manifest_json)
             logging.info("#{0}".format(cmd))
             (ret, output) = commands.getstatusoutput(cmd)
@@ -31,7 +31,7 @@ class ParseManifestXMLBase(object):
                 logging.error("Test Failed - Failed to download manifest file")
                 exit(1)
         else:
-            logging.error("Test Failed - Failed to get params : manifest_url")
+            logging.error("Test Failed - Failed to get testing param Manifest_URL.")
             exit(1)
 
     def load_json(self):

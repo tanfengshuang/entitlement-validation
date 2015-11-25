@@ -23,6 +23,8 @@ class RHNVerification(EntitlementBase):
             (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to clean the yum cache after register...")
             if ret == 0:
                 logging.info("It's successful to clean the yum cache.")
+            else:
+                logging.info("Failed to clean the yum cache.")
             return True
         else:
             #Error Message:
