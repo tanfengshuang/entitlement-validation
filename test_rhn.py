@@ -37,9 +37,9 @@ if __name__ == '__main__':
     log_setting(variant, arch, rhn)
 
     # nosetests test_rhn.py
-    rhn_suite()
+    # rhn_suite()
 
     # python test_rhn.py
-    # suite = test_suite()
-    # runner = unittest.TextTestRunner()
-    # result = runner.run(suite)
+    suite = rhn_suite()
+    runner = unittest.TextTestRunner()
+    result = runner.run(suite)

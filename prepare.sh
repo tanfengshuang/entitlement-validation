@@ -1,12 +1,5 @@
 #!/bin/sh
 
-WORKSPACE=/home/ftan/Code/new-entitlement
-MANIFEST_URL="http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn_6.7.json"
-PID="69"
-VARIANT="Server"
-ARCH="x86_64"
-RELEASE_VER="6Server"
-
 test_case_path=$WORKSPACE/entitlement-validation/Tests/
 
 cdn_environment_path=$WORKSPACE/entitlement-validation/CDN/__init__.py
@@ -52,6 +45,8 @@ prepare_cdn() {
     if [ "`cat $cdn_environment_path | grep DISTRO`" != "" ]; then sed -i -e "s/DISTRO/$DISTRO/g" $cdn_environment_path; fi
     if [ "`cat $cdn_environment_path | grep CDN`" != "" ]; then sed -i -e "s/CDN/$CDN/g" $cdn_environment_path; fi
     if [ "`cat $cdn_environment_path | grep CANDLEPIN`" != "" ]; then sed -i -e "s/CANDLEPIN/$CANDLEPIN/g" $cdn_environment_path; fi
+    if [ "`cat $cdn_environment_path | grep BLACKLIST`" != "" ]; then sed -i -e "s/BLACKLIST/$BLACKLIST/g" $cdn_environment_path; fi
+    if [ "`cat $cdn_environment_path | grep RELEASE_VERSION`" != "" ]; then sed -i -e "s/RELEASE_VERSION/$RELEASE_VERSION/g" $cdn_environment_path; fi
 
     # generate all test cases from template for cdn testing, and add test cases to test suite
     OLD_IFS="$IFS"

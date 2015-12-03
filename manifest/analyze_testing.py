@@ -3,10 +3,14 @@ import sys
 import json
 import commands
 
-# test data
+# cdn test data
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel5.10/rhel5.10-rc-1.3.json
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel7.2/rhel-7.2-snapshot1-qa-cdn.json
+# http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+
+# rhn test data
+# http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel5.10/rhel5.10-rc-1.3.json
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
 
 
@@ -34,20 +38,45 @@ def download_read_manifest(MANIFEST_PATH, MANIFEST_URL):
 
 
 class AnalyzeCDN(object):
+    """
+    1. Get base testing platforms from manifest, such as {"68":["Client-x86_64", "Client-i386"], "69":["Server-x86_64", "Server-i386"]}
+    2. Get Jenkins upstream job parameter 'Product_ID' as PIDs and 'RHEL_Variant' as VARIANTs
+    3. Get testing platform intersection
+        If 'Product_ID' and 'RHEL_Variant' are both empty
+        If 'Product_ID' is not empty, 'RHEL_Variant' is empty
+        If 'Product_ID' is not empty, 'RHEL_Variant' is not empty
+        If 'Product_ID' is empty, 'RHEL_Variant' is not empty
+    4. Generate properties files(such as Server-x86_64.properties, Server-i386.properties), and write VARIANT, ARCH, PID variables
+    5. Append other parameters into properties files in order to pass down these params listed in properties files to downstream jobs
+    6. Content of properties file:
+        VARIANT=Server
+        ARCH=i386
+        PID=90,83,69
+        MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+        DISTRO=RHEL-7.2-20150904.0
+        CDN=QA
+        CANDLEPIN=Stage
+        BLACKLIST=GA
+        RELEASE_VERSION=7.2
+    """
     def __init__(self):
-        self.pid_file = "pid.txt"
-        self.variant_file = "variant.txt"
-        self.baseinfo_file = "baseinfo.txt"
-        self.MANIFEST_PATH = "MANIFEST.json"
-        self.MANIFEST_URL = commands.getoutput("cat %s | grep MANIFEST_URL | awk -F'=' '{print $2}'" % (self.baseinfo_file))
+        # Get Jenkins job parameters
+        self.DISTRO = os.environ["DISTRO"]
+        self.CDN = os.environ["CDN"]
+        self.CANDLEPIN = os.environ["CANDLEPIN"]
+        self.BLACKLIST = os.environ["BLACKLIST"]
+        self.RELEASE_VERSION = os.environ["RELEASE_VERSION"]
+        self.PIDs = os.environ["Product_ID"]
+        self.VARIANTs = os.environ["RHEL_Variant"]
+        self.MANIFEST_URL = os.environ["MANIFEST_URL"]
+
+        # Download manifest
+        self.MANIFEST_PATH = "CDN_MANIFEST.json"
         self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_URL)
 
     def analyze_cdn(self):
-        # read PID and VARIANT from jenkins parameters
-        PIDs, VARIANTs = self.__get_pid_variant()
-
-        # parse MANIFEST.json to get test platforms
         if "cdn" in self.content.keys():
+            # Get testing platforms from provided mainfest
             platforms = {}
             for pid in self.content["cdn"]["products"]:
                 arches = []
@@ -65,70 +94,100 @@ class AnalyzeCDN(object):
                     # arches: ['Server-ppc64le', 'ComputeNode-x86_64', 'Server-aarch64', 'Server-ppc64', 'Client-x86_64', 'Server-s390x', 'Server-x86_64', 'Workstation-x86_64']
                     arches.append("{0}-{1}".format(variant, basearch))
                     platforms[pid] = list(set(arches))
-            # platforms format: {"68":["Client-x86_64", "Client-i386"], "69":["Server-X86_64", "Server-i386"]}
             print "PID, Variants and arches list in manifest:"
+            # platforms format: {"68":["Client-x86_64", "Client-i386"], "69":["Server-x86_64", "Server-i386"]}
             for i in platforms:
                 print "{0}: {1}".format(i, platforms[i])
 
-            if PIDs == "" and VARIANTs == "":
-                # ready to write testing properties files
-                # *.properties file content
-                # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
-                # DISTRO=RHEL-7.2-20150904.0
-                # CDN=QA
-                # CANDLEPIN=Stage
-                # VARIANT=Server
-                # ARCH=i386
-                # PID=69
+            # Jenkins upstream job parameter 'Product_ID' and 'RHEL_Variant' are both empty
+            if self.PIDs == "" and self.VARIANTs == "":
+                # write testing properties files according to platforms listed in manifest
                 for pid in platforms:
                     # generate *.properties files used to trigger downstream jobs
                     for variant_arch in platforms[pid]:
                         self.__generate_properties(variant_arch, pid)
-            elif PIDs != "":
-                for pid in PIDs.split(","):
+
+            # Jenkins upstream job parameter 'Product_ID' is not empty
+            elif self.PIDs != "":
+                for pid in self.PIDs.split(","):
                     if pid not in platforms.keys():
                         print "Warning: PID {0} is not in manifest!".format(pid)
                         continue
-                    if VARIANTs == "":
-                        # generate *.properties files used to trigger downstream jobs
+
+                    # Jenkins upstream job parameter 'Product_ID' is not empty, 'RHEL_Variant' is empty
+                    if self.VARIANTs == "":
+                        # if VARIANTs is empty, then generate *.properties files according to variant_arch under pid in manifest
                         for variant_arch in platforms[pid]:
                             self.__generate_properties(variant_arch, pid)
+
+                    # Jenkins upstream job parameter 'Product_ID' and 'RHEL_Variant' are both not empty
                     else:
                         # Delete those invalid arches which are not in manifest
-                        variants = self.__check_arches(VARIANTs, platforms[pid])
+                        variants = self.__check_arches(self.VARIANTs, platforms[pid])
+
                         # generate *.properties files used to trigger downstream jobs
                         for variant_arch in variants:
                             self.__generate_properties(variant_arch, pid)
-            else:
-                # Delete those invalid arches which are not in manifest
-                variants = self.__check_arches(VARIANTs, platforms[pid])
-                # generate *.properties files used to trigger downstream jobs
-                for variant_arch in variants:
-                    self.__generate_properties(variant_arch, pid)
 
-            # copy the content of file $baseinfo_file to *.properties
+            # Jenkins upstream job parameter Product_ID is empty, RHEL_Variant is not empty
+            else:
+                for pid in platforms.keys():
+                    # Delete those invalid arches which are not in manifest
+                    variants = self.__check_arches(self.VARIANTs, platforms[pid])
+
+                    # generate *.properties files used to trigger downstream jobs
+                    for variant_arch in variants:
+                        self.__generate_properties(variant_arch, pid)
+
+            # Generate the final properties file
             output = commands.getoutput("ls | grep properties")
             if output != "":
-                for file in output.splitlines():
-                    if output != "":
-                        # merge several PIDs into one line, such as, merge the following lines to PID=90,83,69
-                        # PID=90
-                        # PID=83
-                        # PID=69
-                        PID_info = commands.getoutput("cat %s | grep PID | awk -F'=' '{print $2}'" % file).replace('\n', ',')
-                        with open("{0}".format(file), 'w') as f1:
-                            # write non-PID lines
-                            f1.write(commands.getoutput("cat {0} | grep -v PID".format(file)))
-                            # write PID lines to one line - PID=90,83,69
-                            f1.write("PID={0}\n".format(PID_info))
-                    with open("{0}".format(file), 'a+') as f1:
-                        # write $baseinfo_file content to *.properties
-                        with open("{0}".format(self.baseinfo_file), 'r') as f2:
-                            f1.write(f2.read())
+                for prop_file in output.splitlines():
+                    # Content of current properties file
+                    # VARIANT=Server
+                    # ARCH=i386
+                    # PID=90
+                    # PID=83
+                    # PID=69
+
+                    # Merge several PIDs into one line, such as, merge the above PID lines to PID=90,83,69
+                    pid_info = commands.getoutput("cat %s | grep PID | awk -F'=' '{print $2}'" % prop_file).replace('\n', ',')
+
+                    # Delete PID lines from properties file
+                    commands.getoutput("sed -i '/PID/d' {0}".format(prop_file))
+
+                    # Content of final *.properties file
+                    # VARIANT=Server
+                    # ARCH=i386
+                    # PID=90,83,69
+                    # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+                    # DISTRO=RHEL-7.2-20150904.0
+                    # CDN=QA
+                    # CANDLEPIN=Stage
+                    # BLACKLIST=GA
+                    # RELEASE_VERSION=7.2
+                    with open("{0}".format(prop_file), 'a+') as f:
+                        # Re-write PID line into properties file
+                        f.write("PID={0}\n".format(pid_info))
+
+                        # Write other Jenkins job parameters into properties file
+                        f.write("MANIFEST_URL={0}\n".format(self.MANIFEST_URL))
+                        f.write("DISTRO={0}\n".format(self.DISTRO))
+                        f.write("CDN={0}\n".format(self.CDN))
+                        f.write("CANDLEPIN={0}\n".format(self.CANDLEPIN))
+                        f.write("BLACKLIST={0}\n".format(self.BLACKLIST))
+                        f.write("RELEASE_VERSION={0}\n".format(self.RELEASE_VERSION))
+            else:
+                print "No eligible testing platform provided!"
         else:
             print "No CDN part provided in manifest!"
 
     def __generate_properties(self, variant_arch, pid):
+        # current *.properties file content
+        # VARIANT=Server
+        # ARCH=i386
+        # PID=69
+        # PID=83
         variant = variant_arch.split("-")[0]
         arch = variant_arch.split("-")[1]
         file_name = "{0}.properties".format(variant_arch)
@@ -143,21 +202,10 @@ class AnalyzeCDN(object):
                 f.write("PID={0}\n".format(pid))
                 print "write variant({0}), arch({1}) and pid({2}) into {3}.properties".format(variant, arch, pid, variant_arch)
 
-    def __get_pid_variant(self):
-        PIDs = ""
-        VARIANTs = ""
-        if os.path.exists(self.pid_file):
-            with open("{0}".format(self.pid_file), 'r') as f:
-                PIDs = f.read().splitlines()[0]
-        if os.path.exists(self.variant_file):
-            with open("{0}".format(self.variant_file), 'r') as f:
-                VARIANTs = f.read().splitlines()[0]
-        return PIDs, VARIANTs
-
-    def __check_arches(self, VARIANTs, VTs):
+    def __check_arches(self, VARIANTs, VTs_manifest):
         variants = []
         for v in VARIANTs.split(","):
-            if v in VTs:
+            if v in VTs_manifest:
                 variants.append(v)
             else:
                 print "Warning: variant {0} is not in manifest!".format(v)
@@ -165,20 +213,37 @@ class AnalyzeCDN(object):
 
 
 class AnalyzeRHN(object):
+    """
+    1. Get base testing platforms from manifest, such as ['Client_x86_64', 'Server_s390x', 'Server_x86_64', 'Workstation_x86_64']
+    2. Get Jenkins upstream job parameter 'Channels' as CHANNELs and 'RHEL_Variant' as VARIANTs
+    3. Get testing platform intersection
+       If 'Channels' and 'RHEL_Variant' are both empty
+       If 'Channels' is not empty, 'RHEL_Variant' is empty
+       If 'Channels' is not empty, 'RHEL_Variant' is not empty
+       If 'Channels' is empty, 'RHEL_Variant' is not empty
+    4. Generate properties files, such as Server-x86_64.properties, Server-i386.properties, and write VARIANT and ARCH variables
+    5. Append other parameters into properties files in order to pass down these params listed in properties files to downstream jobs
+    6. Content of properties file:
+        VARIANT=Server
+        ARCH=i386
+        MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+        DISTRO=RHEL-7.2-20150904.0
+        RHN=QA
+    """
     def __init__(self):
-        self.channel_file = "channel.txt"
-        self.variant_file = "variant.txt"
-        self.baseinfo_file = "baseinfo.txt"
-        self.MANIFEST_PATH = "MANIFEST.json"
-        self.MANIFEST_URL = commands.getoutput("cat %s | grep MANIFEST_URL | awk -F'=' '{print $2}'" % (self.baseinfo_file))
+        self.DISTRO = os.environ["DISTRO"]
+        self.RHN = os.environ["RHN"]
+        self.CHANNELs = "" #os.environ["Channels"]
+        self.VARIANTs = os.environ["RHEL_Variant"]
+        self.MANIFEST_URL = os.environ["MANIFEST_URL"]
+
+        # Download manifest
+        self.MANIFEST_PATH = "RHN_MANIFEST.json"
         self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_URL)
 
     def analyze_rhn(self):
-        # read PID and VARIANT from jenkins parameters
-        CHANNELs, VARIANTs = self.__get_channel_variant()
-
-        # parse MANIFEST.json to get test platforms
         if "rhn" in self.content.keys():
+            # Get testing platforms from mainfest
             platforms = []
             rhn = self.content["rhn"]
             for channel in rhn["channels"].keys():
@@ -199,47 +264,38 @@ class AnalyzeRHN(object):
             print "Variants and arches list in manifest:", platforms
 
             testing_platforms = []
-            if CHANNELs == "" and VARIANTs == "":
-                # ready to write testing properties files
-                # *.properties file content
-                # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
-                # DISTRO=RHEL-7.2-20150904.0
-                # CDN=QA
-                # VARIANT=Server
-                # ARCH=i386
+            if self.CHANNELs == "" and self.VARIANTs == "":
                 testing_platforms = platforms
-            elif CHANNELs != "":
+            elif self.CHANNELs != "":
                 pass
             else:
                 # get the intersection of $platforms in manifest and $VARIANTs provided as parameter
-                testing_platforms = list(set(VARIANTs.split(",")).intersection(set(platforms)))
+                # VARIANTs: ['Server-i386', 'Server-x86_64']
+                testing_platforms = list(set(self.VARIANTs.split(",")).intersection(set(platforms)))
             print "Need to do testing on:", testing_platforms
 
-            # generate properties used for triggering downstream jobs
+            # generate properties file to trigger downstream jobs and pass down testing parameters
+            # Content of *.properties file
+            # VARIANT=Server
+            # ARCH=i386
+            # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+            # DISTRO=RHEL-7.2-20150904.0
+            # RHN=QA
             for file_content in testing_platforms:
                 variant = file_content.split("-")[0]
                 arch = file_content.split("-")[1]
-                with open("{0}.properties".format(file_content), 'w') as f1:
+                with open("{0}.properties".format(file_content), 'w') as f:
                     # write $variant to new properties file
-                    f1.write("VARIANT={0}\n".format(variant))
-                    # write $arch to new properties file
-                    f1.write("ARCH={0}\n".format(arch))
-                    # copy content of file $baseinfo_file to new properties file
-                    with open("{0}".format(self.baseinfo_file), 'r') as f2:
-                        f1.write(f2.read())
-        else:
-            print "No RHN part provided in manifest!"
+                    f.write("VARIANT={0}\n".format(variant))
 
-    def __get_channel_variant(self):
-        CHANNELs = ""
-        VARIANTs = ""
-        if os.path.exists(self.channel_file):
-            with open("{0}".format(self.channel_file), 'r') as f:
-                CHANNELs = f.read().splitlines()[0]
-        if os.path.exists(self.variant_file):
-            with open("{0}".format(self.variant_file), 'r') as f:
-                VARIANTs = f.read().splitlines()[0]
-        return CHANNELs, VARIANTs
+                    # write $arch to new properties file
+                    f.write("ARCH={0}\n".format(arch))
+
+                    # Write other Jenkins job parameters to properties file
+                    f.write("MANIFEST_URL={0}\n".format(self.MANIFEST_URL))
+                    f.write("DISTRO={0}\n".format(self.DISTRO))
+                    f.write("RHN={0}\n".format(self.RHN))
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
