@@ -1,6 +1,13 @@
 #!/bin/sh
 
-environment_path="$WORKSPACE/entitlement-validation/Utils/environment.py"
+WORKSPACE=/home/ftan/Code/new-entitlement
+MANIFEST_URL="http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn_6.7.json"
+PID="69"
+VARIANT="Server"
+ARCH="x86_64"
+RELEASE_VER="6Server"
+
+environment_path=$WORKSPACE/entitlement-validation/Utils/environment.py
 cdn_test_suite_path=$WORKSPACE/entitlement-validation/test_cdn.py
 test_case_path=$WORKSPACE/entitlement-validation/Tests/
 cdn_case_template=${test_case_path}CDNEntitlement_template.py
@@ -30,7 +37,7 @@ fi
 
 prepare_cdn() {
     # trying to get beaker ip
-    get_ip
+    #get_ip
 
     # write testing parameters to environment.py
     echo "writing testing parameters into file environment.py"

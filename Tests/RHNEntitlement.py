@@ -36,7 +36,7 @@ class RHNEntitlement(unittest.TestCase):
             RHNVerification().remove_non_redhat_repo(self.system_info)
         except Exception, e:
             logging.error(str(e))
-            logging.error("Test Failed - error happened when do content testing!")
+            logging.error("Test Failed - Raised error when do content testing!")
             exit(1)
         logging.info("--------------- End Init ---------------")
 
@@ -64,7 +64,7 @@ class RHNEntitlement(unittest.TestCase):
                 exit(1)
         except Exception, e:
             logging.error(str(e))
-            logging.error("Test Failed - error happened when do content testing!")
+            logging.error("Test Failed - Raised error when do RHN Entitlement testing!")
             exit(1)
 
         logging.info("--------------- End testRHNEntitlement --------------- ")
@@ -88,7 +88,7 @@ class RHNEntitlement(unittest.TestCase):
             RHNVerification().restore_non_redhat_repo(self.system_info)
         except Exception, e:
             logging.error(str(e))
-            logging.error("Test Failed - error happened when do content testing!")
+            logging.error("Test Failed - Raised error when do RHN Entitlement testing!")
             exit(1)
         logging.info("--------------- End tearDown ---------------")
 

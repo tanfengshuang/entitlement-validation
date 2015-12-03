@@ -109,7 +109,7 @@ class AnalyzeCDN(object):
             # copy the content of file $baseinfo_file to *.properties
             output = commands.getoutput("ls | grep properties")
             if output != "":
-                for file in output.split("\n"):
+                for file in output.splitlines():
                     if output != "":
                         # merge several PIDs into one line, such as, merge the following lines to PID=90,83,69
                         # PID=90
@@ -126,7 +126,7 @@ class AnalyzeCDN(object):
                         with open("{0}".format(self.baseinfo_file), 'r') as f2:
                             f1.write(f2.read())
         else:
-            print "No CDN part in provided manifest!"
+            print "No CDN part provided in manifest!"
 
     def __generate_properties(self, variant_arch, pid):
         variant = variant_arch.split("-")[0]
@@ -148,10 +148,10 @@ class AnalyzeCDN(object):
         VARIANTs = ""
         if os.path.exists(self.pid_file):
             with open("{0}".format(self.pid_file), 'r') as f:
-                PIDs = f.read().split('\n')[0]
+                PIDs = f.read().splitlines()[0]
         if os.path.exists(self.variant_file):
             with open("{0}".format(self.variant_file), 'r') as f:
-                VARIANTs = f.read().split('\n')[0]
+                VARIANTs = f.read().splitlines()[0]
         return PIDs, VARIANTs
 
     def __check_arches(self, VARIANTs, VTs):
@@ -228,17 +228,17 @@ class AnalyzeRHN(object):
                     with open("{0}".format(self.baseinfo_file), 'r') as f2:
                         f1.write(f2.read())
         else:
-            print "No RHN part in provided manifest!"
+            print "No RHN part provided in manifest!"
 
     def __get_channel_variant(self):
         CHANNELs = ""
         VARIANTs = ""
         if os.path.exists(self.channel_file):
             with open("{0}".format(self.channel_file), 'r') as f:
-                CHANNELs = f.read().split('\n')[0]
+                CHANNELs = f.read().splitlines()[0]
         if os.path.exists(self.variant_file):
             with open("{0}".format(self.variant_file), 'r') as f:
-                VARIANTs = f.read().split('\n')[0]
+                VARIANTs = f.read().splitlines()[0]
         return CHANNELs, VARIANTs
 
 if __name__ == '__main__':

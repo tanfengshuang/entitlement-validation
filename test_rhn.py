@@ -4,7 +4,7 @@ import unittest
 import logging
 
 from Utils.environment import *
-from Tests import RHNEntitlement
+from Tests.RHNEntitlement import RHNEntitlement
 
 def log_setting(variant, arch, rhn):
     # write log into specified files

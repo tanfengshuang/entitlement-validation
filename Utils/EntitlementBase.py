@@ -29,6 +29,7 @@ class EntitlementBase(object):
             logging.info("It's successful to get current base arch.")
             #prog = re.compile("(\S+\d+.*)\s+")
             #result = re.search(prog, output)
+            base_arch = ""
             if "ppc64le" in output:
                 base_arch = "ppc64le"
             elif "ppc64" in output:
@@ -49,7 +50,7 @@ class EntitlementBase(object):
                 logging.info("No base arch could get from current system.")
                 logging.error("Test Failed - Failed to get current base arch.")
                 exit(1)
-            logging.info("Base arch for current system is %s." % base_arch)
+            logging.info("Base arch for current system is {0}.".format(base_arch))
             return base_arch
         else:
             logging.error("Test Failed - Failed to get current base arch.")
@@ -73,10 +74,134 @@ class EntitlementBase(object):
         RemoteSHH().run_cmd(system_info, cmd, "Trying to backup non-redhat repos to /tmp/backup_repo/...")
 
         # remove non-redhat repo
-        cmd = "ls /etc/yum.repos.d/ | grep -v redhat.repo | xargs rm -rf"
+        cmd = "ls /etc/yum.repos.d/* | grep -v redhat.repo | xargs rm -rf"
+        #cmd = "rm -f $(ls /etc/yum.repos.d/* | grep -v  'redhat.repo')"
         RemoteSHH().run_cmd(system_info, cmd, "Trying to delete non-redhat repos to avoid affection...")
+
+        # check
+        cmd = "ls /etc/yum.repos.d/"
+        RemoteSHH().run_cmd(system_info, cmd, "Trying to check the result of remove non-redhat repos...")
 
     def restore_non_redhat_repo(self, system_info):
         # delete rhn debuginfo repo to remove affection
         cmd = 'cp /tmp/backup_repo/*.repo /etc/yum.repos.d/'
         RemoteSHH().run_cmd(system_info, cmd, "Trying to restore those non-redhat repos...")
+
+    def get_avail_space(self, system_info):
+        ret, output = RemoteSHH().run_cmd(system_info, "df -H | grep home")
+        if "home" in output:
+            avail_space = output.split()[3]
+        else:
+            avail_space = "0"
+        return avail_space
+
+    def get_master_release(self, system_info):
+        ret, release = RemoteSHH().run_cmd(system_info, "lsb_release -r -s", "Trying to restore those non-redhat repos...")
+        master_release = release.split(".")[0]
+        return master_release
+
+    def extend_system_space(self, system_info):
+        # https://engineering.redhat.com/trac/content-tests/wiki/Content/HowTo/ExtendRootInBeaker
+        logging.info("--------------- Begin to extend system space ---------------")
+        master_release = self.get_master_release(system_info)
+
+        avail_space = self.get_avail_space(system_info)
+        if "G" in avail_space:
+            avail_space = avail_space.split("G")[0]
+            extend_space = int(avail_space) - 3
+            if extend_space <= 0:
+                logging.info("No more space to extend")
+                logging.info("--------------- End to extend system space ---------------")
+                return
+
+            # Check the filesystem(ext4 or xfs), free space and list the lvm volumes
+            RemoteSHH().run_cmd(system_info, "cat /etc/fstab", "Trying to get fstab info...")
+            RemoteSHH().run_cmd(system_info, "df -h", "Trying to list/check the free space...")
+            RemoteSHH().run_cmd(system_info, "lvs", "Trying to list the lvm volumes...")
+
+            # Unmount the home partition and activate LVM
+            RemoteSHH().run_cmd(system_info, "umount /home", "Trying to umount home partition...")
+            RemoteSHH().run_cmd(system_info, "lvm vgchange -a y", "Trying to activate the volume group...")
+
+            ret, output = RemoteSHH().run_cmd(system_info, "ls /dev/mapper/ | grep home", "Trying to get home partition name...")
+            lvm_home = output.splitlines()[0]
+            ret, output = RemoteSHH().run_cmd(system_info, "ls /dev/mapper/ | grep root", "Trying to get root partition name...")
+            lvm_root = output.splitlines()[0]
+            """
+            print "**************", lvm_home
+            print "**************", lvm_root
+            print "resize2fs -f /dev/mapper/{0} 1G".format(lvm_home)
+            print "lvreduce -L1G /dev/mapper/{0}".format(lvm_home)
+            print "lvextend -L+{0}G  /dev/mapper/{1}".format(extend_space, lvm_root)
+            print "resize2fs /dev/mapper/{0}".format(lvm_root), "Trying to resize2fs root partition..."
+            print "mount /home"
+            """
+            if master_release in ["5", "6"]:
+                # Shrink the home partition
+                ret, output = RemoteSHH().run_cmd(system_info, "resize2fs -f /dev/mapper/{0} 1G".format(lvm_home), "Trying to resize2fs home partition...", timeout=None)
+                if "Resizing the filesystem on" in output:
+                    logging.info("Succeed to resize2fs home partition to 1G.")
+                else:
+                    logging.warning("Failed to resize2fs home partition to 1G.")
+
+                ret, output = RemoteSHH().run_cmd_interact(system_info, "lvreduce -L1G /dev/mapper/{0}".format(lvm_home), "Trying to lvreduce home partition...")
+                if "successfully resized" in output:
+                    logging.info("Succeed to lvreduce home partition to 1G.")
+                else:
+                    logging.warning("Failed to lvreduce home partition to 1G.")
+
+                # Extend the root partition
+                ret, output = RemoteSHH().run_cmd(system_info, "lvextend -L+{0}G /dev/mapper/{1}".format(extend_space, lvm_root), "Trying to lvextend root partition...", timeout=None)
+                if "successfully resized" in output:
+                    logging.error("Succeed to lvextend {0}G for root partition.".format(avail_space))
+                elif "Insufficient free space" in output:
+                    logging.warning("Insufficient free space when lvextend root partition.")
+                else:
+                    logging.warning("Failed to lvextend {0}G for root partition.".format(avail_space))
+
+                ret, output = RemoteSHH().run_cmd(system_info, "resize2fs /dev/mapper/{0}".format(lvm_root), "Trying to resize2fs root partition...", timeout=None)
+                if "Performing an on-line resize" in output:
+                    logging.info("Succeed to resize2fs root partition.")
+                else:
+                    logging.warning("Failed to resize2fs root partition.")
+
+                # Remount the home partition
+                RemoteSHH().run_cmd(system_info, "mount /home", "Trying to umount home partition...")
+
+                # Check root partition after extend space
+                RemoteSHH().run_cmd(system_info, "df -H", "Trying to check root partition after extend space...")
+
+            elif master_release == "7":
+                # Delete home partition
+                ret, output = RemoteSHH().run_cmd_interact(system_info, "lvremove /dev/mapper/{0}".format(lvm_home), "Trying to delete home partition")
+                if "successfully removed" in output:
+                    logging.info("Succeed to remove home partition.")
+                else:
+                    logging.warning("Succeed to remove home partition.")
+
+                # Extend root partition
+                ret, output = RemoteSHH().run_cmd(system_info, "lvextend -L+{0}G /dev/mapper/{1}".format(extend_space, lvm_root), "Trying to lvextend root partition...", timeout=None)
+                if "successfully resized" in output:
+                    logging.info("Succeed to lvextend {0}G for root partition.".format(avail_space))
+                elif "Insufficient free space" in output:
+                    logging.warning("Insufficient free space when lvextend root partition.")
+                else:
+                    logging.warning("Succeed to lvextend {0}G for root partition.".format(avail_space))
+
+                ret, output = RemoteSHH().run_cmd(system_info, "xfs_growfs /", "Trying to xfs_growfs root partition", timeout=None)
+                if "":
+                    pass
+                else:
+                    pass
+
+                # Check root partition after extend space
+                RemoteSHH().run_cmd(system_info, "df -H", "Trying to check root partition after extend space...")
+            else:
+                logging.error("Failed to extend space!")
+        else:
+            logging.info("No space to extend")
+
+        logging.info("--------------- End to extend system space ---------------")
+
+
+

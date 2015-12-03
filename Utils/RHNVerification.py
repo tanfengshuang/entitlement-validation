@@ -16,11 +16,11 @@ class RHNVerification(EntitlementBase):
                 logging.info("The system is failed to unregister from rhn server, try to use '--force'!")
                 cmd += " --force"
 
-        (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to register to rhn server...")
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to register to rhn server...")
         if ret == 0:
             logging.info("It's successful to register to rhn server.")
             cmd = "rm -rf /var/cache/yum/*"
-            (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to clean the yum cache after register...")
+            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to clean the yum cache after register...")
             if ret == 0:
                 logging.info("It's successful to clean the yum cache.")
             else:
@@ -34,7 +34,7 @@ class RHNVerification(EntitlementBase):
 
     def isregistered(self, system_info,):
         cmd = "ls /etc/sysconfig/rhn/systemid"
-        (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to check if registered to rhn...")
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to check if registered to rhn...")
         if ret == 0:
             logging.info("The system is registered to rhn server now.")
             return True
@@ -59,7 +59,7 @@ class RHNVerification(EntitlementBase):
     def add_channels(self, system_info, username, password, channels):
         channel_default = []
         cmd = "rhn-channel --list --user=%s --password=%s" % (username, password)
-        (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to list the channel which was added by default after register...")
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to list the channel which was added by default after register...")
         if ret == 0:
             channel_default = output.splitlines()
             logging.info("It's successful to get default channel from rhn server: %s" % channel_default)
@@ -71,10 +71,10 @@ class RHNVerification(EntitlementBase):
             if channel not in channel_default:
                 # add channel
                 cmd = "rhn-channel --add --channel=%s --user=%s --password=%s" % (channel, username, password)
-                (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "add channel %s" % channel)
+                ret, output = RemoteSHH().run_cmd(system_info, cmd, "add channel %s" % channel)
 
             cmd = "rhn-channel --list --user=%s --password=%s" % (username, password)
-            (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to check if channel {0} was added successfully...".format(channel))
+            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to check if channel {0} was added successfully...".format(channel))
             channel_added = output.splitlines()
 
             if ret == 0 and channel in channel_added:
@@ -87,7 +87,7 @@ class RHNVerification(EntitlementBase):
     def remove_channels(self, system_info, username, password, channels=None):
         if channels == None:
             cmd = "rhn-channel --list --user=%s --password=%s" % (username, password)
-            (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to list all added channel already...")
+            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to list all added channel already...")
             channels = output.splitlines()
 
         if not isinstance(channels, list):
@@ -95,7 +95,7 @@ class RHNVerification(EntitlementBase):
 
         for channel in channels:
             cmd = "rhn-channel --remove --channel=%s --user=%s --password=%s" % (channel, username, password)
-            (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to remove channel {0}".format(channel))
+            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to remove channel {0}".format(channel))
             if ret == 0:
                 logging.info("It's successful to remove channel %s." % channel)
                 return True
@@ -103,12 +103,12 @@ class RHNVerification(EntitlementBase):
                 logging.info("Test Failed - Failed to remove channel %s." % channel)
                 return False
 
-    def get_channels_from_manifest(self, manifest_file, current_arch, variant):
+    def get_channels_from_manifest(self, manifest_xml, current_arch, variant):
         # get all channels from manifest which need testing
         repo_filter = "%s-%s" % (current_arch, variant.lower())
         logging.info("testing repo filter: {0}".format(repo_filter))
 
-        all_channel_list = ReadRHNXML().get_channel_list(manifest_file)
+        all_channel_list = ReadRHNXML().get_channel_list(manifest_xml)
         channel_list = [channel for channel in all_channel_list if repo_filter in channel]
 
         logging.info('Expected channel list got from packages manifest:')
@@ -121,13 +121,13 @@ class RHNVerification(EntitlementBase):
         else:
             return channel_list
 
-    def verify_channels(self, system_info, manifest_file, username, password, current_arch, variant):
+    def verify_channels(self, system_info, manifest_xml, username, password, current_arch, variant):
         # for now, this function can be only tested on RHEL6, as there is no param --available-channels on RHEL5
         logging.info("--------------- Begin to verify channel manifest ---------------")
         # get all channels which are not added
         available_channels = []
         cmd = "rhn-channel --available-channels --user=%s --password=%s" % (username, password)
-        (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to get available channels with command rhn-channel...")
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get available channels with command rhn-channel...")
         if ret == 0:
             available_channels = output.splitlines()
         else:
@@ -136,7 +136,7 @@ class RHNVerification(EntitlementBase):
         # get all channels which are already added
         added_channels = []
         cmd = "rhn-channel --list --user=%s --password=%s" % (username, password)
-        (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to get added channels with command rhn-channel...")
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get added channels with command rhn-channel...")
         if ret == 0:
             added_channels = output.splitlines()
         else:
@@ -145,7 +145,7 @@ class RHNVerification(EntitlementBase):
         channels_rhn = available_channels + added_channels
 
         # get all channels from manifest which are needed testing
-        channels_manifest = self.get_channels_from_manifest(manifest_file, current_arch, variant)
+        channels_manifest = self.get_channels_from_manifest(manifest_xml, current_arch, variant)
         list1 = self.cmp_arrays(channels_manifest, channels_rhn)
         if len(list1) > 0:
             logging.error("Failed to verify channel manifest.")
@@ -159,10 +159,10 @@ class RHNVerification(EntitlementBase):
             logging.info("--------------- End to verify channel manifest: PASS ---------------")
             return True
 
-    def installation(self, system_info, manifest_file, channel):
+    def installation(self, system_info, manifest_xml, channel):
         logging.info("--------------- Begin to verify packages full installation for channel {0} ---------------".format(channel))
         # get packages from manifest
-        package_list = ReadRHNXML().get_packages(manifest_file, channel)
+        package_list = ReadRHNXML().get_package_list(manifest_xml, channel)
         logging.info("Packages need to install of channel {0}".format(package_list))
         logging.info(package_list)
         # There are source rpms in channels, but they can only be downloaded through the customer portal web site.  They aren't exposed to yum/yumdownloader/repoquery.
@@ -173,7 +173,7 @@ class RHNVerification(EntitlementBase):
         result = True
         for pkg in package_list:
             cmd = "yum install -y %s" % pkg
-            (ret, output) = RemoteSHH().run_cmd(system_info, cmd, "Trying to yum install package {0}".format(pkg))
+            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to yum install package {0}".format(pkg))
 
             if ret == 0:
                 if ("Complete!" in output) or ("Nothing to do" in output) or ("conflicts" in output):

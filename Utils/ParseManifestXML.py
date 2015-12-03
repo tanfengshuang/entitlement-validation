@@ -1,8 +1,9 @@
 #!/usr/bin/python
 import os
-import commands
 import json
 import logging
+import commands
+import traceback
 
 from xml.dom import minidom
 
@@ -21,7 +22,7 @@ class ParseManifestXMLBase(object):
     def downloade_manifest(self):
         if self.manifest_url != "":
             cmd = 'wget %s -O %s' % (self.manifest_url, self.manifest_json)
-            logging.info("#{0}".format(cmd))
+            logging.info("# {0}".format(cmd))
             (ret, output) = commands.getstatusoutput(cmd)
             logging.info(output)
             if ret == 0:
@@ -38,12 +39,13 @@ class ParseManifestXMLBase(object):
         # Get json dir path, set it as output directory
         logging.info('Ready to load json file {0}'.format(self.manifest_json))
         try:
-            #load target file
+            # Load target file
             manifest_content = json.load(open(self.manifest_json, 'r'))
             logging.info('Data type is %s' % type(manifest_content))
             return manifest_content
         except Exception, e:
             logging.error(str(e))
+            logging.error(traceback.format_exc())
             logging.error("Error - Load json file failed when running json.load() function.")
             exit(1)
 
@@ -96,6 +98,7 @@ class RHNParseManifestXML(ParseManifestXMLBase):
                     dom.writexml(f, addindent=' '*4, newl='\n', encoding='utf-8')
         except Exception, e:
             logging.error(str(e))
+            logging.error(traceback.format_exc())
             logging.error("Error - Parse json file failed after loading .")
             exit(1)
 
@@ -178,7 +181,7 @@ class CDNParseManifestXML(ParseManifestXMLBase):
                             arch_item = dom.createElement('arch')
                             arch_item.setAttribute('value', basearch_value)
 
-                            #XML - add child element arch_item for productid_item
+                            # XML - add child element arch_item for productid_item
                             productid_item.appendChild(arch_item)
 
                             for repo_dict in basearch_dict[basearch_value]:
@@ -219,6 +222,7 @@ class CDNParseManifestXML(ParseManifestXMLBase):
 
         except Exception, e:
             logging.error(str(e))
+            logging.error(traceback.format_exc())
             logging.error("Error - Parse json file failed after loading .")
             exit(1)
 
