@@ -5,8 +5,8 @@ import logging
 import ConfigParser
 
 from Utils.RemoteSHH import RemoteSHH
-from Utils.ReadXML import ReadCDNXML
 from Utils.EntitlementBase import EntitlementBase
+from CDN.CDNReadXML import CDNReadXML
 
 class CDNVerification(EntitlementBase):
     def __init__(self):
@@ -341,7 +341,7 @@ class CDNVerification(EntitlementBase):
     def get_repo_list_from_manifest(self, manifest_xml, pid, current_arch, release_ver):
         # Get repo list from xml manifest
         logging.info("--------------- Begin to get repo list from manifest: {0} {1} {2} ---------------".format(pid, current_arch, release_ver))
-        repo_list = ReadCDNXML().get_repo_list(manifest_xml, release_ver, pid, current_arch)
+        repo_list = CDNReadXML().get_repo_list(manifest_xml, release_ver, pid, current_arch)
         if len(repo_list) == 0:
             logging.error("Repo list is empty!")
             logging.error("Test Failed - There is no repo for pid {0} in release {1}.".format(pid, release_ver))
@@ -354,7 +354,7 @@ class CDNVerification(EntitlementBase):
     def get_package_list_from_manifest(self, manifest_xml, pid, repo, current_arch, release_ver, type="name"):
         # Get package list from manifest file
         logging.info("--------------- Begin to get package list from manifest: {0} {1} {2} {3} ---------------".format(pid, current_arch, repo, release_ver))
-        package_list = ReadCDNXML().get_package_list(manifest_xml, repo, release_ver, pid, current_arch)
+        package_list = CDNReadXML().get_package_list(manifest_xml, repo, release_ver, pid, current_arch)
         if type == "name":
             package_list = [p.split()[0] for p in package_list]
         elif type == "full-name":

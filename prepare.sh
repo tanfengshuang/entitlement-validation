@@ -7,11 +7,14 @@ VARIANT="Server"
 ARCH="x86_64"
 RELEASE_VER="6Server"
 
-environment_path=$WORKSPACE/entitlement-validation/Utils/environment.py
-cdn_test_suite_path=$WORKSPACE/entitlement-validation/test_cdn.py
 test_case_path=$WORKSPACE/entitlement-validation/Tests/
+
+cdn_environment_path=$WORKSPACE/entitlement-validation/CDN/__init__.py
+cdn_test_suite_path=$WORKSPACE/entitlement-validation/test_cdn.py
 cdn_case_template=${test_case_path}CDNEntitlement_template.py
-init_file=${test_case_path}__init__.py
+
+rhn_environment_path=$WORKSPACE/entitlement-validation/RHN/__init__.py
+
 
 usage() {
     echo "Usage: $0 cdn|CDN|rhn|RHN|sat|SAT"
@@ -19,6 +22,7 @@ usage() {
 }
 
 get_ip() {
+    environment_path=$1
     ip_file="$WORKSPACE/RESOURCES.txt"
     if [ -f "$ip_file" ]; then
         BEAKER_IP=`cat $ip_file | grep EXISTING_NODES  | awk -F '=' '{print $2}'`
@@ -37,17 +41,17 @@ fi
 
 prepare_cdn() {
     # trying to get beaker ip
-    #get_ip
+    get_ip $cdn_environment_path
 
     # write testing parameters to environment.py
-    echo "writing testing parameters into file environment.py"
-    if [ "`cat $environment_path | grep MANIFEST_URL`" != "" ]; then sed -i -e "s?MANIFEST_URL?$MANIFEST_URL?g" $environment_path; fi
-    if [ "`cat $environment_path | grep PID`" != "" ]; then sed -i "s/PID/$PID/g" $environment_path; fi
-    if [ "`cat $environment_path | grep VARIANT`" != "" ]; then sed -i -e "s/VARIANT/$VARIANT/g" $environment_path; fi
-    if [ "`cat $environment_path | grep ARCH`" != "" ]; then sed -i -e "s/ARCH/$ARCH/g" $environment_path; fi
-    if [ "`cat $environment_path | grep DISTRO`" != "" ]; then sed -i -e "s/DISTRO/$DISTRO/g" $environment_path; fi
-    if [ "`cat $environment_path | grep CDN`" != "" ]; then sed -i -e "s/CDN/$CDN/g" $environment_path; fi
-    if [ "`cat $environment_path | grep CANDLEPIN`" != "" ]; then sed -i -e "s/CANDLEPIN/$CANDLEPIN/g" $environment_path; fi
+    echo "writing testing parameters into $cdn_environment_path"
+    if [ "`cat $cdn_environment_path | grep MANIFEST_URL`" != "" ]; then sed -i -e "s?MANIFEST_URL?$MANIFEST_URL?g" $cdn_environment_path; fi
+    if [ "`cat $cdn_environment_path | grep PID`" != "" ]; then sed -i "s/PID/$PID/g" $cdn_environment_path; fi
+    if [ "`cat $cdn_environment_path | grep VARIANT`" != "" ]; then sed -i -e "s/VARIANT/$VARIANT/g" $cdn_environment_path; fi
+    if [ "`cat $cdn_environment_path | grep ARCH`" != "" ]; then sed -i -e "s/ARCH/$ARCH/g" $cdn_environment_path; fi
+    if [ "`cat $cdn_environment_path | grep DISTRO`" != "" ]; then sed -i -e "s/DISTRO/$DISTRO/g" $cdn_environment_path; fi
+    if [ "`cat $cdn_environment_path | grep CDN`" != "" ]; then sed -i -e "s/CDN/$CDN/g" $cdn_environment_path; fi
+    if [ "`cat $cdn_environment_path | grep CANDLEPIN`" != "" ]; then sed -i -e "s/CANDLEPIN/$CANDLEPIN/g" $cdn_environment_path; fi
 
     # generate all test cases from template for cdn testing, and add test cases to test suite
     OLD_IFS="$IFS"
@@ -65,25 +69,25 @@ prepare_cdn() {
         sed -i -e "s/PID/$pid/g" $case_full_name
 
         # add import sentence to __init__.py
-        if [ "`cat $init_file | grep $case_name`" ==  "" ]; then echo "from $case_name import $case_name" >> $init_file; fi
+        if [ "`cat $cdn_test_suite_path | grep $case_name`" ==  "" ]; then sed -i "9a\from Tests.$case_name import $case_name" $cdn_test_suite_path; fi
 
         # and add test cases to test suite
         line="suite.addTest(CDNEntitlement_$pid('testCDNEntitlement'))"
-        if [ "`cat $cdn_test_suite_path | grep $case_name`" == "" ]; then sed -i "/suite = unittest.TestSuite()/a\    $line" $cdn_test_suite_path; fi
+        if [ "`cat $cdn_test_suite_path | grep $case_name | grep -v import`" == "" ]; then sed -i "/suite = unittest.TestSuite()/a\    $line" $cdn_test_suite_path; fi
     done
 }
 
 prepare_rhn() {
     # trying to get beaker ip
-    get_ip
+    get_ip $rhn_environment_path
 
     # write testing parameters to environment.py
-    echo "writing testing parameters into file environment.py"
-    if [ "`cat $environment_path | grep MANIFEST_URL`" != "" ]; then sed -i -e "s?MANIFEST_URL?$MANIFEST_URL?g" $environment_path; fi
-    if [ "`cat $environment_path | grep VARIANT`" != "" ]; then sed -i -e "s/VARIANT/$VARIANT/g" $environment_path; fi
-    if [ "`cat $environment_path | grep ARCH`" != "" ]; then sed -i -e "s/ARCH/$ARCH/g" $environment_path; fi
-    if [ "`cat $environment_path | grep DISTRO`" != "" ]; then sed -i -e "s/DISTRO/$DISTRO/g" $environment_path; fi
-    if [ "`cat $environment_path | grep RHN`" != "" ]; then sed -i -e "s/RHN/$RHN/g" $environment_path; fi
+    echo "writing testing parameters into $rhn_environment_path..."
+    if [ "`cat $rhn_environment_path | grep MANIFEST_URL`" != "" ]; then sed -i -e "s?MANIFEST_URL?$MANIFEST_URL?g" $rhn_environment_path; fi
+    if [ "`cat $rhn_environment_path | grep VARIANT`" != "" ]; then sed -i -e "s/VARIANT/$VARIANT/g" $rhn_environment_path; fi
+    if [ "`cat $rhn_environment_path | grep ARCH`" != "" ]; then sed -i -e "s/ARCH/$ARCH/g" $rhn_environment_path; fi
+    if [ "`cat $rhn_environment_path | grep DISTRO`" != "" ]; then sed -i -e "s/DISTRO/$DISTRO/g" $rhn_environment_path; fi
+    if [ "`cat $rhn_environment_path | grep RHN`" != "" ]; then sed -i -e "s/RHN/$RHN/g" $rhn_environment_path; fi
 }
 
 prepare_sat() {

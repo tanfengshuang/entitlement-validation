@@ -2,17 +2,36 @@ import os
 import unittest
 import logging
 
-from Utils.ParseManifestXML import RHNParseManifestXML
-from Utils.RHNVerification import RHNVerification
-from Utils.environment import *
+from Utils import beaker_username
+from Utils import beaker_password
+from RHN import beaker_ip
+from RHN import rhn
+from RHN import variant
+from RHN import arch
+from RHN import manifest_url
+from RHN import server_url
+from RHN import account_rhn
+
+from RHN.RHNParseManifestXML import RHNParseManifestXML
+from RHN.RHNVerification import RHNVerification
+
+
+def get_username_password():
+    if rhn == "Live":
+        return account_rhn["Live"]["username"], account_rhn["Live"]["password"]
+    elif rhn == "QA":
+        return account_rhn["QA"]["username"], account_rhn["QA"]["password"]
+
+def get_server_url():
+    if rhn == "QA":
+        return server_url["QA"]
+    else:
+        return server_url["Live"]
 
 class RHNEntitlement(unittest.TestCase):
     def setUp(self):
         logging.info("--------------- Begin Init ---------------")
         try:
-            self.beaker_ip = beaker_ip
-            self.beaker_username = beaker_username
-            self.beaker_password = beaker_password
             self.system_info = {
                 "ip": beaker_ip,
                 "username": beaker_username,
@@ -21,12 +40,13 @@ class RHNEntitlement(unittest.TestCase):
             self.rhn = rhn
             self.variant = variant
             self.arch = arch
+
             self.manifest_url = manifest_url
             self.manifest_json = os.path.join(os.getcwd(), "entitlement-validation/manifest/rhn_test_manifest.json")
             self.manifest_xml = os.path.join(os.getcwd(), "entitlement-validation/manifest/rhn_test_manifest.xml")
 
-            self.username, self.password = self.__get_username_password()
-            self.server_url = self.__get_server_url()
+            self.username, self.password = get_username_password()
+            self.server_url = get_server_url()
 
             self.current_rel_version = RHNVerification().get_os_release_version(self.system_info)
             self.current_arch = RHNVerification().get_os_base_arch(self.system_info)
@@ -68,18 +88,6 @@ class RHNEntitlement(unittest.TestCase):
             exit(1)
 
         logging.info("--------------- End testRHNEntitlement --------------- ")
-
-    def __get_username_password(self):
-        if self.rhn == "Live":
-            return account_rhn["Live"]["username"], account_rhn["Live"]["password"]
-        elif self.rhn == "QA":
-            return account_rhn["QA"]["username"], account_rhn["QA"]["password"]
-
-    def __get_server_url(self):
-        if self.rhn == "QA":
-            return server_url["QA"]
-        else:
-            return server_url["Live"]
 
     def tearDown(self):
         logging.info("--------------- Begin tearDown ---------------")

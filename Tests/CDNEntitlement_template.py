@@ -3,40 +3,71 @@ import unittest
 import logging
 import traceback
 
-from Utils.ParseManifestXML import CDNParseManifestXML
-from Utils.CDNVerification import CDNVerification
-from Utils.environment import *
+from Utils import beaker_username
+from Utils import beaker_password
+from CDN import beaker_ip
+from CDN import cdn
+from CDN import release_ver
+from CDN import blacklist
+from CDN import variant
+from CDN import arch
+from CDN import manifest_url
+from CDN import pid
+from CDN import candlepin
+
+from CDN import account_cdn_stage
+from CDN import account_cdn_prod
+
+from CDN.CDNParseManifestXML import CDNParseManifestXML
+from CDN.CDNVerification import CDNVerification
+
+
+def get_username_password():
+    if cdn == "QA":
+        return account_cdn_stage[pid]["username"], account_cdn_stage[pid]["password"], account_cdn_stage[pid]["sku"], account_cdn_stage[pid]["base_sku"], account_cdn_stage[pid]["base_pid"]
+    elif cdn == "Prod":
+        return account_cdn_prod["username"], account_cdn_prod["password"], account_cdn_prod[pid]["sku"], account_cdn_prod[pid]["base_sku"], account_cdn_prod[pid]["base_pid"]
+
+def get_hostname():
+    if cdn == "QA":
+        hostname = "subscription.rhn.stage.redhat.com"
+    else:
+        hostname = "subscription.rhn.redhat.com"
+    return hostname
+
+def get_baseurl():
+    if candlepin == "QA":
+        baseurl = "https://cdn.qa.redhat.com"
+    else:
+        baseurl = "https://cdn.redhat.com"
+    return baseurl
+
 
 class CDNEntitlement_PID(unittest.TestCase):
-
     def setUp(self):
         logging.info("--------------- Begin Init ---------------")
         try:
-            self.beaker_ip = beaker_ip
-            self.beaker_username = beaker_username
-            self.beaker_password = beaker_password
             self.system_info = {
                 "ip": beaker_ip,
                 "username": beaker_username,
                 "password": beaker_password
             }
 
-            self.cdn = cdn
             self.release_ver = release_ver
             self.blacklist = blacklist
             self.variant = variant
             self.arch = arch
+
             self.manifest_url = manifest_url
             self.manifest_json = os.path.join(os.getcwd(), "entitlement-validation/manifest/cdn_test_manifest.json")
             self.manifest_xml = os.path.join(os.getcwd(), "entitlement-validation/manifest/cdn_test_manifest.xml")
 
             self.pid = pid
-            self.username, self.password, self.sku, self.base_sku, self.base_pid = self.__get_username_password(self.cdn, self.pid)
+            self.username, self.password, self.sku, self.base_sku, self.base_pid = get_username_password()
 
-            self.hostname = self.__get_hostname(cdn)
-            self.baseurl = self.__get_baseurl(candlepin)
+            self.hostname = get_hostname()
+            self.baseurl = get_baseurl()
             CDNVerification().config_testing_environment(self.system_info, self.hostname, self.baseurl)
-
 
             self.current_release_ver = CDNVerification().get_os_release_version(self.system_info)
             self.current_arch = CDNVerification().get_os_base_arch(self.system_info)
@@ -148,26 +179,6 @@ class CDNEntitlement_PID(unittest.TestCase):
             logging.error("Test Failed - Raised error when do CDN Entitlement testing!")
             exit(1)
         logging.info("--------------- End testCDNEntitlement --------------- ")
-
-    def __get_username_password(self, cdn, pid):
-        if cdn == "QA":
-            return account_cdn_stage[pid]["username"], account_cdn_stage[pid]["password"], account_cdn_stage[pid]["sku"], account_cdn_stage[pid]["base_sku"], account_cdn_stage[pid]["base_pid"]
-        elif cdn == "Prod":
-            return account_cdn_prod["username"], account_cdn_prod["password"], account_cdn_prod[pid]["sku"], account_cdn_prod[pid]["base_sku"], account_cdn_prod[pid]["base_pid"]
-
-    def __get_hostname(self, cdn):
-        if cdn == "QA":
-            hostname = "subscription.rhn.stage.redhat.com"
-        else:
-            hostname = "subscription.rhn.redhat.com"
-        return hostname
-
-    def __get_baseurl(self, candlepin):
-        if candlepin == "QA":
-            baseurl = "https://cdn.qa.redhat.com"
-        else:
-            baseurl = "https://cdn.redhat.com"
-        return baseurl
 
     def tearDown(self):
         logging.info("--------------- Begin tearDown ---------------")

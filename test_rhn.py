@@ -3,7 +3,10 @@ import time
 import unittest
 import logging
 
-from Utils.environment import *
+from RHN import variant
+from RHN import arch
+from RHN import rhn
+
 from Tests.RHNEntitlement import RHNEntitlement
 
 def log_setting(variant, arch, rhn):
@@ -32,7 +35,11 @@ def rhn_suite():
 # Launch our test suite
 if __name__ == '__main__':
     log_setting(variant, arch, rhn)
+
+    # nosetests test_rhn.py
     rhn_suite()
-    #suite = test_suite()
-    #runner = unittest.TextTestRunner()
-    #result = runner.run(suite)
+
+    # python test_rhn.py
+    # suite = test_suite()
+    # runner = unittest.TextTestRunner()
+    # result = runner.run(suite)

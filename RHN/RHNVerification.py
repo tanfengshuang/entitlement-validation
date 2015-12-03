@@ -1,8 +1,8 @@
 import logging
 
 from Utils.RemoteSHH import RemoteSHH
-from Utils.ReadXML import ReadRHNXML
 from Utils.EntitlementBase import EntitlementBase
+from RHN.RHNReadXML import RHNReadXML
 
 class RHNVerification(EntitlementBase):
     def __init__(self):
@@ -108,7 +108,7 @@ class RHNVerification(EntitlementBase):
         repo_filter = "%s-%s" % (current_arch, variant.lower())
         logging.info("testing repo filter: {0}".format(repo_filter))
 
-        all_channel_list = ReadRHNXML().get_channel_list(manifest_xml)
+        all_channel_list = RHNReadXML().get_channel_list(manifest_xml)
         channel_list = [channel for channel in all_channel_list if repo_filter in channel]
 
         logging.info('Expected channel list got from packages manifest:')
@@ -162,7 +162,7 @@ class RHNVerification(EntitlementBase):
     def installation(self, system_info, manifest_xml, channel):
         logging.info("--------------- Begin to verify packages full installation for channel {0} ---------------".format(channel))
         # get packages from manifest
-        package_list = ReadRHNXML().get_package_list(manifest_xml, channel)
+        package_list = RHNReadXML().get_package_list(manifest_xml, channel)
         logging.info("Packages need to install of channel {0}".format(package_list))
         logging.info(package_list)
         # There are source rpms in channels, but they can only be downloaded through the customer portal web site.  They aren't exposed to yum/yumdownloader/repoquery.

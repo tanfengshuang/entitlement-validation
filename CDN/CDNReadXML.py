@@ -6,27 +6,7 @@ try:
 except:
         from elementtree import ElementTree
 
-
-class ReadRHNXML(object):
-    def get_channel_list(self, manifest_xml):
-        doc = ElementTree.parse(manifest_xml)
-        root = doc.getroot()
-        channel_list = [i.get("value") for i in root.findall('repoid')]
-        return channel_list
-
-    def get_package_list(self, manifest_xml, channel):
-        doc = ElementTree.parse(manifest_xml)
-        root = doc.getroot()
-        package_list = []
-        for i in root.findall('repoid'):
-            if i.get("value") == channel:
-                for p in i.findall('packagename'):
-                    package_list = [s.strip().split()[0] for s in p.text.strip().splitlines() if s.strip() != ""]
-                break
-        return package_list
-
-
-class ReadCDNXML(object):
+class CDNReadXML(object):
     def get_element(self, ele, tags):
         for tag in tags:
             ele = self.get_next_element(ele, tag)
@@ -83,7 +63,7 @@ class ReadCDNXML(object):
 
 if __name__ == "__main__":
     # 69 x86_64 rhel-6-server-debug-rpms 6Server
-    repolist = ReadCDNXML().get_repo_list("manifest/cdn_test_manifest.xml", "6Server", "69", "x86_64")
-    pkg_list = ReadCDNXML().get_package_list("manifest/cdn_test_manifest.xml", "rhel-6-server-debug-rpms", "6Server", "69", "x86_64")
+    repolist = CDNReadXML().get_repo_list("manifest/cdn_test_manifest.xml", "6Server", "69", "x86_64")
+    pkg_list = CDNReadXML().get_package_list("manifest/cdn_test_manifest.xml", "rhel-6-server-debug-rpms", "6Server", "69", "x86_64")
     print repolist
     print pkg_list
