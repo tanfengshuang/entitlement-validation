@@ -29,8 +29,7 @@
             $WORKSPACE/ci-ops-central/bootstrap/provision_resources.sh --site=qeos --project_defaults=entitlement-validation/config/project-defaults \
             --topology=entitlement-validation/config/bkr --ssh_keyfile=entitlement-validation/config/keys/ent-ci --name=$DISTRO_$VARIANT_$ARCH
 
-            #STATUS=$?
-            STATUS=0
+            STATUS=$?
             if [ $STATUS -eq 0 ]
             then
                 #echo "EXISTING_NODES=cloud-qe-16-vm-01.idmqe.lab.eng.bos.redhat.com" >> RESOURCES.txt

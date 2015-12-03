@@ -16,7 +16,7 @@
         - string:
             name: Relase_Version
             default: 
-            description: Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
         - choice:
             name: Blacklist
             choices:
@@ -24,7 +24,7 @@
               - Beta
               - HTB
               - GA
-            description: Select Blacklist value if needed.
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: CDN
             choices:
@@ -40,10 +40,10 @@
         - string:
             name: Product_ID
             default: 
-            description: Optional, you can specify 'Product_ID' only, or use it together with the following 'RHEL_Variant' parameter. And you can input 1 or more PIDs separated by comma.
+            description: Optional. You can specify 'Product_ID' only, or use it together with the following 'RHEL_Variant' parameter. And you can input 1 or more PIDs separated by comma.
         - extended-choice:
             name: RHEL_Variant
-            description: Optional, you can specify 'RHEL_Variant' only, or use it together with above 'Product_ID' parameter.
+            description: Optional. You can specify 'RHEL_Variant' only, or use it together with above 'Product_ID' parameter.
             type: 'PT_CHECKBOX'
             value: Server-i386,Server-x86_64,Server-ppc64,Server-ppc64le,Server-aarch64,Server-s390x,Client-i386,Client-x86_64,Workstation-i386,Workstation-x86_64,ComputeNode-x86_64
             visible-item-count: "11"
@@ -56,14 +56,14 @@
    builders:
         - shell: |
             #!/bin/bash
-            export MANIFEST_URL
-            export DISTRO
-            export CDN
-            export CANDLEPIN
-            export BLACKLIST
-            export RELEASE_VERSION
-            export Product_ID
-            export RHEL_Variant
+            export MANIFEST_URL=$Manifest_URL
+            export DISTRO=$Distro
+            export CDN=$CDN
+            export CANDLEPIN=$Candlepin
+            export BLACKLIST=$Blacklist
+            export RELEASE_VERSION=$Relase_Version
+            export Product_ID=$Product_ID
+            export RHEL_Variant=$RHEL_Variant
 
             python $WORKSPACE/entitlement-validation/manifest/analyze_testing.py cdn
 

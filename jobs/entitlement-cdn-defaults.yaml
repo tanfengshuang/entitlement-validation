@@ -40,7 +40,7 @@
                 bash entitlement-validation/prepare.sh rhn
                 PREPARE_STATUS=$?
                 if [ $PREPARE_STATUS -eq 0 ]; then 
-                    nosetests entitlement-validation/test_cdn.py
+                    python entitlement-validation/test_cdn.py
                 else
                     exit 1
                 fi
@@ -53,7 +53,7 @@
                 echo "**************** RESOURCES.txt ****************"
                 cat RESOURCES.txt
                 echo "**************** RESOURCES.txt ****************"
-                #exit 1
+                exit 1
             fi
     publishers:
       - archive:

@@ -34,10 +34,10 @@
    builders:
         - shell: |
             #!/bin/bash
-            export MANIFEST_URL
-            export DISTRO
-            export RHN
-            export RHEL_Variant
+            export MANIFEST_URL=$Manifest_URL
+            export DISTRO=$Distro
+            export RHN=$RHN
+            export RHEL_Variant=$RHEL_Variant
 
             python $WORKSPACE/entitlement-validation/manifest/analyze_testing.py rhn
 
