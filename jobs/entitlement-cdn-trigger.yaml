@@ -1,18 +1,30 @@
 - job-template:
    name: EntitlementCDNTestingTrigger
-   node: ftan_test_6.5
+   node: entitlement
    wrappers:
         - ansicolor
         - workspace-cleanup
    parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description: It should be a json format file. and if no 'Product_ID' and 'Variant' parameters, will do the testing according to this manifest content.
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description: Distro version in Beaker used to do testing, such as RHEL-7.2-20150904.0.
+        - string:
+            name: Relase_Version
+            default: 
+            description: Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Select Blacklist value if needed.
         - choice:
             name: CDN
             choices:
@@ -44,17 +56,20 @@
    builders:
         - shell: |
             #!/bin/bash
-            echo MANIFEST_URL=$Manifest_URL > baseinfo.txt
-            echo DISTRO=$Distro >> baseinfo.txt
-            echo CDN=$CDN >> baseinfo.txt
-            echo CANDLEPIN=$Candlepin >> baseinfo.txt
-            echo $Product_ID >> pid.txt
-            echo $RHEL_Variant >> variant.txt
+            export MANIFEST_URL
+            export DISTRO
+            export CDN
+            export CANDLEPIN
+            export BLACKLIST
+            export RELEASE_VERSION
+            export Product_ID
+            export RHEL_Variant
+
             python $WORKSPACE/entitlement-validation/manifest/analyze_testing.py cdn
 
    publishers:
       - archive:
-          artifacts: '*.txt, *.json'
+          artifacts: '*.txt, *.json, *.properties'
           allow-empty: 'true'
       - trigger-parameterized-builds:
           - project: 'EntitlementCDN-Server_x86_64'

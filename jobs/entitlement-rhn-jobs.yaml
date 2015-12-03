@@ -5,15 +5,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
-            description: 
-        - string:
-            name: Product_ID
-            default: optional
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -26,16 +22,10 @@
               - x86_64
             description:
         - choice:
-            name: CDN
+            name: RHN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-template:
@@ -45,15 +35,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description:
         - string:
-            name: Product_ID
-            default: optional
-            description: 
-        - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -66,16 +52,10 @@
               - i386
             description:
         - choice:
-            name: CDN
+            name: RHN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-template:
@@ -85,15 +65,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description:
         - string:
-            name: Product_ID
-            default: optional
-            description: 
-        - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -106,16 +82,10 @@
               - ppc64
             description:
         - choice:
-            name: CDN
+            name: RHN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-template:
@@ -125,15 +95,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description:
         - string:
-            name: Product_ID
-            default: optional
-            description: 
-        - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -149,13 +115,7 @@
             name: CDN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-template:
@@ -165,15 +125,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description:
         - string:
-            name: Product_ID
-            default: optional
-            description: 
-        - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -189,13 +145,7 @@
             name: CDN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-template:
@@ -205,15 +155,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description:
         - string:
-            name: Product_ID
-            default: optional
-            description: 
-        - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -229,16 +175,10 @@
               - s390x
             description:
         - choice:
-            name: CDN
+            name: RHN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-template:
@@ -248,15 +188,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description:
         - string:
-            name: Product_ID
-            default: optional
-            description: 
-        - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -269,16 +205,10 @@
               - x86_64
             description:
         - choice:
-            name: CDN
+            name: RHN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-template:
@@ -288,15 +218,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description:
         - string:
-            name: Product_ID
-            default: optional
-            description: 
-        - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -309,16 +235,10 @@
               - i386
             description:
         - choice:
-            name: CDN
+            name: RHN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-template:
@@ -328,15 +248,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description:
         - string:
-            name: Product_ID
-            default: optional
-            description: 
-        - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -349,16 +265,10 @@
               - x86_64
             description:
         - choice:
-            name: CDN
+            name: RHN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-template:
@@ -368,15 +278,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description:
         - string:
-            name: Product_ID
-            default: optional
-            description: 
-        - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -389,16 +295,10 @@
               - i386
             description:
         - choice:
-            name: CDN
+            name: RHN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-template:
@@ -408,15 +308,11 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description:
         - string:
-            name: Product_ID
-            default: optional
-            description: 
-        - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -429,16 +325,10 @@
               - x86_64
             description:
         - choice:
-            name: CDN
+            name: RHN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
+              - Live
             description:
 
 - job-group:

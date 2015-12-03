@@ -1,37 +1,27 @@
 - job-template:
    name: EntitlementRHNTestingTrigger
-   node: ftan_test_6.5
+   node: entitlement
    wrappers:
         - ansicolor
         - workspace-cleanup
    parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default:  http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-rhn.json
             description: It should be a json format file. and if no 'Product_ID' and 'Variant' parameters, will do the testing according to this manifest content.
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description: Distro version in Beaker used to do testing, such as RHEL-7.2-20150904.0.
         - choice:
-            name: CDN
+            name: RHN
             choices:
               - QA
-              - Prod
-            description:
-        - choice:
-            name: Candlepin
-            choices:
-              - Stage
-              - Prod
-            description:
-        - string:
-            name: Product_ID
-            default: 
-            description: Optional, you can specify 'Product_ID' only, or use it together with the following 'RHEL_Variant' parameter. And you can input 1 or more PIDs separated by comma.
+              - Live
+            description: RHN QA(https://xmlrpc.rhn.qa.redhat.com/XMLRPC), RHN Live(https://xmlrpc.rhn.redhat.com/XMLRPC)
         - extended-choice:
             name: RHEL_Variant
-            description: Optional, you can specify 'RHEL_Variant' only, or use it together with above 'Product_ID' parameter.
+            description: Optional
             type: 'PT_CHECKBOX'
             value: Server-i386,Server-x86_64,Server-ppc64,Server-ppc64le,Server-aarch64,Server-s390x,Client-i386,Client-x86_64,Workstation-i386,Workstation-x86_64,ComputeNode-x86_64
             visible-item-count: "11"
@@ -44,17 +34,16 @@
    builders:
         - shell: |
             #!/bin/bash
-            echo MANIFEST_URL=$Manifest_URL > baseinfo.txt
-            echo DISTRO=$Distro >> baseinfo.txt
-            echo CDN=$CDN >> baseinfo.txt
-            echo CANDLEPIN=$Candlepin >> baseinfo.txt
-            echo $Product_ID >> pid.txt
-            echo $RHEL_Variant >> variant.txt
+            export MANIFEST_URL
+            export DISTRO
+            export RHN
+            export RHEL_Variant
+
             python $WORKSPACE/entitlement-validation/manifest/analyze_testing.py rhn
 
    publishers:
       - archive:
-          artifacts: '*.txt, *.json'
+          artifacts: '*.txt, *.json, *.properties'
           allow-empty: 'true'
       - trigger-parameterized-builds:
           - project: 'EntitlementRHN-Server_x86_64'

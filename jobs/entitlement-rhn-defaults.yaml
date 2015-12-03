@@ -25,43 +25,37 @@
             sed -i "s/NAME/$DISTRO/g" $WORKSPACE/entitlement-validation/config/bkr.json
             sed -i "s/VARIANT/$VARIANT/g" $WORKSPACE/entitlement-validation/config/bkr.json
             sed -i "s/ARCH/$ARCH/g" $WORKSPACE/entitlement-validation/config/bkr.json
+
             $WORKSPACE/ci-ops-central/bootstrap/provision_resources.sh --site=qeos --project_defaults=entitlement-validation/config/project-defaults \
-            --topology=entitlement-validation/config/bkr --ssh_keyfile=entitlement-validation/config/keys/id_rsa --name=$DISTRO_$VARIANT_$ARCH
-            STATUS=$?
-            if [ "$STATUS" == 0 ]
+            --topology=entitlement-validation/config/bkr --ssh_keyfile=entitlement-validation/config/keys/ent-ci --name=$DISTRO_$VARIANT_$ARCH
+
+            #STATUS=$?
+            STATUS=0
+            if [ $STATUS -eq 0 ]
             then
-                echo "Succeed to provison beaker system: $EXISTING_NODES"
-                echo "**************** env ****************"
-                env
-                echo "**************** env ****************"
+                #echo "EXISTING_NODES=cloud-qe-16-vm-01.idmqe.lab.eng.bos.redhat.com" >> RESOURCES.txt
+                echo "Succeed to provison beaker system: "
                 echo "**************** RESOURCES.txt ****************"
                 cat RESOURCES.txt
                 echo "**************** RESOURCES.txt ****************"
+                bash entitlement-validation/prepare.sh rhn
+                PREPARE_STATUS=$?
+                if [ $PREPARE_STATUS -eq 0 ]; then 
+                    python entitlement-validation/test_rhn.py
+                else
+                    exit 1
+                fi
             else
                 echo "ERROR: Failed to provision beaker system!"
                 echo "EXISTING_NODES: $EXISTING_NODES"
-                echo "****************env****************"
-                env
-                echo "****************env****************"
                 echo "**************** RESOURCES.txt ****************"
                 cat RESOURCES.txt
                 echo "**************** RESOURCES.txt ****************"
-                #exit 1
+                exit 1
             fi
-
-            bash entitlement-validation/prepare.sh rhn
-            STATUS=$?
-            ech "# cat entitlement-validation/test_entitlement.py"
-            cat entitlement-validation/test_entitlement.py
-            echo "# ll  entitlement-validation/Tests"
-            ll  entitlement-validation/Tests
-            echo "# cat entitlement-validation/Tests/__init__.py"
-            cat entitlement-validation/Tests/__init__.py
-            if [ STATUS -eq 1]; then python entitlement-validation/test_entitlement.py; fi
-
     publishers:
       - archive:
-          artifacts: '*.txt, *.json, *.properties'
+          artifacts: '*.txt, *.json, *.properties, **/*.log'
           allow-empty: 'true'
     wrappers:
         - ansicolor

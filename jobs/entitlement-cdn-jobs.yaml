@@ -5,7 +5,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description: 
         - string:
             name: Product_ID
@@ -13,7 +13,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -45,7 +45,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
             name: Product_ID
@@ -53,7 +53,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -85,7 +85,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
             name: Product_ID
@@ -93,7 +93,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -125,7 +125,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
             name: Product_ID
@@ -133,7 +133,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -165,7 +165,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
             name: Product_ID
@@ -173,7 +173,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -205,7 +205,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
             name: Product_ID
@@ -213,7 +213,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -248,7 +248,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
             name: Product_ID
@@ -256,7 +256,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -288,7 +288,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
             name: Product_ID
@@ -296,7 +296,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -328,7 +328,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
             name: Product_ID
@@ -336,7 +336,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -368,7 +368,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
             name: Product_ID
@@ -376,7 +376,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
@@ -408,7 +408,7 @@
     parameters:
         - string:
             name: Manifest_URL
-            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
             name: Product_ID
@@ -416,7 +416,7 @@
             description: 
         - string:
             name: Distro
-            default: RHEL-7.2-20150904.0
+            default: RHEL-6.7
             description:
         - choice:
             name: Variant
