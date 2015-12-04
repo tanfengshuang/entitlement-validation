@@ -1,4 +1,5 @@
 import paramiko
+import commands
 import logging
 
 class RemoteSHH(object):
@@ -9,9 +10,15 @@ class RemoteSHH(object):
         logging.info(cmd_desc)
         logging.info("# {0}".format(cmd))
 
-        ip = system_info["ip"]
-        username = system_info["username"]
-        password = system_info["password"]
+        if system_info == None:
+            # Run commands locally
+            ret, output = commands.getstatusoutput(cmd)
+            return ret, output
+        else:
+            # Run commands remotely
+            ip = system_info["ip"]
+            username = system_info["username"]
+            password = system_info["password"]
 
         ssh = paramiko.SSHClient()
         ssh.load_system_host_keys()
@@ -82,26 +89,28 @@ class RemoteSHH(object):
         return channel.recv_exit_status(), output
 
     def download_file(self, system_info, remote_path, local_path):
+        # Download file from remote system to local system
         logging.info("Trying to download remote file {0} to local {0}...".format(remote_path, local_path))
 
         ip = system_info["ip"]
         username = system_info["username"]
         password = system_info["password"]
 
-        t = paramiko.Transport(ip, 22)
+        t = paramiko.Transport((ip, 22))
         t.connect(username=username, password=password)
         sftp = paramiko.SFTPClient.from_transport(t)
         sftp.get(remote_path, local_path)
         t.close()
 
-    def upload_file(self, system_info, remote_path, local_path):
+    def upload_file(self, system_info, local_path, remote_path):
+        # Upload file from local system to remote system
         logging.info("Trying to download remote file {0} to local {0}...".format(remote_path, local_path))
 
         ip = system_info["ip"]
         username = system_info["username"]
         password = system_info["password"]
 
-        t = paramiko.Transport(ip, 22)
+        t = paramiko.Transport((ip, 22))
         t.connect(username=username, password=password)
         sftp = paramiko.SFTPClient.from_transport(t)
         sftp.put(local_path, remote_path)

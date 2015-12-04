@@ -8,7 +8,7 @@ class EntitlementBase(object):
         pass
 
     def get_os_release_version(self, system_info):
-        # get release version of current system
+        # Get release version of current system
         cmd = '''python -c "import yum; yb = yum.YumBase(); print(yb.conf.yumvar)['releasever']"'''
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get current release version...")
         if ret == 0 and "Loaded plugins" in output:
@@ -22,13 +22,11 @@ class EntitlementBase(object):
             exit(1)
 
     def get_os_base_arch(self, system_info):
-        # get base arch of current system
+        # Get base arch of current system
         cmd = '''python -c "import yum; yb = yum.YumBase(); print(yb.conf.yumvar)['basearch']"'''
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get current base arch...")
         if(ret == 0 and "Loaded plugins" in output):
             logging.info("It's successful to get current base arch.")
-            #prog = re.compile("(\S+\d+.*)\s+")
-            #result = re.search(prog, output)
             base_arch = ""
             if "ppc64le" in output:
                 base_arch = "ppc64le"
@@ -57,7 +55,7 @@ class EntitlementBase(object):
             exit(1)
 
     def cmp_arrays(self, array1, array2):
-        # cmp two arrays, get the data in array1 but not in array2
+        # Compare two arrays, get the data in array1 but not in array2
         list_not_in_array2 = []
         for i in array1:
             if i not in array2:
@@ -69,21 +67,20 @@ class EntitlementBase(object):
             logging.info(i)
 
     def remove_non_redhat_repo(self, system_info):
-        # backup non-redhat repo to avoid bad affection
+        # Backup non-redhat repo
         cmd = "mkdir -p /tmp/backup_repo/; cp /etc/yum.repos.d/beaker* /tmp/backup_repo/"
         RemoteSHH().run_cmd(system_info, cmd, "Trying to backup non-redhat repos to /tmp/backup_repo/...")
 
-        # remove non-redhat repo
+        # Remove non-redhat repo
         cmd = "ls /etc/yum.repos.d/* | grep -v redhat.repo | xargs rm -rf"
-        #cmd = "rm -f $(ls /etc/yum.repos.d/* | grep -v  'redhat.repo')"
         RemoteSHH().run_cmd(system_info, cmd, "Trying to delete non-redhat repos to avoid affection...")
 
-        # check
+        # Check remove result
         cmd = "ls /etc/yum.repos.d/"
         RemoteSHH().run_cmd(system_info, cmd, "Trying to check the result of remove non-redhat repos...")
 
     def restore_non_redhat_repo(self, system_info):
-        # delete rhn debuginfo repo to remove affection
+        # Restore non-redhat repo after testing
         cmd = 'cp /tmp/backup_repo/*.repo /etc/yum.repos.d/'
         RemoteSHH().run_cmd(system_info, cmd, "Trying to restore those non-redhat repos...")
 
@@ -101,6 +98,7 @@ class EntitlementBase(object):
         return master_release
 
     def extend_system_space(self, system_info):
+        # Extend beaker system available space for / partition
         # https://engineering.redhat.com/trac/content-tests/wiki/Content/HowTo/ExtendRootInBeaker
         logging.info("--------------- Begin to extend system space ---------------")
         master_release = self.get_master_release(system_info)
@@ -188,11 +186,7 @@ class EntitlementBase(object):
                 else:
                     logging.warning("Succeed to lvextend {0}G for root partition.".format(avail_space))
 
-                ret, output = RemoteSHH().run_cmd(system_info, "xfs_growfs /", "Trying to xfs_growfs root partition", timeout=None)
-                if "":
-                    pass
-                else:
-                    pass
+                RemoteSHH().run_cmd(system_info, "xfs_growfs /", "Trying to xfs_growfs root partition", timeout=None)
 
                 # Check root partition after extend space
                 RemoteSHH().run_cmd(system_info, "df -H", "Trying to check root partition after extend space...")

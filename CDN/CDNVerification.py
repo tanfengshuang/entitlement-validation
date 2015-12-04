@@ -9,19 +9,20 @@ from Utils.EntitlementBase import EntitlementBase
 from CDN.CDNReadXML import CDNReadXML
 
 class CDNVerification(EntitlementBase):
-    def __init__(self):
-        pass
-
     def redhat_repo_backup(self, system_info):
-        # Get content of file redhat.repo on guest and prepare it on host
-        ret, output = RemoteSHH().run_cmd(system_info, "cat /etc/yum.repos.d/redhat.repo", "Trying to backup the content of /etc/yum.repos.d/redhat.repo content...")
-        repo_file = "/tmp/redhat.repo"
-        with open(repo_file, 'w') as f:
-            f.write(output)
+        # Download content of file redhat.repo remotely, and save it locally
+        remote_path = "/etc/yum.repos.d/redhat.repo"
+        local_path = "/tmp/redhat.repo"
+        RemoteSHH().download_file(system_info, remote_path, local_path)
+        ret, output = RemoteSHH().run_cmd(None, "ls /tmp/redhat.repo", "Trying to check /tmp/redhat.repo.")
+        if "No such file or directory" in output:
+            logging.warning("Failed to download {0} to {1}".format(remote_path, local_path))
+        else:
+            logging.info("Succeed to download {0} to {1}".format(remote_path, local_path))
 
     def stop_rhsmcertd(self, system_info):
-        # Stop rhsmcertd because healing(autosubscribe) will run 2 mins after the machine is started, then every 24
-        # hours after that, which will influence our content test.
+        # Stop rhcertd service. As headling(autosubscribe) operation will be run every 2 mins after start up system,
+        # then every 24 hours after that, which will influence our subscribe test.
         cmd = 'service rhsmcertd status'
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get status of service rhsmcertd...")
         if 'stopped' in output or 'Stopped' in output:
@@ -39,9 +40,10 @@ class CDNVerification(EntitlementBase):
         else:
             logging.error("Failed to stop rhsmcertd service.")
 
-    def stop_yum_updatesd(self, system_info, current_rel_version):
-        # Stop the yum_updatesd service in RHEL5.9 in order to avoid the yum lock issue
-        if "5" in current_rel_version and ".5" not in current_rel_version:
+    def stop_yum_updatesd(self, system_info):
+        # Stop service yum-updatesd on RHEL5 in order to avoid yum lock to save testing time
+        master_release = self.get_master_release(system_info)
+        if master_release == '5':
             cmd = 'service yum-updatesd status'
             ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get status of service yum-updatesd...")
             if 'stopped' in output or "yum-updatesd: unrecognized service" in output:
@@ -60,16 +62,14 @@ class CDNVerification(EntitlementBase):
                 logging.error("Failed to stop yum-updatesd service.")
 
     def ntpdate_redhat_clock(self, system_info):
-        # ntpdate clock of redhat.com as a workaround for time of some systems are not correct, which will result in no
-        # info dislaying with "yum repolist" or "s-m repos --list"
+        # Synchronize system time with clock.redhat.com, it's a workaround when system time is not correct,
+        # commands "yum repolist" and "subscription-manager repos --list" return nothing
         cmd = 'ntpdate clock.redhat.com'
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to ntpdate system time with clock of redhat.com...")
-        print output
         if ret == 0 or "the NTP socket is in use, exiting" in output:
             logging.info("It's successful to ntpdate system time with clock of redhat.com.")
         else:
-            logging.error("Test Failed - Failed to ntpdate system time with clock of redhat.com.")
-            exit(1)
+            logging.warning("Test Failed - Failed to ntpdate system time with clock of redhat.com.")
 
     def config_testing_environment(self, system_info, hostname, baseurl):
 
@@ -78,7 +78,6 @@ class CDNVerification(EntitlementBase):
 
         cmd = "subscription-manager config --rhsm.baseurl={0}".format(baseurl)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to set baseurl in /etc/rhsm/rhsm.conf...")
-
 
     def check_registered(self, system_info):
         cmd = "subscription-manager identity"
@@ -136,7 +135,6 @@ class CDNVerification(EntitlementBase):
         else:
             logging.error("Test Failed - Failed to register.")
             exit(1)
-
 
     def check_subscription(self, system_info, sku):
         cmd = "subscription-manager list --available --all | grep {0}".format(sku)
@@ -204,12 +202,12 @@ class CDNVerification(EntitlementBase):
         return output.splitlines()
 
     def verify_productid_in_entitlement_cert(self, system_info, entitlement_cert, pid):
-        # verify one product id in one entitlement cert
+        # Verify if one specific product id in one entitlement cert
         cmd = "rct cat-cert /etc/pki/entitlement/{0} | grep ID | egrep -v 'Stacking ID|Pool ID'".format(entitlement_cert)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to check PID {0} in entitlement certificate {1} with rct...".format(pid, entitlement_cert))
 
         if ret == 0:
-            # output:
+            # Output:
             #    ID: 240
             #    ID: 281
             #    ID: 285
@@ -224,7 +222,7 @@ class CDNVerification(EntitlementBase):
                 logging.error("Test Failed - Failed to verify PID {0} in entitlement certificate {1}.".format(pid, entitlement_cert))
                 exit(1)
         else:
-            # output:
+            # Output:
             # sh: rct: command not found
             prefix_str = '1.3.6.1.4.1.2312.9.1.'
             cmd = 'openssl x509 -text -noout -in /etc/pki/entitlement/{0} | grep --max-count=1 -A 1 {1}{2}'.format(entitlement_cert, prefix_str, pid)
@@ -236,12 +234,12 @@ class CDNVerification(EntitlementBase):
                 logging.error("Test Failed - Failed to verify PID {0} in entitlement certificate {1}.".format(pid, entitlement_cert))
 
     def verify_sku_in_entitlement_cert(self, system_info, entitlement_cert, sku):
-        # verify one sku id in one entitlement cert
+        # Verify if one specific sku id in one entitlement cert
         cmd = "rct cat-cert /etc/pki/entitlement/{0} | grep SKU".format(entitlement_cert)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to check SKU {0} in entitlement certificate {1} with rct...".format(sku, entitlement_cert))
 
         if ret == 0:
-            # output: SKU: MCT2887
+            # Output: SKU: MCT2887
             if sku in output.split(":")[1].strip():
                 logging.info(" It's successful to verify sku {0} in entitlement certificate {1}.".format(sku, entitlement_cert))
                 return True
@@ -249,7 +247,7 @@ class CDNVerification(EntitlementBase):
                 logging.error("Test Failed - Failed to verify sku {0} in entitlement cert {1}.".format(sku, entitlement_cert))
                 exit(1)
         else:
-            # output:
+            # Output:
             # sh: rct: command not found
             cmd = 'openssl x509 -text -noout -in /etc/pki/entitlement/{0} | grep {1}'.format(entitlement_cert, sku)
             ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to check SKU {0} in entitlement certificate {1} with openssl...".format(sku, entitlement_cert))
@@ -327,15 +325,15 @@ class CDNVerification(EntitlementBase):
             exit(1)
         return releasever_set
 
-    def clear_yum_cache(self, system_info, releasever_set):
-        # get repolist
+    def clean_yum_cache(self, system_info, releasever_set):
+        # Clean yum cache
         cmd = 'yum clean all --enablerepo=* {0}'.format(releasever_set)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to yum clean cache...")
         if ret == 0:
-            logging.info("It's successful to clear yum cache")
+            logging.info("It's successful to clean yum cache")
             return True
         else:
-            logging.error("Test Failed - Failed to clear yum cache")
+            logging.error("Test Failed - Failed to clean yum cache")
             exit(1)
 
     def get_repo_list_from_manifest(self, manifest_xml, pid, current_arch, release_ver):
@@ -482,7 +480,7 @@ class CDNVerification(EntitlementBase):
         return result
 
     def yum_download_source_package(self, system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver):
-        # yum download one package for source repo
+        # Download one package for source repo with yumdownloader
         formatstr = "%{name}-%{version}-%{release}.src"
         cmd = '''repoquery --pkgnarrow=available --all --repoid=%s --archlist=src --qf "%s" %s''' % (repo, formatstr, releasever_set)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to repoquery available source packages for repo {0}...".format(repo))
@@ -566,7 +564,7 @@ class CDNVerification(EntitlementBase):
             return False
 
     def yum_install_one_package(self, system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver):
-        # yum install one package
+        # Install one package with yum
         formatstr = "%{name}"
         cmd = '''repoquery --pkgnarrow=available --all --repoid=%s --qf "%s" %s''' % (repo, formatstr, releasever_set)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to repoquery available packages...")
@@ -619,7 +617,7 @@ class CDNVerification(EntitlementBase):
             return False
 
     def remove_layered_product_cert(self, system_info, base_pid):
-        # Remove the none base product cert before install package
+        # Remove the layered product certificate before install package
         logging.info("------------------ Begin to remove the none base product cert before install the packages-----------------------")
         cmd = "ls /etc/pki/product/"
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to list product cert...")
@@ -638,7 +636,7 @@ class CDNVerification(EntitlementBase):
         logging.info("--------------------End to remove the none product cert before install the packages-----------------------------")
 
     def pid_cert_installation(self, system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver):
-        # Verify product cert installation after install one package with yum
+        # Verify product certificate installation after install one package with yum
         logging.info("--------------- Begin to verify productcert installation for the repo {0} of the product {1} ---------------".format(repo, pid))
         if ("source" in repo) or ("src" in repo):
             # yumdownloader source package
@@ -666,7 +664,7 @@ class CDNVerification(EntitlementBase):
             exit(1)
 
     def remove_pkg(self, system_info, pkg, repo):
-        # Yum remove a package after install in order to resolve dependency issue which described in
+        # Remove a package after install in order to resolve dependency issue which described in
         # https://bugzilla.redhat.com/show_bug.cgi?id=1272902
         cmd = "yum remove -y {0}".format(pkg)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to remove package {0} of repo {1}...".format(pkg, repo))
@@ -682,7 +680,7 @@ class CDNVerification(EntitlementBase):
         # Get all packages already installed in testing system before installation testing
         system_pkglist = self.get_sys_pkglist(system_info)
 
-        # Use to store the failed packages after 'yum remove'.
+        # Store the failed packages after 'yum remove'.
         remove_failed_pkglist = []
 
         checkresult = True
@@ -706,10 +704,10 @@ class CDNVerification(EntitlementBase):
                 logging.info("There is no source packages for pid:repo {0}:{1}".format(pid, repo))
         else:
             pkg_list = self.get_package_list_from_manifest(manifest_xml, pid, repo, arch, release_ver, "name")
-            # uniquify pkgs
+            # Distinct pkgs
             pkg_list = list(set(pkg_list))
 
-            # print the package list, and number every package
+            # Print out the package list
             logging.info("Ready to install below rpm packages:")
             self.print_list(pkg_list)
 

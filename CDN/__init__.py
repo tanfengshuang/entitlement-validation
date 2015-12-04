@@ -1,12 +1,14 @@
-manifest_url = "MANIFEST_URL"
-pid = "PID"
-variant = "VARIANT"
-arch = "ARCH"
-cdn = "CDN"
-blacklist = "BLACKLIST"
-release_ver = "RELEASE_VERSION"
-candlepin = "CANDLEPIN"
-beaker_ip = "BEAKER_IP"
+import os
+
+manifest_url = os.environ["MANIFEST_URL"]
+pid = os.environ["PID"]
+variant = os.environ["VARIANT"]
+arch = os.environ["ARCH"]
+cdn = os.environ["CDN"]
+blacklist = os.environ["BLACKLIST"]
+release_ver = os.environ["RELEASE_VERSION"]
+candlepin = os.environ["CANDLEPIN"]
+beaker_ip = os.environ["BEAKER_IP"]
 
 # baseurl hostname server_url
 cdn_baseurl = {

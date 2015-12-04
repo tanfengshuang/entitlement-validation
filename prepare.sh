@@ -1,13 +1,8 @@
 #!/bin/sh
 
 test_case_path=$WORKSPACE/entitlement-validation/Tests/
-
-cdn_environment_path=$WORKSPACE/entitlement-validation/CDN/__init__.py
 cdn_test_suite_path=$WORKSPACE/entitlement-validation/test_cdn.py
 cdn_case_template=${test_case_path}CDNEntitlement_template.py
-
-rhn_environment_path=$WORKSPACE/entitlement-validation/RHN/__init__.py
-
 
 usage() {
     echo "Usage: $0 cdn|CDN|rhn|RHN|sat|SAT"
@@ -15,15 +10,14 @@ usage() {
 }
 
 get_ip() {
-    environment_path=$1
     ip_file="$WORKSPACE/RESOURCES.txt"
     if [ -f "$ip_file" ]; then
         BEAKER_IP=`cat $ip_file | grep EXISTING_NODES  | awk -F '=' '{print $2}'`
         if [ "$BEAKER_IP" != "" ]; then
-            if [ "`cat $environment_path | grep BEAKER_IP`" != "" ]; then sed -i "s/BEAKER_IP/$BEAKER_IP/g" $environment_path; fi
-            echo "Succeed to get and write ip($BEAKER_IP) into $environment_path."
+            export BEAKER_IP=$BEAKER_IP
+            echo "Succeed to get beaker IP: $BEAKER_IP."
         else
-            echo "ERROR: Failed to get the ip of beaker system!"
+            echo "ERROR: Failed to get the IP of beaker system!"
             exit 1
         fi
     else
@@ -34,19 +28,7 @@ fi
 
 prepare_cdn() {
     # trying to get beaker ip
-    get_ip $cdn_environment_path
-
-    # write testing parameters to environment.py
-    echo "writing testing parameters into $cdn_environment_path"
-    if [ "`cat $cdn_environment_path | grep MANIFEST_URL`" != "" ]; then sed -i -e "s?MANIFEST_URL?$MANIFEST_URL?g" $cdn_environment_path; fi
-    if [ "`cat $cdn_environment_path | grep PID`" != "" ]; then sed -i "s/PID/$PID/g" $cdn_environment_path; fi
-    if [ "`cat $cdn_environment_path | grep VARIANT`" != "" ]; then sed -i -e "s/VARIANT/$VARIANT/g" $cdn_environment_path; fi
-    if [ "`cat $cdn_environment_path | grep ARCH`" != "" ]; then sed -i -e "s/ARCH/$ARCH/g" $cdn_environment_path; fi
-    if [ "`cat $cdn_environment_path | grep DISTRO`" != "" ]; then sed -i -e "s/DISTRO/$DISTRO/g" $cdn_environment_path; fi
-    if [ "`cat $cdn_environment_path | grep CDN`" != "" ]; then sed -i -e "s/CDN/$CDN/g" $cdn_environment_path; fi
-    if [ "`cat $cdn_environment_path | grep CANDLEPIN`" != "" ]; then sed -i -e "s/CANDLEPIN/$CANDLEPIN/g" $cdn_environment_path; fi
-    if [ "`cat $cdn_environment_path | grep BLACKLIST`" != "" ]; then sed -i -e "s/BLACKLIST/$BLACKLIST/g" $cdn_environment_path; fi
-    if [ "`cat $cdn_environment_path | grep RELEASE_VERSION`" != "" ]; then sed -i -e "s/RELEASE_VERSION/$RELEASE_VERSION/g" $cdn_environment_path; fi
+    get_ip
 
     # generate all test cases from template for cdn testing, and add test cases to test suite
     OLD_IFS="$IFS"
@@ -74,15 +56,7 @@ prepare_cdn() {
 
 prepare_rhn() {
     # trying to get beaker ip
-    get_ip $rhn_environment_path
-
-    # write testing parameters to environment.py
-    echo "writing testing parameters into $rhn_environment_path..."
-    if [ "`cat $rhn_environment_path | grep MANIFEST_URL`" != "" ]; then sed -i -e "s?MANIFEST_URL?$MANIFEST_URL?g" $rhn_environment_path; fi
-    if [ "`cat $rhn_environment_path | grep VARIANT`" != "" ]; then sed -i -e "s/VARIANT/$VARIANT/g" $rhn_environment_path; fi
-    if [ "`cat $rhn_environment_path | grep ARCH`" != "" ]; then sed -i -e "s/ARCH/$ARCH/g" $rhn_environment_path; fi
-    if [ "`cat $rhn_environment_path | grep DISTRO`" != "" ]; then sed -i -e "s/DISTRO/$DISTRO/g" $rhn_environment_path; fi
-    if [ "`cat $rhn_environment_path | grep RHN`" != "" ]; then sed -i -e "s/RHN/$RHN/g" $rhn_environment_path; fi
+    get_ip
 }
 
 prepare_sat() {

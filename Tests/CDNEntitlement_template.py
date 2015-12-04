@@ -74,20 +74,24 @@ class CDNEntitlement_PID(unittest.TestCase):
             if self.release_ver == "":
                 self.release_ver = self.current_release_ver
 
-            # Stop rhcertd because headling(autosubscribe) will run 2 mins after the machine is started, then every 24
-            # hours after that, which will influence our test.
+            # Stop rhcertd service. As headling(autosubscribe) operation will be run every 2 mins after start up system,
+            # then every 24 hours after that, which will influence our subscribe test.
             CDNVerification().stop_rhsmcertd(self.system_info)
 
-            # Stop service yum-updatesd on RHEL5 in order to solve the yum lock issue
-            CDNVerification().stop_yum_updatesd(self.system_info, self.current_release_ver)
+            # Stop service yum-updatesd on RHEL5 in order to avoid yum lock to save testing time
+            CDNVerification().stop_yum_updatesd(self.system_info)
 
-            # Synchronize system time with clock.redhat.com, as a workaround when system time is not correct, which will
-            # result in no info display with "yum repolist" or "s-m repos --list"
-            #CDNVerification().ntpdate_redhat_clock(self.system_info)
+            # Synchronize system time with clock.redhat.com, it's a workaround when system time is not correct,
+            # commands "yum repolist" and "subscription-manager repos --list" return nothing
+            CDNVerification().ntpdate_redhat_clock(self.system_info)
 
             CDNParseManifestXML(self.manifest_url, self.manifest_json, self.manifest_xml).parse_json_to_xml()
 
+            # Remove
             CDNVerification().remove_non_redhat_repo(self.system_info)
+
+            # Space extend
+            CDNVerification().extend_system_space(self.system_info)
         except Exception, e:
             logging.error(str(e))
             logging.error(traceback.format_exc())
@@ -99,9 +103,6 @@ class CDNEntitlement_PID(unittest.TestCase):
         logging.info("--------------- Begin testCDNEntitlement --------------- ")
         test_result = True
         try:
-            # Space extend
-            CDNVerification().extend_system_space(self.system_info)
-
             # Register
             test_result &= CDNVerification().register(self.system_info, self.username, self.password)
 
@@ -147,7 +148,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             print "releasever_set:", releasever_set
 
             # Clear yum cache
-            test_result &= CDNVerification().clear_yum_cache(self.system_info, releasever_set)
+            test_result &= CDNVerification().clean_yum_cache(self.system_info, releasever_set)
 
             # Get repo list from package manifest
             repo_list = CDNVerification().get_repo_list_from_manifest(self.manifest_xml, self.pid, self.current_arch, self.release_ver)
