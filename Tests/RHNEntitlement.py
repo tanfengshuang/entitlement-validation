@@ -15,7 +15,6 @@ from RHN import account_rhn
 from RHN.RHNParseManifestXML import RHNParseManifestXML
 from RHN.RHNVerification import RHNVerification
 
-
 def get_username_password():
     if rhn == "Live":
         return account_rhn["Live"]["username"], account_rhn["Live"]["password"]
@@ -30,6 +29,7 @@ def get_server_url():
 
 class RHNEntitlement(unittest.TestCase):
     def setUp(self):
+        RHNVerification().log_setting(variant, arch, rhn)
         logging.info("--------------- Begin Init ---------------")
         try:
             self.system_info = {
