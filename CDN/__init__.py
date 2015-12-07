@@ -26,187 +26,187 @@ account_cdn_prod = {
     "username": "qa@redhat.com",
     "password": "QMdMJ8jvSWUwB6WZ",
     "68": {
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "68"
     },
     "69": {
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "69"
     },
     "71": {
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "71"
     },
     "72": {
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "72"
     },
     "74": {
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "74"
     },
     "76": {
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "76"
     },
     "83": {
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "69"
     },
     "90": {
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "69"
     },
     "146": {
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "69"
     },
     "241": {
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "69"
     },
     "279": {
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "279"
     },
     "287": {
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "69"
     },
     "294": {
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "294"
     },
     "299": {
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "72"
     },
     "300": {
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "72"
     }
 }
 
 account_cdn_stage = {
     "68": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "68"
     },
     "69": {
-        "username": "stage_test_12",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "RH0103708",
-        "base_sku": "RH0103708",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "69"
     },
     "71": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "71"
     },
     "72": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "72"
     },
     "74": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "74"
     },
     "76": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "76"
     },
     "83": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
         "base_pid": "69"
     },
     "90": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "69"
     },
     "146": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "69"
     },
     "241": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "69"
     },
     "279": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "279"
     },
     "287": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "69"
     },
     "294": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "294"
     },
     "299": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "72"
     },
     "300": {
-        "username": "",
+        "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "",
-        "base_sku": "",
-        "base_pid": ""
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "72"
     }
 }
 
