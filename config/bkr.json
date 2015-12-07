@@ -8,10 +8,10 @@
                     "arch": "ARCH",
                     "variant": "VARIANT",
                     "keyvalue": ["DISKSPACE>=20000"],
-                    "hostrequire": ["memory>=2000"],
+                    "hostrequire": ["arch=ARCH", "memory>=2000"],
                     "bkr_data": {
-                        "role": "Slave",
-                        "name": "SlaveMachine"
+                        "role": "Testing",
+                        "name": "TestingMachine"
                     }
                 }
             ]
