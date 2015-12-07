@@ -112,6 +112,9 @@ class EntitlementBase(object):
         return avail_space
 
     def get_master_release(self, system_info):
+        ret, output = RemoteSHH().run_cmd(system_info, "rpm -q redhat-lsb", "Trying to check if command redhat-lsb is installed...")
+        if "not installed" in output:
+            RemoteSHH().run_cmd(system_info, "yum install -y redhat-lsb", "Trying to check if command redhat-lsb is installed...")
         ret, release = RemoteSHH().run_cmd(system_info, "lsb_release -r -s", "Trying to restore those non-redhat repos...")
         master_release = release.split(".")[0]
         return master_release
