@@ -1,10 +1,10 @@
 import os
 
-manifest_url = os.environ["MANIFEST_URL"]
+manifest_url = os.environ["Manifest_URL"]
 variant = os.environ["VARIANT"]
 arch = os.environ["ARCH"]
 rhn = os.environ["RHN"]
-beaker_ip = os.environ["BEAKER_IP"]
+beaker_ip = os.environ["Beaker_IP"]
 
 # rhn server url
 server_url = {

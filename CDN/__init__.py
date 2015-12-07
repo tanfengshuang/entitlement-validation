@@ -1,14 +1,14 @@
 import os
 
-manifest_url = os.environ["MANIFEST_URL"]
+manifest_url = os.environ["Manifest_URL"]
 pid = os.environ["PID"]
 variant = os.environ["VARIANT"]
 arch = os.environ["ARCH"]
 cdn = os.environ["CDN"]
-blacklist = os.environ["BLACKLIST"]
-release_ver = os.environ["RELEASE_VERSION"]
-candlepin = os.environ["CANDLEPIN"]
-beaker_ip = os.environ["BEAKER_IP"]
+blacklist = os.environ["Blacklist"]
+release_ver = os.environ["Release_Version"]
+candlepin = os.environ["Candlepin"]
+beaker_ip = os.environ["Beaker_IP"]
 
 # baseurl hostname server_url
 cdn_baseurl = {

@@ -61,14 +61,14 @@ class AnalyzeCDN(object):
     """
     def __init__(self):
         # Get Jenkins job parameters
-        self.DISTRO = os.environ["DISTRO"]
+        self.DISTRO = os.environ["Distro"]
         self.CDN = os.environ["CDN"]
-        self.CANDLEPIN = os.environ["CANDLEPIN"]
-        self.BLACKLIST = os.environ["BLACKLIST"]
-        self.RELEASE_VERSION = os.environ["RELEASE_VERSION"]
+        self.CANDLEPIN = os.environ["Candlepin"]
+        self.BLACKLIST = os.environ["Blacklist"]
+        self.RELEASE_VERSION = os.environ["Release_Version"]
         self.PIDs = os.environ["Product_ID"]
         self.VARIANTs = os.environ["RHEL_Variant"]
-        self.MANIFEST_URL = os.environ["MANIFEST_URL"]
+        self.MANIFEST_URL = os.environ["Manifest_URL"]
 
         # Download manifest
         self.MANIFEST_PATH = "CDN_MANIFEST.json"
@@ -171,12 +171,12 @@ class AnalyzeCDN(object):
                         f.write("PID={0}\n".format(pid_info))
 
                         # Write other Jenkins job parameters into properties file
-                        f.write("MANIFEST_URL={0}\n".format(self.MANIFEST_URL))
-                        f.write("DISTRO={0}\n".format(self.DISTRO))
+                        f.write("Manifest_URL={0}\n".format(self.MANIFEST_URL))
+                        f.write("Distro={0}\n".format(self.DISTRO))
                         f.write("CDN={0}\n".format(self.CDN))
-                        f.write("CANDLEPIN={0}\n".format(self.CANDLEPIN))
-                        f.write("BLACKLIST={0}\n".format(self.BLACKLIST))
-                        f.write("RELEASE_VERSION={0}\n".format(self.RELEASE_VERSION))
+                        f.write("Candlepin={0}\n".format(self.CANDLEPIN))
+                        f.write("Blacklist={0}\n".format(self.BLACKLIST))
+                        f.write("Release_Version={0}\n".format(self.RELEASE_VERSION))
             else:
                 print "No eligible testing platform provided!"
         else:
@@ -231,11 +231,11 @@ class AnalyzeRHN(object):
         RHN=QA
     """
     def __init__(self):
-        self.DISTRO = os.environ["DISTRO"]
+        self.DISTRO = os.environ["Distro"]
         self.RHN = os.environ["RHN"]
         self.CHANNELs = "" #os.environ["Channels"]
         self.VARIANTs = os.environ["RHEL_Variant"]
-        self.MANIFEST_URL = os.environ["MANIFEST_URL"]
+        self.MANIFEST_URL = os.environ["Manifest_URL"]
 
         # Download manifest
         self.MANIFEST_PATH = "RHN_MANIFEST.json"
@@ -292,8 +292,8 @@ class AnalyzeRHN(object):
                     f.write("ARCH={0}\n".format(arch))
 
                     # Write other Jenkins job parameters to properties file
-                    f.write("MANIFEST_URL={0}\n".format(self.MANIFEST_URL))
-                    f.write("DISTRO={0}\n".format(self.DISTRO))
+                    f.write("Manifest_URL={0}\n".format(self.MANIFEST_URL))
+                    f.write("Distro={0}\n".format(self.DISTRO))
                     f.write("RHN={0}\n".format(self.RHN))
 
 
