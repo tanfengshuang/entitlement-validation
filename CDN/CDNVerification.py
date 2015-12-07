@@ -240,7 +240,7 @@ class CDNVerification(EntitlementBase):
 
         if ret == 0:
             # Output: SKU: MCT2887
-            if sku in output.split(":")[1].strip():
+            if sku in [i.strip().split(":")[1].strip() for i in output.splitlines()]:
                 logging.info(" It's successful to verify sku {0} in entitlement certificate {1}.".format(sku, entitlement_cert))
                 return True
             else:
