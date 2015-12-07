@@ -4,7 +4,7 @@
 	    "job_group": "jenkins-ci",
             "recipesets": [
                 {
-                    "name": "NAME",
+                    "distro": "DISTRO",
                     "arch": "ARCH",
                     "variant": "VARIANT",
                     "keyvalue": ["DISKSPACE>=20000"],
