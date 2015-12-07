@@ -1,7 +1,6 @@
 import os
 
 manifest_url = os.environ["Manifest_URL"]
-pid = os.environ["PID"]
 variant = os.environ["VARIANT"]
 arch = os.environ["ARCH"]
 cdn = os.environ["CDN"]

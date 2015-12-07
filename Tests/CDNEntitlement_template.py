@@ -12,7 +12,6 @@ from CDN import blacklist
 from CDN import variant
 from CDN import arch
 from CDN import manifest_url
-from CDN import pid
 from CDN import candlepin
 
 from CDN import account_cdn_stage
@@ -21,6 +20,8 @@ from CDN import account_cdn_prod
 from CDN.CDNParseManifestXML import CDNParseManifestXML
 from CDN.CDNVerification import CDNVerification
 
+
+pid = "PID"
 
 def get_username_password():
     if cdn == "QA":
