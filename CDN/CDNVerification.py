@@ -239,7 +239,8 @@ class CDNVerification(EntitlementBase):
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to check SKU {0} in entitlement certificate {1} with rct...".format(sku, entitlement_cert))
 
         if ret == 0:
-            # Output: SKU: MCT2887
+            # Output:
+            # SKU: MCT2887
             if sku in [i.strip().split(":")[1].strip() for i in output.splitlines()]:
                 logging.info(" It's successful to verify sku {0} in entitlement certificate {1}.".format(sku, entitlement_cert))
                 return True
@@ -353,12 +354,13 @@ class CDNVerification(EntitlementBase):
         # Get package list from manifest file
         logging.info("--------------- Begin to get package list from manifest: {0} {1} {2} {3} ---------------".format(pid, current_arch, repo, release_ver))
         package_list = CDNReadXML().get_package_list(manifest_xml, repo, release_ver, pid, current_arch)
-        if type == "name":
-            package_list = [p.split()[0] for p in package_list]
-        elif type == "full-name":
-            # "%{name}-%{version}-%{release}.src"
-            package_list = ["{0}-{1}-{2}-{3}".format(i.split()[0], i.split()[1], i.split()[2], i.split()[3]) for i in package_list]
         logging.info("It's successful to get {0} packages from package manifest".format(len(package_list)))
+        if len(package_list) != 0:
+            if type == "name":
+                package_list = [p.split()[0] for p in package_list]
+            elif type == "full-name":
+                # "%{name}-%{version}-%{release}.src"
+                package_list = ["{0}-{1}-{2}-{3}".format(i.split()[0], i.split()[1], i.split()[2], i.split()[3]) for i in package_list]
         logging.info("--------------- End to get package list from manifest: PASS ---------------")
         return package_list
 

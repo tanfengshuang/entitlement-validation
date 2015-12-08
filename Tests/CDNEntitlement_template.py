@@ -25,7 +25,11 @@ pid = "PID"
 
 def get_username_password():
     if cdn == "QA":
-        return account_cdn_stage[pid]["username"], account_cdn_stage[pid]["password"], account_cdn_stage[pid]["sku"], account_cdn_stage[pid]["base_sku"], account_cdn_stage[pid]["base_pid"]
+        if pid in account_cdn_stage.keys():
+            return account_cdn_stage[pid]["username"], account_cdn_stage[pid]["password"], account_cdn_stage[pid]["sku"], account_cdn_stage[pid]["base_sku"], account_cdn_stage[pid]["base_pid"]
+        else:
+            logging.error("Test Failed - Failed to get PID {0} in account_cdn_stage.".format(pid))
+            exit(1)
     elif cdn == "Prod":
         return account_cdn_prod["username"], account_cdn_prod["password"], account_cdn_prod[pid]["sku"], account_cdn_prod[pid]["base_sku"], account_cdn_prod[pid]["base_pid"]
 
