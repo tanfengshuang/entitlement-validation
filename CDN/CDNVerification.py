@@ -12,7 +12,7 @@ class CDNVerification(EntitlementBase):
     def redhat_repo_backup(self, system_info):
         # Download content of file redhat.repo remotely, and save it locally
         remote_path = "/etc/yum.repos.d/redhat.repo"
-        local_path = "/tmp/redhat.repo"
+        local_path = os.path.join(os.getcwd(), "redhat.repo")
         RemoteSHH().download_file(system_info, remote_path, local_path)
         ret, output = RemoteSHH().run_cmd(None, "ls /tmp/redhat.repo", "Trying to check /tmp/redhat.repo.")
         if "No such file or directory" in output:
@@ -603,20 +603,20 @@ class CDNVerification(EntitlementBase):
         else:
             cmd = "yum -y install --skip-broken %s %s" % (pkg_name, releasever_set)
 
+        checkresult = True
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to yum install package {0}...".format(pkg_name))
         if ret == 0 and ("Complete!" in output or "Nothing to do" in output):
             logging.info("It's successful to yum install package {0} of repo {1}.".format(pkg_name, repo))
 
-        if ("optional" not in repo) and ("supplementary" not in repo) and ("debug" not in repo):
-            if base_pid == pid:
-                logging.info("For RHEL testing, skip product cert testing, the default rhel product cert is located in the folder '/etc/pki/product-default/', and will not be downloaded into '/etc/pki/product/' anew.")
-                checkresult = True
-            else:
-                checkresult = self.verify_productid_in_product_cert(system_info, pid, base_pid)
-            return checkresult
+            if ("optional" not in repo) and ("supplementary" not in repo) and ("debug" not in repo):
+                if base_pid == pid:
+                    logging.info("For RHEL testing, skip product cert testing, the default rhel product cert is located in the folder '/etc/pki/product-default/', and will not be downloaded into '/etc/pki/product/' anew.")
+                else:
+                    checkresult = self.verify_productid_in_product_cert(system_info, pid, base_pid)
         else:
             logging.error("Test Failed - Failed to yum install package {0} of repo {1}.".format(pkg_name, repo))
-            return False
+            checkresult = False
+        return checkresult
 
     def remove_layered_product_cert(self, system_info, base_pid):
         # Remove the layered product certificate before install package
@@ -701,7 +701,8 @@ class CDNVerification(EntitlementBase):
                     if "No Match for argument" in output:
                         error_list = [s for s in output.splitlines() if "No Match" in s]
                         failed_src_pkglist = [error.replace('No Match for argument ', '').replace('\r', '') for error in error_list]
-                        logging.error("Failed to download following source packages: %s" % failed_src_pkglist)
+                        logging.error("Failed to download following source packages:")
+                        self.print_list(failed_src_pkglist)
             else:
                 logging.info("There is no source packages for pid:repo {0}:{1}".format(pid, repo))
         else:

@@ -51,7 +51,7 @@ def get_baseurl():
 class CDNEntitlement_PID(unittest.TestCase):
     def setUp(self):
         CDNVerification().log_setting(variant, arch, cdn)
-        logging.info("--------------- Begin Init ---------------")
+        logging.info("--------------- Begin Init for product {0} ---------------".format(pid))
         try:
             self.system_info = {
                 "ip": beaker_ip,
@@ -103,10 +103,10 @@ class CDNEntitlement_PID(unittest.TestCase):
             logging.error(traceback.format_exc())
             logging.error("Test Failed - Raised error when do CDN Entitlement testing!")
             exit(1)
-        logging.info("--------------- End Init ---------------")
+        logging.info("--------------- End Init for product {0} ---------------".format(pid))
 
     def testCDNEntitlement(self):
-        logging.info("--------------- Begin testCDNEntitlement --------------- ")
+        logging.info("--------------- Begin testCDNEntitlement for product {0} ---------------".format(pid))
         test_result = True
         try:
             # Register
@@ -185,10 +185,10 @@ class CDNEntitlement_PID(unittest.TestCase):
             logging.error(traceback.format_exc())
             logging.error("Test Failed - Raised error when do CDN Entitlement testing!")
             exit(1)
-        logging.info("--------------- End testCDNEntitlement --------------- ")
+        logging.info("--------------- End testCDNEntitlement for product {0} ---------------".format(pid))
 
     def tearDown(self):
-        logging.info("--------------- Begin tearDown ---------------")
+        logging.info("--------------- Begin tearDown for product {0} ---------------".format(pid))
 
         try:
             CDNVerification().unregister(self.system_info)
@@ -198,7 +198,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             logging.error(traceback.format_exc())
             logging.error("Test Failed - Raised error when do CDN Entitlement testing!")
             exit(1)
-        logging.info("--------------- End tearDown ---------------")
+        logging.info("--------------- End tearDown for product {0} ---------------".format(pid))
 
 if __name__ == '__main__':
     unittest.main()

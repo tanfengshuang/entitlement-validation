@@ -54,7 +54,10 @@ class CDNReadXML(object):
             for i in repoid_ele.findall("repoid"):
                 if i.get("releasever") == release_ver and i.get('value') == repo:
                     package_list = [j.text.strip().splitlines() for j in list(i) if j.tag == "packagename"]
-            return [i.strip() for i in package_list[0]]
+            if len(package_list) != 0:
+                return [i.strip() for i in package_list[0]]
+            else:
+                return package_list
         except Exception, e:
             logging.error(str(e))
             logging.error(traceback.format_exc())
