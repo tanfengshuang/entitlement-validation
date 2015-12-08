@@ -701,7 +701,7 @@ class CDNVerification(EntitlementBase):
                     if "No Match for argument" in output:
                         error_list = [s for s in output.splitlines() if "No Match" in s]
                         failed_src_pkglist = [error.replace('No Match for argument ', '').replace('\r', '') for error in error_list]
-                        logging.error("Failed to download following source packages:")
+                        logging.error("Failed to download following {0} source packages:".format(len(failed_src_pkglist)))
                         self.print_list(failed_src_pkglist)
             else:
                 logging.info("There is no source packages for pid:repo {0}:{1}".format(pid, repo))

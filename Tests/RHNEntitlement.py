@@ -42,8 +42,8 @@ class RHNEntitlement(unittest.TestCase):
             self.arch = arch
 
             self.manifest_url = manifest_url
-            self.manifest_json = os.path.join(os.getcwd(), "entitlement-validation/manifest/rhn_test_manifest.json")
-            self.manifest_xml = os.path.join(os.getcwd(), "entitlement-validation/manifest/rhn_test_manifest.xml")
+            self.manifest_json = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.json")
+            self.manifest_xml = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.xml")
 
             self.username, self.password = get_username_password()
             self.server_url = get_server_url()

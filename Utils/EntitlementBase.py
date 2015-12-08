@@ -87,8 +87,9 @@ class EntitlementBase(object):
 
     def remove_non_redhat_repo(self, system_info):
         # Backup non-redhat repo
-        cmd = "mkdir -p /tmp/backup_repo/; cp /etc/yum.repos.d/beaker* /tmp/backup_repo/"
-        RemoteSHH().run_cmd(system_info, cmd, "Trying to backup non-redhat repos to /tmp/backup_repo/...")
+        backup_path = os.path.join(os.getcwd(), "backup_repo")
+        cmd = "mkdir -p {0}; cp /etc/yum.repos.d/beaker* {0}".format(backup_path)
+        RemoteSHH().run_cmd(system_info, cmd, "Trying to backup non-redhat repos to {0}...".format(backup_path))
 
         # Remove non-redhat repo
         cmd = "ls /etc/yum.repos.d/* | grep -v redhat.repo | xargs rm -rf"
@@ -100,7 +101,8 @@ class EntitlementBase(object):
 
     def restore_non_redhat_repo(self, system_info):
         # Restore non-redhat repo after testing
-        cmd = 'cp /tmp/backup_repo/*.repo /etc/yum.repos.d/'
+        path = os.path.join(os.getcwd(), "backup_repo/*.repo")
+        cmd = 'cp {0} /etc/yum.repos.d/'.format(path)
         RemoteSHH().run_cmd(system_info, cmd, "Trying to restore those non-redhat repos...")
 
     def get_avail_space(self, system_info):
@@ -173,7 +175,7 @@ class EntitlementBase(object):
                 # Extend the root partition
                 ret, output = RemoteSHH().run_cmd(system_info, "lvextend -L+{0}G /dev/mapper/{1}".format(extend_space, lvm_root), "Trying to lvextend root partition...", timeout=None)
                 if "successfully resized" in output:
-                    logging.error("Succeed to lvextend {0}G for root partition.".format(avail_space))
+                    logging.info("Succeed to lvextend {0}G for root partition.".format(avail_space))
                 elif "Insufficient free space" in output:
                     logging.warning("Insufficient free space when lvextend root partition.")
                 else:

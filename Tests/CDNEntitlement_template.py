@@ -65,8 +65,8 @@ class CDNEntitlement_PID(unittest.TestCase):
             self.arch = arch
 
             self.manifest_url = manifest_url
-            self.manifest_json = os.path.join(os.getcwd(), "entitlement-validation/manifest/cdn_test_manifest.json")
-            self.manifest_xml = os.path.join(os.getcwd(), "entitlement-validation/manifest/cdn_test_manifest.xml")
+            self.manifest_json = os.path.join(os.getcwd(), "manifest/cdn_test_manifest.json")
+            self.manifest_xml = os.path.join(os.getcwd(), "manifest/cdn_test_manifest.xml")
 
             self.pid = pid
             self.username, self.password, self.sku, self.base_sku, self.base_pid = get_username_password()
