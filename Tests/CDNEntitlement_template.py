@@ -50,7 +50,7 @@ def get_baseurl():
 
 class CDNEntitlement_PID(unittest.TestCase):
     def setUp(self):
-        CDNVerification().log_setting(variant, arch, cdn)
+        CDNVerification().log_setting(variant, arch, cdn, pid)
         logging.info("--------------- Begin Init for product {0} ---------------".format(pid))
         try:
             self.system_info = {
@@ -172,10 +172,10 @@ class CDNEntitlement_PID(unittest.TestCase):
                 test_result &= CDNVerification().enable_repo(self.system_info, repo)
 
                 # Product id certificate installation
-                CDNVerification().pid_cert_installation(self.system_info, repo, releasever_set, self.blacklist, self.manifest_xml, self.pid, self.base_pid, self.current_arch, self.release_ver)
+                test_result &= CDNVerification().pid_cert_installation(self.system_info, repo, releasever_set, self.blacklist, self.manifest_xml, self.pid, self.base_pid, self.current_arch, self.release_ver)
 
                 # All package installation
-                CDNVerification().verify_all_packages_installation(self.system_info, self.manifest_xml, self.pid, repo, self.arch, self.release_ver, releasever_set, self.blacklist)
+                test_result &= CDNVerification().verify_all_packages_installation(self.system_info, self.manifest_xml, self.pid, repo, self.arch, self.release_ver, releasever_set, self.blacklist)
 
                 # Disable the test repo
                 test_result &= CDNVerification().disable_repo(self.system_info, repo)

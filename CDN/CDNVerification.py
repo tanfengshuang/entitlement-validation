@@ -699,6 +699,7 @@ class CDNVerification(EntitlementBase):
                     logging.info(" It's successful to download source packages.")
                 else:
                     if "No Match for argument" in output:
+                        checkresult = False
                         error_list = [s for s in output.splitlines() if "No Match" in s]
                         failed_src_pkglist = [error.replace('No Match for argument ', '').replace('\r', '') for error in error_list]
                         logging.error("Failed to download following {0} source packages:".format(len(failed_src_pkglist)))
