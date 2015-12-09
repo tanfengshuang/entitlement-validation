@@ -65,8 +65,9 @@ class CDNEntitlement_PID(unittest.TestCase):
             self.arch = arch
 
             self.manifest_url = manifest_url
-            self.manifest_json = os.path.join(os.getcwd(), "manifest/cdn_test_manifest.json")
-            self.manifest_xml = os.path.join(os.getcwd(), "manifest/cdn_test_manifest.xml")
+            self.manifest_path = os.path.join(os.getcwd(), "manifest")
+            self.manifest_json = os.path.join(self.manifest_path, "cdn_test_manifest.json")
+            self.manifest_xml = os.path.join(self.manifest_path, "cdn_test_manifest.xml")
 
             self.pid = pid
             self.username, self.password, self.sku, self.base_sku, self.base_pid = get_username_password()
@@ -91,7 +92,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             # commands "yum repolist" and "subscription-manager repos --list" return nothing
             CDNVerification().ntpdate_redhat_clock(self.system_info)
 
-            CDNParseManifestXML(self.manifest_url, self.manifest_json, self.manifest_xml).parse_json_to_xml()
+            CDNParseManifestXML(self.manifest_url, self.manifest_path, self.manifest_json, self.manifest_xml).parse_json_to_xml()
 
             # Remove
             CDNVerification().remove_non_redhat_repo(self.system_info)
