@@ -32,7 +32,7 @@ prepare_cdn() {
 
     if [ "$PID" == "" ]; then
         # Get PID from manifest for related arch and varaint
-        python analyze_testing.py pid
+        python $WORKSPACE/entitlement-validation/analyze_testing.py pid
         PID=`cat PID.txt`
     fi
 
