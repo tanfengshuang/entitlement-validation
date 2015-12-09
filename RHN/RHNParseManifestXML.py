@@ -14,10 +14,14 @@ except ImportError:
 
 
 class ParseManifestXMLBase(object):
-    def __init__(self, manifest_url, manifest_json, manifest_xml):
+    def __init__(self, manifest_url, cdn_manifest_path, manifest_json, manifest_xml):
         self.manifest_url = manifest_url
         self.manifest_xml = manifest_xml
         self.manifest_json = manifest_json
+        self.cdn_manifest_path = cdn_manifest_path
+
+        if not os.path.exists(self.cdn_manifest_path):
+            os.mkdir(self.cdn_manifest_path)
 
     def downloade_manifest(self):
         if self.manifest_url != "":
@@ -108,9 +112,8 @@ class RHNParseManifestXML(ParseManifestXMLBase):
 
 if __name__ == '__main__':
     manifest_url = "http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json"
-    rhn_manifest_json = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.json")
-    rhn_manifest_xml = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.xml")
-    cdn_manifest_json = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.json")
-    cdn_manifest_xml = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.xml")
-    RHNParseManifestXML(manifest_url, rhn_manifest_json, rhn_manifest_xml).parse_json_to_xml()
+    cdn_manifest_path = os.path.join(os.getcwd(), "manifest")
+    rhn_manifest_json = os.path.join(cdn_manifest_path, "rhn_test_manifest.json")
+    rhn_manifest_xml = os.path.join(cdn_manifest_path, "rhn_test_manifest.xml")
+    RHNParseManifestXML(manifest_url, cdn_manifest_path, rhn_manifest_json, rhn_manifest_xml).parse_json_to_xml()
 
