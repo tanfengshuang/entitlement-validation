@@ -133,6 +133,7 @@ class AnalyzeCDN(object):
             else:
                 for pid in platforms.keys():
                     # Delete those invalid arches which are not in manifest
+                    print "PID {0}:{1}".format(pid, platforms[pid])
                     variants = self.__check_arches(self.VARIANTs, platforms[pid])
 
                     # generate *.properties files used to trigger downstream jobs
@@ -207,8 +208,9 @@ class AnalyzeCDN(object):
         for v in VARIANTs.split(","):
             if v in VTs_manifest:
                 variants.append(v)
+                print "Requested variant {0} is in manifest!".format(v)
             else:
-                print "Warning: variant {0} is not in manifest!".format(v)
+                print "Warning: requested variant {0} is not in manifest!".format(v)
         return variants
 
 
@@ -297,6 +299,41 @@ class AnalyzeRHN(object):
                     f.write("RHN={0}\n".format(self.RHN))
 
 
+class GetPID(object):
+    def __init__(self):
+        self.PID = []
+        self.VARIANT = os.environ["VARIANT"]
+        self.ARCH = os.environ["ARCH"]
+        self.MANIFEST_URL = os.environ["Manifest_URL"]
+
+        # Download manifest
+        self.MANIFEST_PATH = "CDN_MANIFEST.json"
+        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_URL)
+
+    def get_pid(self):
+        if "cdn" in self.content.keys():
+            # Get testing platforms from provided mainfest
+            platforms = {}
+            for pid in self.content["cdn"]["products"]:
+                arches = []
+                for repo_path in self.content["cdn"]["products"][pid]["Repo Paths"]:
+                    basearch = self.content["cdn"]["products"][pid]["Repo Paths"][repo_path]["basearch"]
+                    variant = repo_path.split('/')[4]
+                    if variant in ["server", "system-z", "power", "power-le", "arm"]:
+                        variant = "Server"
+                    if variant == "client":
+                        variant = "Client"
+                    if variant == "workstation":
+                        variant = "Workstation"
+                    if variant == "computenode":
+                        variant = "ComputeNode"
+                    if self.VARIANT == variant and self.ARCH == basearch:
+                        self.PID.append(pid)
+                        break
+            with open("PID.txt", 'w') as f:
+                f.write(",".join(self.PID))
+
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         usage()
@@ -307,6 +344,8 @@ if __name__ == '__main__':
         elif sys.argv[1] == "rhn":
             rhn = AnalyzeRHN()
             rhn.analyze_rhn()
+        elif sys.argv[1] == "pid":
+            GetPID().get_pid()
         else:
             pass
 

@@ -30,6 +30,23 @@ prepare_cdn() {
     # trying to get beaker ip
     get_ip
 
+    if [ "$PID" == "" ]; then
+        # Get PID from manifest for related arch and varaint
+        python analyze_testing.py pid
+        PID=`cat PID.txt`
+    fi
+
+    # print params
+    echo "PID=$PID"
+    echo "VARIANT=$VARIANT"
+    echo "ARCH=$ARCH"
+    echo "Manifest_URL=$Manifest_URL"
+    echo "Distro=$Distro"
+    echo "CDN=$CDN"
+    echo "Candlepin=$Candlepin"
+    echo "Blacklist=$Blacklist"
+    echo "Rlease_Version=$Rlease_Version"
+
     # generate all test cases from template for cdn testing, and add test cases to test suite
     OLD_IFS="$IFS"
     IFS=","
@@ -57,6 +74,13 @@ prepare_cdn() {
 prepare_rhn() {
     # trying to get beaker ip
     get_ip
+
+    # print params
+    echo "VARIANT=$VARIANT"
+    echo "ARCH=$ARCH"
+    echo "Manifest_URL=$Manifest_URL"
+    echo "Distro=$Distro"
+    echo "RHN=$RHN"
 }
 
 prepare_sat() {
