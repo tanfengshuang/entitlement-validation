@@ -34,7 +34,6 @@ prepare_cdn() {
         # Get PID from manifest for current arch and varaint
         python $WORKSPACE/entitlement-validation/analyze_testing.py pid
         PID=`cat PID.txt`
-        echo "***************  $PID"
     fi
 
     # Print params
@@ -64,7 +63,7 @@ prepare_cdn() {
         sed -i -e "s/PID/$pid/g" $case_full_name
 
         # Add import sentence to __init__.py
-        if [ "`cat $cdn_test_suite_path | grep $case_name`" ==  "" ]; then sed -i "2a\from Tests.$case_name import $case_name" $cdn_test_suite_path; fi
+        if [ "`cat $cdn_test_suite_path | grep $case_name`" ==  "" ]; then sed -i "3a\from Tests.$case_name import $case_name" $cdn_test_suite_path; fi
 
         # Add test cases to test suite
         line="suite.addTest(CDNEntitlement_$pid('testCDNEntitlement'))"

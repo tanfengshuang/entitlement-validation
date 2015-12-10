@@ -21,19 +21,21 @@ class EntitlementBase(object):
 
         logger = logging.getLogger()
         formatter = logging.Formatter('%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s')
-        filehandler = logging.FileHandler(filename)
-        filehandler.suffix = "%Y-%m-%d"
-        filehandler.setFormatter(formatter)
-        filehandler.setLevel(logging.INFO)
-        logger.addHandler(filehandler)
+        file_handler = logging.FileHandler(filename)
+        file_handler.suffix = "%Y-%m-%d"
+        file_handler.setFormatter(formatter)
+        file_handler.setLevel(logging.INFO)
+        logger.addHandler(file_handler)
+        return file_handler
 
     def log_console(self):
         # Print log on the console
-        console = logging.StreamHandler()
-        console.setLevel(logging.INFO)
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.INFO)
         formatter = logging.Formatter('%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s')
-        console.setFormatter(formatter)
-        logging.getLogger('').addHandler(console)
+        console_handler.setFormatter(formatter)
+        logging.getLogger('').addHandler(console_handler)
+        return console_handler
 
     def get_os_release_version(self, system_info):
         # Get release version of current system

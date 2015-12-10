@@ -50,9 +50,12 @@ def get_baseurl():
 
 class CDNEntitlement_PID(unittest.TestCase):
     def setUp(self):
-        # Set logging
-        CDNVerification().log_setting(variant, arch, cdn, pid)
-        CDNVerification().log_console()
+        # Write log into file
+        self.log_file_handler = CDNVerification().log_setting(variant, arch, cdn, pid)
+
+        # Pring log on console
+        self.console_handler = CDNVerification().log_console()
+
         logging.info("--------------- Begin Init for product {0} ---------------".format(pid))
         try:
             self.system_info = {
@@ -66,6 +69,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             self.variant = variant
             self.arch = arch
 
+            # Download and parse manifest
             self.manifest_url = manifest_url
             self.manifest_path = os.path.join(os.getcwd(), "manifest")
             self.manifest_json = os.path.join(self.manifest_path, "cdn_test_manifest.json")
@@ -202,6 +206,12 @@ class CDNEntitlement_PID(unittest.TestCase):
             logging.error("Test Failed - Raised error when do CDN Entitlement testing!")
             exit(1)
         logging.info("--------------- End tearDown for product {0} ---------------".format(pid))
+
+        # Close log file handler
+        self.log_file_handler.close()
+
+        # Close console log handler
+        self.console_handler.close()
 
 if __name__ == '__main__':
     unittest.main()
