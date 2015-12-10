@@ -42,8 +42,9 @@ class RHNEntitlement(unittest.TestCase):
             self.arch = arch
 
             self.manifest_url = manifest_url
-            self.manifest_json = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.json")
-            self.manifest_xml = os.path.join(os.getcwd(), "manifest/rhn_test_manifest.xml")
+            self.manifest_path = os.path.join(os.getcwd(), "manifest")
+            self.manifest_json = os.path.join(self.manifest_path, "rhn_test_manifest.json")
+            self.manifest_xml = os.path.join(self.manifest_path, "rhn_test_manifest.xml")
 
             self.username, self.password = get_username_password()
             self.server_url = get_server_url()
@@ -51,7 +52,7 @@ class RHNEntitlement(unittest.TestCase):
             self.current_rel_version = RHNVerification().get_os_release_version(self.system_info)
             self.current_arch = RHNVerification().get_os_base_arch(self.system_info)
 
-            RHNParseManifestXML(self.manifest_url, self.manifest_json, self.manifest_xml).parse_json_to_xml()
+            RHNParseManifestXML(self.manifest_url, self.manifest_path, self.manifest_json, self.manifest_xml).parse_json_to_xml()
 
             RHNVerification().remove_non_redhat_repo(self.system_info)
         except Exception, e:

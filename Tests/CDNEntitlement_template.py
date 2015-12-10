@@ -98,7 +98,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             CDNVerification().remove_non_redhat_repo(self.system_info)
 
             # Space extend
-            # CDNVerification().extend_system_space(self.system_info)
+            CDNVerification().extend_system_space(self.system_info)
         except Exception, e:
             logging.error(str(e))
             logging.error(traceback.format_exc())

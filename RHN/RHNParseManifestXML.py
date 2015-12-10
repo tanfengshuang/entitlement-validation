@@ -54,8 +54,8 @@ class ParseManifestXMLBase(object):
             exit(1)
 
 class RHNParseManifestXML(ParseManifestXMLBase):
-    def __init__(self, manifest_url, manifest_json, manifest_xml):
-        super(RHNParseManifestXML, self).__init__(manifest_url, manifest_json, manifest_xml)
+    def __init__(self, manifest_url, cdn_manifest_path, manifest_json, manifest_xml):
+        super(RHNParseManifestXML, self).__init__(manifest_url, cdn_manifest_path, manifest_json, manifest_xml)
         self.manifest_url = manifest_url
         self.manifest_xml = manifest_xml
 

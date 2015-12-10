@@ -3,13 +3,13 @@ import sys
 import json
 import commands
 
-# cdn test data
+# CDN test data
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel5.10/rhel5.10-rc-1.3.json
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel7.2/rhel-7.2-snapshot1-qa-cdn.json
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
 
-# rhn test data
+# RHN test data
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel5.10/rhel5.10-rc-1.3.json
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhcmsys8/15017-package-manifest.json
 
@@ -18,12 +18,15 @@ def usage():
     print "Usage: {0} cdn|CDN|rhn|RHN|sat|SAT".format(sys.argv[0])
     exit(1)
 
-def download_read_manifest(MANIFEST_PATH, MANIFEST_URL):
-    # check if there is MANIFEST.json, if yes, delete it and re-download
+def download_read_manifest(MANIFEST_PATH, MANIFEST_NAME, MANIFEST_URL):
+    # Check if there is MANIFEST.json, if yes, delete it and re-download
     if os.path.exists(MANIFEST_PATH):
-        commands.getstatusoutput("rm -rf %s" % MANIFEST_PATH)
-        print "deleting MANIFEST.json"
-    cmd = 'wget %s -O %s' % (MANIFEST_URL, MANIFEST_PATH)
+        if os.path.exists(MANIFEST_NAME):
+            os.remove(MANIFEST_NAME)
+            print "Deleting {0}".format(MANIFEST_NAME)
+    else:
+        os.mkdir(MANIFEST_PATH)
+    cmd = 'wget %s -O %s' % (MANIFEST_URL, MANIFEST_NAME)
     print cmd
     ret, output = commands.getstatusoutput(cmd)
     if ret == 0:
@@ -32,7 +35,7 @@ def download_read_manifest(MANIFEST_PATH, MANIFEST_URL):
         print "Failed to download manifest!"
         exit(1)
 
-    # open and read MANIFEST.json
+    # Open and load MANIFEST.json
     content = json.load(open(MANIFEST_PATH, 'r'))
     return content
 
@@ -70,9 +73,10 @@ class AnalyzeCDN(object):
         self.VARIANTs = os.environ["RHEL_Variant"]
         self.MANIFEST_URL = os.environ["Manifest_URL"]
 
-        # Download manifest
-        self.MANIFEST_PATH = "CDN_MANIFEST.json"
-        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_URL)
+        # Download and load manifest
+        self.MANIFEST_PATH = os.path.join(os.getcwd(), "manifest")
+        self.MANIFEST_NAME = os.path.join(self.MANIFEST_PATH, "CDN_MANIFEST.json")
+        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.MANIFEST_URL)
 
     def analyze_cdn(self):
         if "cdn" in self.content.keys():
@@ -91,19 +95,19 @@ class AnalyzeCDN(object):
                         variant = "Workstation"
                     if variant == "computenode":
                         variant = "ComputeNode"
-                    # arches: ['Server-ppc64le', 'ComputeNode-x86_64', 'Server-aarch64', 'Server-ppc64', 'Client-x86_64', 'Server-s390x', 'Server-x86_64', 'Workstation-x86_64']
+                    # $arches: ['Server-ppc64le', 'ComputeNode-x86_64', 'Server-aarch64', 'Server-ppc64', 'Client-x86_64', 'Server-s390x', 'Server-x86_64', 'Workstation-x86_64']
                     arches.append("{0}-{1}".format(variant, basearch))
                     platforms[pid] = list(set(arches))
             print "PID, Variants and arches list in manifest:"
-            # platforms format: {"68":["Client-x86_64", "Client-i386"], "69":["Server-x86_64", "Server-i386"]}
+            # Variable $platforms format: {"68":["Client-x86_64", "Client-i386"], "69":["Server-x86_64", "Server-i386"]}
             for i in platforms:
                 print "{0}: {1}".format(i, platforms[i])
 
             # Jenkins upstream job parameter 'Product_ID' and 'RHEL_Variant' are both empty
             if self.PIDs == "" and self.VARIANTs == "":
-                # write testing properties files according to platforms listed in manifest
+                # Write testing properties files according to platforms listed in manifest
                 for pid in platforms:
-                    # generate *.properties files used to trigger downstream jobs
+                    # Generate *.properties files used to trigger downstream jobs
                     for variant_arch in platforms[pid]:
                         self.__generate_properties(variant_arch, pid)
 
@@ -116,7 +120,7 @@ class AnalyzeCDN(object):
 
                     # Jenkins upstream job parameter 'Product_ID' is not empty, 'RHEL_Variant' is empty
                     if self.VARIANTs == "":
-                        # if VARIANTs is empty, then generate *.properties files according to variant_arch under pid in manifest
+                        # If VARIANTs is empty, then generate *.properties files according to variant_arch under pid in manifest
                         for variant_arch in platforms[pid]:
                             self.__generate_properties(variant_arch, pid)
 
@@ -125,7 +129,7 @@ class AnalyzeCDN(object):
                         # Delete those invalid arches which are not in manifest
                         variants = self.__check_arches(self.VARIANTs, platforms[pid])
 
-                        # generate *.properties files used to trigger downstream jobs
+                        # Generate *.properties files used to trigger downstream jobs
                         for variant_arch in variants:
                             self.__generate_properties(variant_arch, pid)
 
@@ -136,7 +140,7 @@ class AnalyzeCDN(object):
                     print "PID {0}:{1}".format(pid, platforms[pid])
                     variants = self.__check_arches(self.VARIANTs, platforms[pid])
 
-                    # generate *.properties files used to trigger downstream jobs
+                    # Generate *.properties files used to trigger downstream jobs
                     for variant_arch in variants:
                         self.__generate_properties(variant_arch, pid)
 
@@ -184,7 +188,7 @@ class AnalyzeCDN(object):
             print "No CDN part provided in manifest!"
 
     def __generate_properties(self, variant_arch, pid):
-        # current *.properties file content
+        # Content of current *.properties file
         # VARIANT=Server
         # ARCH=i386
         # PID=69
@@ -239,9 +243,10 @@ class AnalyzeRHN(object):
         self.VARIANTs = os.environ["RHEL_Variant"]
         self.MANIFEST_URL = os.environ["Manifest_URL"]
 
-        # Download manifest
-        self.MANIFEST_PATH = "RHN_MANIFEST.json"
-        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_URL)
+        # Download and load manifest
+        self.MANIFEST_PATH = os.path.join(os.getcwd(), "manifest")
+        self.MANIFEST_NAME = os.path.join(self.MANIFEST_PATH, "RHN_MANIFEST.json")
+        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.MANIFEST_URL)
 
     def analyze_rhn(self):
         if "rhn" in self.content.keys():
@@ -271,12 +276,12 @@ class AnalyzeRHN(object):
             elif self.CHANNELs != "":
                 pass
             else:
-                # get the intersection of $platforms in manifest and $VARIANTs provided as parameter
+                # Get the intersection of $platforms in manifest and $VARIANTs provided as parameter
                 # VARIANTs: ['Server-i386', 'Server-x86_64']
                 testing_platforms = list(set(self.VARIANTs.split(",")).intersection(set(platforms)))
             print "Need to do testing on:", testing_platforms
 
-            # generate properties file to trigger downstream jobs and pass down testing parameters
+            # Generate properties file to trigger downstream jobs and pass down testing parameters
             # Content of *.properties file
             # VARIANT=Server
             # ARCH=i386
@@ -287,10 +292,10 @@ class AnalyzeRHN(object):
                 variant = file_content.split("-")[0]
                 arch = file_content.split("-")[1]
                 with open("{0}.properties".format(file_content), 'w') as f:
-                    # write $variant to new properties file
+                    # Write $variant to new properties file
                     f.write("VARIANT={0}\n".format(variant))
 
-                    # write $arch to new properties file
+                    # Write $arch to new properties file
                     f.write("ARCH={0}\n".format(arch))
 
                     # Write other Jenkins job parameters to properties file
@@ -306,16 +311,15 @@ class GetPID(object):
         self.ARCH = os.environ["ARCH"]
         self.MANIFEST_URL = os.environ["Manifest_URL"]
 
-        # Download manifest
-        self.MANIFEST_PATH = "CDN_MANIFEST.json"
-        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_URL)
+        # Download and load manifest
+        self.MANIFEST_PATH = os.path.join(os.getcwd(), "manifest")
+        self.MANIFEST_NAME = os.path.join(self.MANIFEST_PATH, "CDN_MANIFEST.json")
+        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.MANIFEST_URL)
 
     def get_pid(self):
         if "cdn" in self.content.keys():
-            # Get testing platforms from provided mainfest
-            platforms = {}
+            # Get PIDs need testing on current $VARIANT and $ARCH
             for pid in self.content["cdn"]["products"]:
-                arches = []
                 for repo_path in self.content["cdn"]["products"][pid]["Repo Paths"]:
                     basearch = self.content["cdn"]["products"][pid]["Repo Paths"][repo_path]["basearch"]
                     variant = repo_path.split('/')[4]
@@ -330,8 +334,11 @@ class GetPID(object):
                     if self.VARIANT == variant and self.ARCH == basearch:
                         self.PID.append(pid)
                         break
+            # Write $PID into file PID.txt
             with open("PID.txt", 'w') as f:
                 f.write(",".join(self.PID))
+        else:
+            print "No CDN part provided in manifest!"
 
 
 if __name__ == '__main__':

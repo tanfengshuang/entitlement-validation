@@ -133,7 +133,7 @@ class EntitlementBase(object):
         avail_space = self.get_avail_space(system_info)
         if "G" in avail_space:
             avail_space = avail_space.split("G")[0]
-            extend_space = int(avail_space) - 3
+            extend_space = int(float(avail_space)) - 3
             if extend_space <= 0:
                 logging.info("No more space to extend")
                 logging.info("--------------- End to extend system space ---------------")

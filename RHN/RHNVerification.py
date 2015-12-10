@@ -27,8 +27,8 @@ class RHNVerification(EntitlementBase):
                 logging.info("Failed to clean the yum cache.")
             return True
         else:
-            #Error Message:
-            #Invalid username/password combination
+            # Error Message:
+            # Invalid username/password combination
             logging.error("Test Failed - Failed to register to rhn server.")
             exit(1)
 
@@ -69,7 +69,7 @@ class RHNVerification(EntitlementBase):
 
         for channel in channels:
             if channel not in channel_default:
-                # add channel
+                # Add channel
                 cmd = "rhn-channel --add --channel=%s --user=%s --password=%s" % (channel, username, password)
                 ret, output = RemoteSHH().run_cmd(system_info, cmd, "add channel %s" % channel)
 
@@ -104,7 +104,7 @@ class RHNVerification(EntitlementBase):
                 return False
 
     def get_channels_from_manifest(self, manifest_xml, current_arch, variant):
-        # get all channels from manifest which need testing
+        # Get all channels from manifest which need testing
         repo_filter = "%s-%s" % (current_arch, variant.lower())
         logging.info("testing repo filter: {0}".format(repo_filter))
 
@@ -122,9 +122,9 @@ class RHNVerification(EntitlementBase):
             return channel_list
 
     def verify_channels(self, system_info, manifest_xml, username, password, current_arch, variant):
-        # for now, this function can be only tested on RHEL6, as there is no param --available-channels on RHEL5
+        # For now, this function can be only tested on RHEL6, as there is no param --available-channels on RHEL5
         logging.info("--------------- Begin to verify channel manifest ---------------")
-        # get all channels which are not added
+        # Get all channels which are not added
         available_channels = []
         cmd = "rhn-channel --available-channels --user=%s --password=%s" % (username, password)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get available channels with command rhn-channel...")
@@ -133,7 +133,7 @@ class RHNVerification(EntitlementBase):
         else:
             logging.error("Failed to get available channels.")
 
-        # get all channels which are already added
+        # Get all channels which are already added
         added_channels = []
         cmd = "rhn-channel --list --user=%s --password=%s" % (username, password)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get added channels with command rhn-channel...")
@@ -144,7 +144,7 @@ class RHNVerification(EntitlementBase):
 
         channels_rhn = available_channels + added_channels
 
-        # get all channels from manifest which are needed testing
+        # Get all channels from manifest which are needed testing
         channels_manifest = self.get_channels_from_manifest(manifest_xml, current_arch, variant)
         list1 = self.cmp_arrays(channels_manifest, channels_rhn)
         if len(list1) > 0:
@@ -161,15 +161,15 @@ class RHNVerification(EntitlementBase):
 
     def installation(self, system_info, manifest_xml, channel):
         logging.info("--------------- Begin to verify packages full installation for channel {0} ---------------".format(channel))
-        # get packages from manifest
+        # Get packages from manifest
         package_list = RHNReadXML().get_package_list(manifest_xml, channel)
         logging.info("Packages need to install of channel {0}".format(package_list))
         logging.info(package_list)
         # There are source rpms in channels, but they can only be downloaded through the customer portal web site.  They aren't exposed to yum/yumdownloader/repoquery.
         # RHN APIs that can be used to query the source packages available, but the APIs are only available to RHN admins. So, let's not worry about SRPMs for now.
-        # download source rpms from the customer portal web site - ignored for now
+        # Download source rpms from the customer portal web site - ignored for now
 
-        # yum install binary packages
+        # Install binary packages with yum
         result = True
         for pkg in package_list:
             cmd = "yum install -y %s" % pkg
