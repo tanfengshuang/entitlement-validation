@@ -36,7 +36,7 @@ def download_read_manifest(MANIFEST_PATH, MANIFEST_NAME, MANIFEST_URL):
         exit(1)
 
     # Open and load MANIFEST.json
-    content = json.load(open(MANIFEST_PATH, 'r'))
+    content = json.load(open(MANIFEST_NAME, 'r'))
     return content
 
 
