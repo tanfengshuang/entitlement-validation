@@ -18,16 +18,22 @@ class EntitlementBase(object):
             filename = "{0}{1}-{2}-{3}-{4}.log".format(path, variant, arch, server, time.strftime('%Y-%m-%d',time.localtime(time.time())))
         else:
             filename = "{0}{1}-{2}-{3}-{4}-{5}.log".format(path, variant, arch, server, pid, time.strftime('%Y-%m-%d',time.localtime(time.time())))
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s',
-                            datefmt='%d %b %Y %H:%M:%S'
-                            )
+
         logger = logging.getLogger()
         formatter = logging.Formatter('%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s')
         filehandler = logging.FileHandler(filename)
         filehandler.suffix = "%Y-%m-%d"
         filehandler.setFormatter(formatter)
+        filehandler.setLevel(logging.INFO)
         logger.addHandler(filehandler)
+
+    def log_console(self):
+        # Print log on the console
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s')
+        console.setFormatter(formatter)
+        logging.getLogger('').addHandler(console)
 
     def get_os_release_version(self, system_info):
         # Get release version of current system

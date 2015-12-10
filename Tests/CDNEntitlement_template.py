@@ -50,7 +50,9 @@ def get_baseurl():
 
 class CDNEntitlement_PID(unittest.TestCase):
     def setUp(self):
+        # Set logging
         CDNVerification().log_setting(variant, arch, cdn, pid)
+        CDNVerification().log_console()
         logging.info("--------------- Begin Init for product {0} ---------------".format(pid))
         try:
             self.system_info = {
