@@ -1,8 +1,8 @@
 import os
 
 manifest_url = os.environ["Manifest_URL"]
-variant = os.environ["VARIANT"]
-arch = os.environ["ARCH"]
+variant = os.environ["Variant"]
+arch = os.environ["Arch"]
 rhn = os.environ["RHN"]
 beaker_ip = os.environ["Beaker_IP"]
 
@@ -10,7 +10,6 @@ beaker_ip = os.environ["Beaker_IP"]
 server_url = {
     "QA": "https://xmlrpc.rhn.qa.redhat.com/XMLRPC",
     "Live": "https://xmlrpc.rhn.redhat.com/XMLRPC"
-
 }
 
 # accounts used for rhn testing

@@ -27,19 +27,20 @@ fi
 }
 
 prepare_cdn() {
-    # trying to get beaker ip
+    # Trying to get beaker ip
     get_ip
 
     if [ "$PID" == "" ]; then
-        # Get PID from manifest for related arch and varaint
+        # Get PID from manifest for current arch and varaint
         python $WORKSPACE/entitlement-validation/analyze_testing.py pid
         PID=`cat PID.txt`
+        echo "***************  $PID"
     fi
 
-    # print params
+    # Print params
     echo "PID=$PID"
-    echo "VARIANT=$VARIANT"
-    echo "ARCH=$ARCH"
+    echo "Variant=$Variant"
+    echo "Arch=$Arch"
     echo "Manifest_URL=$Manifest_URL"
     echo "Distro=$Distro"
     echo "CDN=$CDN"
@@ -47,7 +48,7 @@ prepare_cdn() {
     echo "Blacklist=$Blacklist"
     echo "Rlease_Version=$Rlease_Version"
 
-    # generate all test cases from template for cdn testing, and add test cases to test suite
+    # Generate all test cases from template for cdn testing, and add test cases to test suite
     OLD_IFS="$IFS"
     IFS=","
     PID_array=($PID)
@@ -58,26 +59,26 @@ prepare_cdn() {
         case_name=CDNEntitlement_$pid
         case_full_name=${test_case_path}CDNEntitlement_$pid.py
 
-        # generate test case
+        # Generate test case
         cp $cdn_case_template $case_full_name
         sed -i -e "s/PID/$pid/g" $case_full_name
 
-        # add import sentence to __init__.py
+        # Add import sentence to __init__.py
         if [ "`cat $cdn_test_suite_path | grep $case_name`" ==  "" ]; then sed -i "2a\from Tests.$case_name import $case_name" $cdn_test_suite_path; fi
 
-        # and add test cases to test suite
+        # Add test cases to test suite
         line="suite.addTest(CDNEntitlement_$pid('testCDNEntitlement'))"
         if [ "`cat $cdn_test_suite_path | grep $case_name | grep -v import`" == "" ]; then sed -i "/suite = unittest.TestSuite()/a\    $line" $cdn_test_suite_path; fi
     done
 }
 
 prepare_rhn() {
-    # trying to get beaker ip
+    # Trying to get beaker ip
     get_ip
 
-    # print params
-    echo "VARIANT=$VARIANT"
-    echo "ARCH=$ARCH"
+    # Print params
+    echo "Variant=$Variant"
+    echo "Arch=$Arch"
     echo "Manifest_URL=$Manifest_URL"
     echo "Distro=$Distro"
     echo "RHN=$RHN"

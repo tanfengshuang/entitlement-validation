@@ -49,11 +49,11 @@ class AnalyzeCDN(object):
         If 'Product_ID' is not empty, 'RHEL_Variant' is empty
         If 'Product_ID' is not empty, 'RHEL_Variant' is not empty
         If 'Product_ID' is empty, 'RHEL_Variant' is not empty
-    4. Generate properties files(such as Server-x86_64.properties, Server-i386.properties), and write VARIANT, ARCH, PID variables
+    4. Generate properties files(such as Server-x86_64.properties, Server-i386.properties), and write Variant, Arch, PID variables
     5. Append other parameters into properties files in order to pass down these params listed in properties files to downstream jobs
     6. Content of properties file:
-        VARIANT=Server
-        ARCH=i386
+        Variant=Server
+        Arch=i386
         PID=90,83,69
         MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
         DISTRO=RHEL-7.2-20150904.0
@@ -98,7 +98,7 @@ class AnalyzeCDN(object):
                     # $arches: ['Server-ppc64le', 'ComputeNode-x86_64', 'Server-aarch64', 'Server-ppc64', 'Client-x86_64', 'Server-s390x', 'Server-x86_64', 'Workstation-x86_64']
                     arches.append("{0}-{1}".format(variant, basearch))
                     platforms[pid] = list(set(arches))
-            print "PID, Variants and arches list in manifest:"
+            print "PID, variants and arches list in manifest:"
             # Variable $platforms format: {"68":["Client-x86_64", "Client-i386"], "69":["Server-x86_64", "Server-i386"]}
             for i in platforms:
                 print "{0}: {1}".format(i, platforms[i])
@@ -149,8 +149,8 @@ class AnalyzeCDN(object):
             if output != "":
                 for prop_file in output.splitlines():
                     # Content of current properties file
-                    # VARIANT=Server
-                    # ARCH=i386
+                    # Variant=Server
+                    # Arch=i386
                     # PID=90
                     # PID=83
                     # PID=69
@@ -162,8 +162,8 @@ class AnalyzeCDN(object):
                     commands.getoutput("sed -i '/PID/d' {0}".format(prop_file))
 
                     # Content of final *.properties file
-                    # VARIANT=Server
-                    # ARCH=i386
+                    # Variant=Server
+                    # Arch=i386
                     # PID=90,83,69
                     # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
                     # DISTRO=RHEL-7.2-20150904.0
@@ -189,8 +189,8 @@ class AnalyzeCDN(object):
 
     def __generate_properties(self, variant_arch, pid):
         # Content of current *.properties file
-        # VARIANT=Server
-        # ARCH=i386
+        # Variant=Server
+        # Arch=i386
         # PID=69
         # PID=83
         variant = variant_arch.split("-")[0]
@@ -202,8 +202,8 @@ class AnalyzeCDN(object):
                 print "write PID {0} into {1}.properties".format(pid, variant_arch)
         else:
             with open(file_name, 'a+') as f:
-                f.write("VARIANT={0}\n".format(variant))
-                f.write("ARCH={0}\n".format(arch))
+                f.write("Variant={0}\n".format(variant))
+                f.write("Arch={0}\n".format(arch))
                 f.write("PID={0}\n".format(pid))
                 print "write variant({0}), arch({1}) and pid({2}) into {3}.properties".format(variant, arch, pid, variant_arch)
 
@@ -230,8 +230,8 @@ class AnalyzeRHN(object):
     4. Generate properties files, such as Server-x86_64.properties, Server-i386.properties, and write VARIANT and ARCH variables
     5. Append other parameters into properties files in order to pass down these params listed in properties files to downstream jobs
     6. Content of properties file:
-        VARIANT=Server
-        ARCH=i386
+        Variant=Server
+        Arch=i386
         MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
         DISTRO=RHEL-7.2-20150904.0
         RHN=QA
@@ -283,8 +283,8 @@ class AnalyzeRHN(object):
 
             # Generate properties file to trigger downstream jobs and pass down testing parameters
             # Content of *.properties file
-            # VARIANT=Server
-            # ARCH=i386
+            # Variant=Server
+            # Arch=i386
             # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
             # DISTRO=RHEL-7.2-20150904.0
             # RHN=QA
@@ -293,10 +293,10 @@ class AnalyzeRHN(object):
                 arch = file_content.split("-")[1]
                 with open("{0}.properties".format(file_content), 'w') as f:
                     # Write $variant to new properties file
-                    f.write("VARIANT={0}\n".format(variant))
+                    f.write("Variant={0}\n".format(variant))
 
                     # Write $arch to new properties file
-                    f.write("ARCH={0}\n".format(arch))
+                    f.write("Arch={0}\n".format(arch))
 
                     # Write other Jenkins job parameters to properties file
                     f.write("Manifest_URL={0}\n".format(self.MANIFEST_URL))
@@ -307,8 +307,8 @@ class AnalyzeRHN(object):
 class GetPID(object):
     def __init__(self):
         self.PID = []
-        self.VARIANT = os.environ["VARIANT"]
-        self.ARCH = os.environ["ARCH"]
+        self.Variant = os.environ["Variant"]
+        self.Arch = os.environ["Arch"]
         self.MANIFEST_URL = os.environ["Manifest_URL"]
 
         # Download and load manifest
@@ -318,7 +318,7 @@ class GetPID(object):
 
     def get_pid(self):
         if "cdn" in self.content.keys():
-            # Get PIDs need testing on current $VARIANT and $ARCH
+            # Get PIDs need testing on current $Variant and $Arch
             for pid in self.content["cdn"]["products"]:
                 for repo_path in self.content["cdn"]["products"][pid]["Repo Paths"]:
                     basearch = self.content["cdn"]["products"][pid]["Repo Paths"][repo_path]["basearch"]
@@ -331,7 +331,7 @@ class GetPID(object):
                         variant = "Workstation"
                     if variant == "computenode":
                         variant = "ComputeNode"
-                    if self.VARIANT == variant and self.ARCH == basearch:
+                    if self.Variant == variant and self.Arch == basearch:
                         self.PID.append(pid)
                         break
             # Write $PID into file PID.txt

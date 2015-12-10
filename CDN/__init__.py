@@ -1,8 +1,8 @@
 import os
 
 manifest_url = os.environ["Manifest_URL"]
-variant = os.environ["VARIANT"]
-arch = os.environ["ARCH"]
+variant = os.environ["Variant"]
+arch = os.environ["Arch"]
 cdn = os.environ["CDN"]
 blacklist = os.environ["Blacklist"]
 release_ver = os.environ["Release_Version"]
