@@ -207,11 +207,11 @@ class CDNEntitlement_PID(unittest.TestCase):
             exit(1)
         logging.info("--------------- End tearDown for product {0} ---------------".format(pid))
 
-        # Close log file handler
-        self.log_file_handler.close()
+        # Remove log file handler from current logger
+        logging.getLogger().removeHandler(self.log_file_handler)
 
-        # Close console log handler
-        self.console_handler.close()
+        # Remove console log handler from current logger
+        logging.getLogger().removeHandler(self.console_handler)
 
 if __name__ == '__main__':
     unittest.main()
