@@ -5,9 +5,6 @@ from Utils.EntitlementBase import EntitlementBase
 from RHN.RHNReadXML import RHNReadXML
 
 class RHNVerification(EntitlementBase):
-    def __init__(self):
-        pass
-
     def register(self, system_info, username, password, server_url):
         cmd = "rhnreg_ks --username=%s --password=%s --serverUrl=%s" % (username, password, server_url)
 

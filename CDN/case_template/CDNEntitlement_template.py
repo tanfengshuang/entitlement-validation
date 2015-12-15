@@ -48,7 +48,7 @@ def get_baseurl():
     return baseurl
 
 
-class CDNEntitlement_PID(unittest.TestCase):
+class CDNEntitlement_VARIANT_ARCH_PID(unittest.TestCase):
     def setUp(self):
         # Write log into file
         self.log_file_handler = CDNVerification().log_setting(variant, arch, cdn, pid)
@@ -112,7 +112,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             exit(1)
         logging.info("--------------- End Init for product {0} ---------------".format(pid))
 
-    def testCDNEntitlement(self):
+    def testCDNEntitlement_VARIANT_ARCH_PID(self):
         logging.info("--------------- Begin testCDNEntitlement for product {0} ---------------".format(pid))
         test_result = True
         try:
@@ -158,7 +158,6 @@ class CDNEntitlement_PID(unittest.TestCase):
             releasever_set = ""
             if self.release_ver != self.current_release_ver:
                 releasever_set = CDNVerification().set_release(self.system_info, self.release_ver)
-            print "releasever_set:", releasever_set
 
             # Clear yum cache
             test_result &= CDNVerification().clean_yum_cache(self.system_info, releasever_set)

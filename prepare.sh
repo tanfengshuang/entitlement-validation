@@ -1,9 +1,5 @@
 #!/bin/sh
 
-test_case_path=$WORKSPACE/entitlement-validation/Tests/
-cdn_test_suite_path=$WORKSPACE/entitlement-validation/test_cdn.py
-cdn_case_template=${test_case_path}CDNEntitlement_template.py
-
 usage() {
     echo "Usage: $0 cdn|CDN|rhn|RHN|sat|SAT"
     exit 1
@@ -47,6 +43,10 @@ prepare_cdn() {
     echo "Blacklist=$Blacklist"
     echo "Rlease_Version=$Rlease_Version"
 
+    cdn_test_case_path=$WORKSPACE/entitlement-validation/CDN/Tests/
+    cdn_test_suite_path=$WORKSPACE/entitlement-validation/test_cdn.py
+    cdn_case_template=$WORKSPACE/entitlement-validation/CDN/case_template/CDNEntitlement_template.py
+
     # Generate all test cases from template for cdn testing, and add test cases to test suite
     OLD_IFS="$IFS"
     IFS=","
@@ -55,18 +55,18 @@ prepare_cdn() {
     for pid in ${PID_array[@]}
     do
         echo "Ready to generate test case for PID $pid"
-        case_name=CDNEntitlement_$pid
-        case_full_name=${test_case_path}CDNEntitlement_$pid.py
+        case_name=CDNEntitlement_$Variant_$Arch_$pid
+        case_full_name=${cdn_test_case_path}CDNEntitlement_$Variant_$Arch_$pid.py
 
         # Generate test case
         cp $cdn_case_template $case_full_name
-        sed -i -e "s/PID/$pid/g" $case_full_name
+        sed -i -e "s/PID/$pid/g" -e "s/VARIANT/$Variant/g" -e "s/ARCH/$Arch/g" $case_full_name
 
         # Add import sentence to __init__.py
-        if [ "`cat $cdn_test_suite_path | grep $case_name`" ==  "" ]; then sed -i "2a\from Tests.$case_name import $case_name" $cdn_test_suite_path; fi
+        if [ "`cat $cdn_test_suite_path | grep $case_name`" ==  "" ]; then sed -i "2a\from CDN.Tests.$case_name import $case_name" $cdn_test_suite_path; fi
 
         # Add test cases to test suite
-        line="suite.addTest(CDNEntitlement_$pid('testCDNEntitlement'))"
+        line="suite.addTest(CDNEntitlement_$pid('testCDNEntitlement_$Variant_$Arch_$pid'))"
         if [ "`cat $cdn_test_suite_path | grep $case_name | grep -v import`" == "" ]; then sed -i "/suite = unittest.TestSuite()/a\    $line" $cdn_test_suite_path; fi
     done
 }

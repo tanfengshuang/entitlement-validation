@@ -1,6 +1,6 @@
 import unittest
 
-from Tests.RHNEntitlement import RHNEntitlement
+from RHN.Tests.RHNEntitlement import RHNEntitlement
 
 
 # Create our test suite.
