@@ -9,12 +9,24 @@
             description: 
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -49,12 +61,24 @@
             description:
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -89,12 +113,24 @@
             description:
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -129,12 +165,24 @@
             description:
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -169,12 +217,24 @@
             description:
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -209,12 +269,24 @@
             description:
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -252,12 +324,24 @@
             description:
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -292,12 +376,24 @@
             description:
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -332,12 +428,24 @@
             description:
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -372,12 +480,24 @@
             description:
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -412,12 +532,24 @@
             description:
         - string:
             name: Product_ID
-            default: optional
+            default:
             description: 
         - string:
             name: Distro
             default: RHEL-6.7
             description:
+        - string:
+            name: Release_Version
+            default: 
+            description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - choice:
+            name: Blacklist
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
