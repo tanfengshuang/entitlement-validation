@@ -22,43 +22,109 @@
     builders:
         - shell: |
             #!/bin/bash
-            sed -i "s/NAME/$DISTRO/g" $WORKSPACE/entitlement-validation/config/bkr.json
-            sed -i "s/VARIANT/$VARIANT/g" $WORKSPACE/entitlement-validation/config/bkr.json
-            sed -i "s/ARCH/$ARCH/g" $WORKSPACE/entitlement-validation/config/bkr.json
-            $WORKSPACE/ci-ops-central/bootstrap/provision_resources.sh --site=qeos --project_defaults=entitlement-validation/config/project-defaults \
-            --topology=entitlement-validation/config/bkr --ssh_keyfile=entitlement-validation/config/keys/ent-ci --name=$DISTRO_$VARIANT_$ARCH
-            STATUS=$?
-            if [ "$STATUS" == 0 ]
-            then
-                echo "Succeed to provison beaker system: $EXISTING_NODES"
-                echo "**************** env ****************"
-                env
-                echo "**************** env ****************"
-                echo "**************** RESOURCES.txt ****************"
-                cat RESOURCES.txt
-                echo "**************** RESOURCES.txt ****************"
-                bash entitlement-validation/prepare.sh rhn
+            # Export testing environment variables
+            export Manifest_URL=$Manifest_URL
+            export Distro=$Distro
+            export CDN=$CDN
+            export Candlepin=$Candlepin
+            export Blacklist=$Blacklist
+            export Release_Version=$Release_Version
+            export Variant=$Variant
+            export Arch=$Arch
+
+            env | grep "^PID="
+            if [ $? -eq 0 ]; then
+                export PID=$PID
+            else
+                export PID=$Product_ID
+            fi
+
+            # Generate property file to inject environment variables
+            echo BUILD_TAG=$BUILD_TAG > build.prop
+
+            # Prepare polarion plugin property file
+            master_release=`python -c """import os; distro=os.environ['Distro']; print distro.split('-')[1].split('.')[0]"""`
+            if [ "$master_release" == "6" ]; then
+                cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL6.txt $WORKSPACE/POLARION_PROPS.txt
+            elif [ "$master_release" == "7" ]; then
+                cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL7.txt $WORKSPACE/POLARION_PROPS.txt
+            fi
+
+            # Run kinit before provision to avoid the following errors
+            # krbV.Krb5Error: (-1765328189, 'No credentials cache found')
+            # krbV.Krb5Error: (-1765328188, 'Internal credentials cache error')
+            KEYTAB=/etc/jenkins.keytab-rhsm-jenkins.rhev-ci-vms.eng.rdu2.redhat.com
+            PRINCIPAL=jenkins/rhsm-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM
+            kinit -k -t $KEYTAB $PRINCIPAL
+
+            # Run klist before provision to make sure have a valid kerberos ticket
+            klist 
+
+            # Modify bkr.json to provision suitable beaker system
+            bkr_path=$WORKSPACE/entitlement-validation/CI/config/bkr.json
+            sed -i -e "s/DISTRO/$Distro/g" -e "s/VARIANT/$Variant/g" -e "s/ARCH/$Arch/g" $bkr_path
+
+            # Provision testing system in beaker
+            #$WORKSPACE/ci-ops-central/bootstrap/provision_resources.sh --site=qeos --project_defaults=entitlement-validation/CI/config/project-defaults \
+            --topology=entitlement-validation/CI/config/bkr --ssh_keyfile=entitlement-validation/CI/keys/ent-ci --name=$Distro_$Variant_$Arch
+            #STATUS=$?
+
+            echo EXISTING_NODES=test09-64.sysmgmt.lab.eng.rdu2.redhat.com > RESOURCES.txt
+            STATUS=1
+            if [ "$STATUS" == 0 ]; then
+                echo "Succeed to provison beaker system!"
+                . entitlement-validation/prepare.sh cdn
                 PREPARE_STATUS=$?
                 if [ $PREPARE_STATUS -eq 0 ]; then 
-                    python entitlement-validation/test_cdn.py
+                    # Run testing with nosetests
+                    nosetests entitlement-validation/CDN/Tests/*.py --with-xunit --xunit-file=nosetests.xml --logging-level=INFO --logging-format='%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s' --logging-datefmt="%Y-%m-%d" --logging-clear-handlers
+                    #nosetests entitlement-validation/test_cdn.py --with-xunit --xunit-file=nosetests.xml
                 else
                     exit 1
                 fi
             else
                 echo "ERROR: Failed to provision beaker system!"
-                echo "EXISTING_NODES: $EXISTING_NODES"
-                echo "****************env****************"
-                env
-                echo "****************env****************"
-                echo "**************** RESOURCES.txt ****************"
-                cat RESOURCES.txt
-                echo "**************** RESOURCES.txt ****************"
                 exit 1
             fi
+
+        - inject:
+            properties-file: build.prop
     publishers:
-      - archive:
-          artifacts: '*.txt, *.json, *.properties, /tmp/redhat.repo'
-          allow-empty: 'true'
+        - archive:
+            artifacts: '*.txt, *.json, *.xml, *.properties, redhat.repo, **/*.log, manifest/**'
+            allow-empty: 'true'
+        - ci-polarion:
+            url: 'https://polarion-node01.rhev-ci-vms.eng.rdu2.redhat.com/polarion/ws/services/'
+            user: ftan
+            password: ''
+            xunit-name-regex: 'nosetests.xml'
+            create-test-cases: true
+            export-skipped: true
+            mark-failed: false
+            include-failure: true
+            include-error: true
+            include-stdout: true
+            include-stderr: true
+            properties-file: $WORKSPACE/POLARION_PROPS.txt
+            properties-list: |
+                polarion.run.prefix=$BUILD_TAG
+        - xunit:
+            thresholdmode: 'number'
+            thresholds:
+                - failed:
+                    unstable: 0
+                    unstablenew: 0
+                    failure: 0
+                    failurenew: 0
+                - skipped:
+                    unstable: 0
+                    unstablenew: 0
+                    failure: 0
+                    failurenew: 0
+            types:
+                - junit:
+                    pattern: '*.xml'
+                    deleteoutput: false
     wrappers:
         - ansicolor
         - workspace-cleanup

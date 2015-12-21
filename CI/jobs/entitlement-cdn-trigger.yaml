@@ -14,7 +14,7 @@
             default: RHEL-6.7
             description: Distro version in Beaker used to do testing, such as RHEL-7.2-20150904.0.
         - string:
-            name: Relase_Version
+            name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
         - choice:
@@ -56,20 +56,20 @@
    builders:
         - shell: |
             #!/bin/bash
-            export MANIFEST_URL=$Manifest_URL
-            export DISTRO=$Distro
+            export Manifest_URL=$Manifest_URL
+            export Distro=$Distro
             export CDN=$CDN
-            export CANDLEPIN=$Candlepin
-            export BLACKLIST=$Blacklist
-            export RELEASE_VERSION=$Relase_Version
+            export Candlepin=$Candlepin
+            export Blacklist=$Blacklist
+            export Release_Version=$Release_Version
             export Product_ID=$Product_ID
             export RHEL_Variant=$RHEL_Variant
 
-            python $WORKSPACE/entitlement-validation/manifest/analyze_testing.py cdn
+            python $WORKSPACE/entitlement-validation/analyze_testing.py cdn
 
    publishers:
       - archive:
-          artifacts: '*.txt, *.json, *.properties'
+          artifacts: 'manifest/*.json, *.properties'
           allow-empty: 'true'
       - trigger-parameterized-builds:
           - project: 'EntitlementCDN-Server_x86_64'
