@@ -1,7 +1,6 @@
 import os
 import unittest
 import logging
-import logging.config
 import traceback
 
 from Utils import beaker_username
@@ -23,6 +22,8 @@ from CDN.CDNVerification import CDNVerification
 
 pid = "PID"
 
+"""
+import logging.config
 # Set our logging config file
 log_path = os.path.join(os.getcwd(), "log/{0}/".format(pid))
 if not os.path.exists(log_path):
@@ -32,7 +33,10 @@ logging.config.fileConfig(logging_conf_file, defaults={'logfilepath': log_path})
 
 # Create logger
 logger = logging.getLogger("entLogger")
+"""
 
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 def get_username_password():
     if cdn == "QA":
@@ -59,8 +63,13 @@ def get_baseurl():
     return baseurl
 
 
-class CDNEntitlement_VARIANT_ARCH_PID(unittest.TestCase):
+class CDNEntitlement_PID(unittest.TestCase):
     def setUp(self):
+        self.file_handler_debug, self.file_handler_info, self.file_handler_error, self.console_handler = CDNVerification().log_setting(variant, arch, cdn, pid)
+        logger.addHandler(self.file_handler_debug)
+        logger.addHandler(self.file_handler_info)
+        logger.addHandler(self.file_handler_error)
+        logger.addHandler(self.console_handler)
         logger.info("--------------- Begin Init for product {0} ---------------".format(pid))
         try:
             self.system_info = {
@@ -212,5 +221,12 @@ class CDNEntitlement_VARIANT_ARCH_PID(unittest.TestCase):
             logger.error("Test Failed - Raised error when do CDN Entitlement testing!")
             exit(1)
         logger.info("--------------- End tearDown for product {0} ---------------".format(pid))
+
+        # Remove log handlers from current logger
+        logger.removeHandler(self.file_handler_debug)
+        logger.removeHandler(self.file_handler_info)
+        logger.removeHandler(self.file_handler_error)
+        logger.removeHandler(self.console_handler)
+
 if __name__ == '__main__':
     unittest.main()

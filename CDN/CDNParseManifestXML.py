@@ -8,7 +8,8 @@ import traceback
 from xml.dom import minidom
 
 # Create logger
-logger = logging.getLogger("entLogger")
+# logger = logging.getLogger("entLogger")
+logger = logging.getLogger()
 
 try:
     from kobo.rpmlib import parse_nvra

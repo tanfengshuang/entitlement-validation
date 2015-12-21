@@ -6,7 +6,8 @@ import logging
 from Utils.RemoteSHH import RemoteSHH
 
 # Create logger
-logger = logging.getLogger("entLogger")
+# logger = logging.getLogger("entLogger")
+logger = logging.getLogger()
 
 class EntitlementBase(object):
     def __init__(self):
@@ -30,8 +31,6 @@ class EntitlementBase(object):
             filename_info = "{0}/INFO-{1}-{2}-{3}-{4}-{5}.log".format(case_log_path, variant, arch, server, pid, time.strftime('%Y-%m-%d',time.localtime(time.time())))
             filename_error = "{0}/ERROR-{1}-{2}-{3}-{4}-{5}.log".format(case_log_path, variant, arch, server, pid, time.strftime('%Y-%m-%d',time.localtime(time.time())))
 
-        #logger = logging.getLogger()
-        #logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s')
 
         # Set debug log file
@@ -39,32 +38,24 @@ class EntitlementBase(object):
         file_handler_debug.suffix = "%Y-%m-%d"
         file_handler_debug.setFormatter(formatter)
         file_handler_debug.setLevel(logging.DEBUG)
-        #logger.addHandler(file_handler_debug)
 
         # Set info log file
         file_handler_info = logging.FileHandler(filename_info)
         file_handler_info.suffix = "%Y-%m-%d"
         file_handler_info.setFormatter(formatter)
         file_handler_info.setLevel(logging.INFO)
-        #logger.addHandler(file_handler_info)
 
         # Set error log file
         file_handler_error = logging.FileHandler(filename_error)
         file_handler_error.suffix = "%Y-%m-%d"
         file_handler_error.setFormatter(formatter)
         file_handler_error.setLevel(logging.ERROR)
-        #logger.addHandler(file_handler_error)
 
-        return file_handler_debug, file_handler_info, file_handler_error
-
-    def log_console(self):
         # Print log on the console
         console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.INFO)
-        formatter = logging.Formatter('%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s')
         console_handler.setFormatter(formatter)
-        #logging.getLogger().addHandler(console_handler)
-        return console_handler
+        console_handler.setLevel(logging.INFO)
+        return file_handler_debug, file_handler_info, file_handler_error, console_handler
 
     def get_os_release_version(self, system_info):
         # Get release version of current system

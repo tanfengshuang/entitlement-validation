@@ -1,7 +1,7 @@
 import os
 import unittest
 import logging
-import logging.config
+
 
 from Utils import beaker_username
 from Utils import beaker_password
@@ -16,6 +16,8 @@ from RHN import account_rhn
 from RHN.RHNParseManifestXML import RHNParseManifestXML
 from RHN.RHNVerification import RHNVerification
 
+"""
+import logging.config
 # Set our logging config file
 log_path = os.path.join(os.getcwd(), "log")
 if not os.path.exists(log_path):
@@ -25,7 +27,15 @@ logging.config.fileConfig(logging_conf_file, defaults={'logfilepath': log_path})
 
 # Create logger
 logger = logging.getLogger("entLogger")
+"""
 
+file_handler_debug, file_handler_info, file_handler_error, console_handler = CDNVerification.log_setting(variant, arch, cdn, pid)
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+logger.addHandler(file_handler_debug)
+logger.addHandler(file_handler_info)
+logger.addHandler(file_handler_error)
+logger.addHandler(console_handler)
 
 def get_username_password():
     if rhn == "Live":
@@ -111,6 +121,12 @@ class RHNEntitlement(unittest.TestCase):
             logger.error("Test Failed - Raised error when do RHN Entitlement testing!")
             exit(1)
         logger.info("--------------- End tearDown ---------------")
+
+        # Remove log handlers from current logger
+        logger.removeHandler(file_handler_debug)
+        logger.removeHandler(file_handler_info)
+        logger.removeHandler(file_handler_error)
+        logger.removeHandler(console_handler)
 
 if __name__ == '__main__':
     unittest.main()
