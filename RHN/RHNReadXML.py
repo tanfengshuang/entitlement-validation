@@ -6,6 +6,8 @@ try:
 except:
         from elementtree import ElementTree
 
+# Create logger
+logger = logging.getLogger("entLogger")
 
 class RHNReadXML(object):
     def get_channel_list(self, manifest_xml):

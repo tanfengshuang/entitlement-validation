@@ -6,6 +6,9 @@ try:
 except:
         from elementtree import ElementTree
 
+# Create logger
+logger = logging.getLogger("entLogger")
+
 class CDNReadXML(object):
     def get_element(self, ele, tags):
         for tag in tags:
@@ -13,7 +16,7 @@ class CDNReadXML(object):
             if ele != None:
                 continue
             else:
-                logging.error("There is no element {0} in manifest.".format(tag))
+                logger.error("There is no element {0} in manifest.".format(tag))
                 exit(1)
         return ele
 
@@ -30,7 +33,7 @@ class CDNReadXML(object):
             repoid_ele = self.get_element(root_ele, args)
             return repoid_ele
         else:
-            logging.error("There is no rhel root element in manifest.")
+            logger.error("There is no rhel root element in manifest.")
             exit(1)
 
     def get_repo_list(self, manifest_xml, release_ver, *args):
@@ -40,9 +43,9 @@ class CDNReadXML(object):
             repo_list = [i.get("value") for i in repoid_ele.findall("repoid") if i.get("releasever") == release_ver]
             return repo_list
         except Exception, e:
-            logging.error(str(e))
-            logging.error(traceback.format_exc())
-            logging.error("Test Failed - Raised error when get repo list from cdn xml manifest!")
+            logger.error(str(e))
+            logger.error(traceback.format_exc())
+            logger.error("Test Failed - Raised error when get repo list from cdn xml manifest!")
             exit(1)
 
     def get_package_list(self, manifest_xml, repo, release_ver, *args):
@@ -59,9 +62,9 @@ class CDNReadXML(object):
             else:
                 return package_list
         except Exception, e:
-            logging.error(str(e))
-            logging.error(traceback.format_exc())
-            logging.error("Test Failed - Raised error when get package list from cdn xml manifest!")
+            logger.error(str(e))
+            logger.error(traceback.format_exc())
+            logger.error("Test Failed - Raised error when get package list from cdn xml manifest!")
             exit(1)
 
 if __name__ == "__main__":

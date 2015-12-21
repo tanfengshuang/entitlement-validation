@@ -5,28 +5,57 @@ import logging
 
 from Utils.RemoteSHH import RemoteSHH
 
+# Create logger
+logger = logging.getLogger("entLogger")
+
 class EntitlementBase(object):
     def __init__(self):
         pass
-
     def log_setting(self, variant, arch, server, pid=None):
-        # Write log into specified files
-        path = './log/'
-        if not os.path.exists(path):
-            os.mkdir(path)
-        if pid == None:
-            filename = "{0}{1}-{2}-{3}-{4}.log".format(path, variant, arch, server, time.strftime('%Y-%m-%d',time.localtime(time.time())))
-        else:
-            filename = "{0}{1}-{2}-{3}-{4}-{5}.log".format(path, variant, arch, server, pid, time.strftime('%Y-%m-%d',time.localtime(time.time())))
+        # Write log into specific files
+        log_path = './log/'
+        case_log_path = os.path.join(log_path, pid)
+        if not os.path.exists(log_path):
+            os.mkdir(log_path)
 
-        logger = logging.getLogger()
-        logger.setLevel(logging.INFO)
+        if not os.path.exists(case_log_path):
+            os.mkdir(case_log_path)
+
+        if pid == None:
+            filename_debug = "{0}/DEBUG-{1}-{2}-{3}-{4}.log".format(case_log_path, variant, arch, server, time.strftime('%Y-%m-%d',time.localtime(time.time())))
+            filename_info = "{0}/INFO-{1}-{2}-{3}-{4}.log".format(case_log_path, variant, arch, server, time.strftime('%Y-%m-%d',time.localtime(time.time())))
+            filename_error = "{0}/ERROR-{1}-{2}-{3}-{4}.log".format(case_log_path, variant, arch, server, time.strftime('%Y-%m-%d',time.localtime(time.time())))
+        else:
+            filename_debug = "{0}/DEBUG-{1}-{2}-{3}-{4}-{5}.log".format(case_log_path, variant, arch, server, pid, time.strftime('%Y-%m-%d',time.localtime(time.time())))
+            filename_info = "{0}/INFO-{1}-{2}-{3}-{4}-{5}.log".format(case_log_path, variant, arch, server, pid, time.strftime('%Y-%m-%d',time.localtime(time.time())))
+            filename_error = "{0}/ERROR-{1}-{2}-{3}-{4}-{5}.log".format(case_log_path, variant, arch, server, pid, time.strftime('%Y-%m-%d',time.localtime(time.time())))
+
+        #logger = logging.getLogger()
+        #logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s')
-        file_handler = logging.FileHandler(filename)
-        file_handler.suffix = "%Y-%m-%d"
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-        return file_handler
+
+        # Set debug log file
+        file_handler_debug = logging.FileHandler(filename_debug)
+        file_handler_debug.suffix = "%Y-%m-%d"
+        file_handler_debug.setFormatter(formatter)
+        file_handler_debug.setLevel(logging.DEBUG)
+        #logger.addHandler(file_handler_debug)
+
+        # Set info log file
+        file_handler_info = logging.FileHandler(filename_info)
+        file_handler_info.suffix = "%Y-%m-%d"
+        file_handler_info.setFormatter(formatter)
+        file_handler_info.setLevel(logging.INFO)
+        #logger.addHandler(file_handler_info)
+
+        # Set error log file
+        file_handler_error = logging.FileHandler(filename_error)
+        file_handler_error.suffix = "%Y-%m-%d"
+        file_handler_error.setFormatter(formatter)
+        file_handler_error.setLevel(logging.ERROR)
+        #logger.addHandler(file_handler_error)
+
+        return file_handler_debug, file_handler_info, file_handler_error
 
     def log_console(self):
         # Print log on the console
@@ -34,7 +63,7 @@ class EntitlementBase(object):
         console_handler.setLevel(logging.INFO)
         formatter = logging.Formatter('%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s')
         console_handler.setFormatter(formatter)
-        logging.getLogger().addHandler(console_handler)
+        #logging.getLogger().addHandler(console_handler)
         return console_handler
 
     def get_os_release_version(self, system_info):
@@ -42,13 +71,13 @@ class EntitlementBase(object):
         cmd = '''python -c "import yum; yb = yum.YumBase(); print(yb.conf.yumvar)['releasever']"'''
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get current release version...")
         if ret == 0 and "Loaded plugins" in output:
-            logging.info("It's successful to get current release version.")
+            logger.info("It's successful to get current release version.")
             prog = re.compile('(\d+\S+)\s*')
             result = re.findall(prog, output)
-            logging.info("Release version for current system is {0}.".format(result[0]))
+            logger.info("Release version for current system is {0}.".format(result[0]))
             return result[0]
         else:
-            logging.error("Test Failed - Failed to get current release version.")
+            logger.error("Test Failed - Failed to get current release version.")
             exit(1)
 
     def get_os_base_arch(self, system_info):
@@ -56,7 +85,7 @@ class EntitlementBase(object):
         cmd = '''python -c "import yum; yb = yum.YumBase(); print(yb.conf.yumvar)['basearch']"'''
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get current base arch...")
         if(ret == 0 and "Loaded plugins" in output):
-            logging.info("It's successful to get current base arch.")
+            logger.info("It's successful to get current base arch.")
             base_arch = ""
             if "ppc64le" in output:
                 base_arch = "ppc64le"
@@ -75,13 +104,13 @@ class EntitlementBase(object):
             elif "aarch64" in output:
                 base_arch = "aarch64"
             else:
-                logging.info("No base arch could get from current system.")
-                logging.error("Test Failed - Failed to get current base arch.")
+                logger.info("No base arch could get from current system.")
+                logger.error("Test Failed - Failed to get current base arch.")
                 exit(1)
-            logging.info("Base arch for current system is {0}.".format(base_arch))
+            logger.info("Base arch for current system is {0}.".format(base_arch))
             return base_arch
         else:
-            logging.error("Test Failed - Failed to get current base arch.")
+            logger.error("Test Failed - Failed to get current base arch.")
             exit(1)
 
     def cmp_arrays(self, array1, array2):
@@ -94,7 +123,7 @@ class EntitlementBase(object):
 
     def print_list(self, list):
         for i in list:
-            logging.info(i)
+            logger.info(i)
 
     def remove_non_redhat_repo(self, system_info):
         # Backup non-redhat repo
@@ -135,7 +164,7 @@ class EntitlementBase(object):
     def extend_system_space(self, system_info):
         # Extend beaker system available space for / partition
         # https://engineering.redhat.com/trac/content-tests/wiki/Content/HowTo/ExtendRootInBeaker
-        logging.info("--------------- Begin to extend system space ---------------")
+        logger.info("--------------- Begin to extend system space ---------------")
         master_release = self.get_master_release(system_info)
 
         avail_space = self.get_avail_space(system_info)
@@ -143,8 +172,8 @@ class EntitlementBase(object):
             avail_space = avail_space.split("G")[0]
             extend_space = int(float(avail_space)) - 3
             if extend_space <= 0:
-                logging.info("No more space to extend")
-                logging.info("--------------- End to extend system space ---------------")
+                logger.info("No more space to extend")
+                logger.info("--------------- End to extend system space ---------------")
                 return
 
             # Check the filesystem(ext4 or xfs), free space and list the lvm volumes
@@ -173,30 +202,30 @@ class EntitlementBase(object):
                 # Shrink the home partition
                 ret, output = RemoteSHH().run_cmd(system_info, "resize2fs -f /dev/mapper/{0} 1G".format(lvm_home), "Trying to resize2fs home partition...", timeout=None)
                 if "Resizing the filesystem on" in output:
-                    logging.info("Succeed to resize2fs home partition to 1G.")
+                    logger.info("Succeed to resize2fs home partition to 1G.")
                 else:
-                    logging.warning("Failed to resize2fs home partition to 1G.")
+                    logger.warning("Failed to resize2fs home partition to 1G.")
 
                 ret, output = RemoteSHH().run_cmd_interact(system_info, "lvreduce -L1G /dev/mapper/{0}".format(lvm_home), "Trying to lvreduce home partition...")
                 if "successfully resized" in output:
-                    logging.info("Succeed to lvreduce home partition to 1G.")
+                    logger.info("Succeed to lvreduce home partition to 1G.")
                 else:
-                    logging.warning("Failed to lvreduce home partition to 1G.")
+                    logger.warning("Failed to lvreduce home partition to 1G.")
 
                 # Extend the root partition
                 ret, output = RemoteSHH().run_cmd(system_info, "lvextend -L+{0}G /dev/mapper/{1}".format(extend_space, lvm_root), "Trying to lvextend root partition...", timeout=None)
                 if "successfully resized" in output:
-                    logging.info("Succeed to lvextend {0}G for root partition.".format(avail_space))
+                    logger.info("Succeed to lvextend {0}G for root partition.".format(avail_space))
                 elif "Insufficient free space" in output:
-                    logging.warning("Insufficient free space when lvextend root partition.")
+                    logger.warning("Insufficient free space when lvextend root partition.")
                 else:
-                    logging.warning("Failed to lvextend {0}G for root partition.".format(avail_space))
+                    logger.warning("Failed to lvextend {0}G for root partition.".format(avail_space))
 
                 ret, output = RemoteSHH().run_cmd(system_info, "resize2fs /dev/mapper/{0}".format(lvm_root), "Trying to resize2fs root partition...", timeout=None)
                 if "Performing an on-line resize" in output:
-                    logging.info("Succeed to resize2fs root partition.")
+                    logger.info("Succeed to resize2fs root partition.")
                 else:
-                    logging.warning("Failed to resize2fs root partition.")
+                    logger.warning("Failed to resize2fs root partition.")
 
                 # Remount the home partition
                 RemoteSHH().run_cmd(system_info, "mount /home", "Trying to umount home partition...")
@@ -208,29 +237,29 @@ class EntitlementBase(object):
                 # Delete home partition
                 ret, output = RemoteSHH().run_cmd_interact(system_info, "lvremove /dev/mapper/{0}".format(lvm_home), "Trying to delete home partition")
                 if "successfully removed" in output:
-                    logging.info("Succeed to remove home partition.")
+                    logger.info("Succeed to remove home partition.")
                 else:
-                    logging.warning("Succeed to remove home partition.")
+                    logger.warning("Succeed to remove home partition.")
 
                 # Extend root partition
                 ret, output = RemoteSHH().run_cmd(system_info, "lvextend -L+{0}G /dev/mapper/{1}".format(extend_space, lvm_root), "Trying to lvextend root partition...", timeout=None)
                 if "successfully resized" in output:
-                    logging.info("Succeed to lvextend {0}G for root partition.".format(avail_space))
+                    logger.info("Succeed to lvextend {0}G for root partition.".format(avail_space))
                 elif "Insufficient free space" in output:
-                    logging.warning("Insufficient free space when lvextend root partition.")
+                    logger.warning("Insufficient free space when lvextend root partition.")
                 else:
-                    logging.warning("Succeed to lvextend {0}G for root partition.".format(avail_space))
+                    logger.warning("Succeed to lvextend {0}G for root partition.".format(avail_space))
 
                 RemoteSHH().run_cmd(system_info, "xfs_growfs /", "Trying to xfs_growfs root partition", timeout=None)
 
                 # Check root partition after extend space
                 RemoteSHH().run_cmd(system_info, "df -H", "Trying to check root partition after extend space...")
             else:
-                logging.error("Failed to extend space!")
+                logger.warning("Failed to extend space!")
         else:
-            logging.info("No space to extend")
+            logger.info("No space to extend")
 
-        logging.info("--------------- End to extend system space ---------------")
+        logger.info("--------------- End to extend system space ---------------")
 
 
 

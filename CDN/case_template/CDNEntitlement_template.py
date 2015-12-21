@@ -1,6 +1,7 @@
 import os
 import unittest
 import logging
+import logging.config
 import traceback
 
 from Utils import beaker_username
@@ -20,15 +21,25 @@ from CDN import account_cdn_prod
 from CDN.CDNParseManifestXML import CDNParseManifestXML
 from CDN.CDNVerification import CDNVerification
 
-
 pid = "PID"
+
+# Set our logging config file
+log_path = os.path.join(os.getcwd(), "log/{0}/".format(pid))
+if not os.path.exists(log_path):
+    os.makedirs(log_path)
+logging_conf_file = "{0}/logging.conf".format(os.getcwd())
+logging.config.fileConfig(logging_conf_file, defaults={'logfilepath': log_path})
+
+# Create logger
+logger = logging.getLogger("entLogger")
+
 
 def get_username_password():
     if cdn == "QA":
         if pid in account_cdn_stage.keys():
             return account_cdn_stage[pid]["username"], account_cdn_stage[pid]["password"], account_cdn_stage[pid]["sku"], account_cdn_stage[pid]["base_sku"], account_cdn_stage[pid]["base_pid"]
         else:
-            logging.error("Test Failed - Failed to get PID {0} in account_cdn_stage.".format(pid))
+            logger.error("Test Failed - Failed to get PID {0} in account_cdn_stage.".format(pid))
             exit(1)
     elif cdn == "Prod":
         return account_cdn_prod["username"], account_cdn_prod["password"], account_cdn_prod[pid]["sku"], account_cdn_prod[pid]["base_sku"], account_cdn_prod[pid]["base_pid"]
@@ -50,13 +61,7 @@ def get_baseurl():
 
 class CDNEntitlement_VARIANT_ARCH_PID(unittest.TestCase):
     def setUp(self):
-        # Write log into file
-        self.log_file_handler = CDNVerification().log_setting(variant, arch, cdn, pid)
-
-        # Pring log on console
-        self.console_handler = CDNVerification().log_console()
-
-        logging.info("--------------- Begin Init for product {0} ---------------".format(pid))
+        logger.info("--------------- Begin Init for product {0} ---------------".format(pid))
         try:
             self.system_info = {
                 "ip": beaker_ip,
@@ -106,14 +111,14 @@ class CDNEntitlement_VARIANT_ARCH_PID(unittest.TestCase):
             # Space extend
             CDNVerification().extend_system_space(self.system_info)
         except Exception, e:
-            logging.error(str(e))
-            logging.error(traceback.format_exc())
-            logging.error("Test Failed - Raised error when do CDN Entitlement testing!")
+            logger.error(str(e))
+            logger.error(traceback.format_exc())
+            logger.error("Test Failed - Raised error when do CDN Entitlement testing!")
             exit(1)
-        logging.info("--------------- End Init for product {0} ---------------".format(pid))
+        logger.info("--------------- End Init for product {0} ---------------".format(pid))
 
     def testCDNEntitlement_VARIANT_ARCH_PID(self):
-        logging.info("--------------- Begin testCDNEntitlement for product {0} ---------------".format(pid))
+        logger.info("--------------- Begin testCDNEntitlement for product {0} ---------------".format(pid))
         test_result = True
         try:
             # Register
@@ -123,11 +128,11 @@ class CDNEntitlement_VARIANT_ARCH_PID(unittest.TestCase):
             sku_pool_dict = {}
             if self.current_arch == 'i386' and self.pid in ["92", "94", "132", "146"]:
                 # Products SF, SAP, HPN are not supported on i386, and keep them pass currently.
-                logging.info("Product {0} could not be supported on arch i386.".format(self.pid))
+                logger.info("Product {0} could not be supported on arch i386.".format(self.pid))
                 exit(0)
             else:
                 sku_pool_dict = CDNVerification().get_sku_pool(self.system_info)
-                logging.info("sku_pool_dict:")
+                logger.info("sku_pool_dict:")
                 CDNVerification().print_list(sku_pool_dict)
                 # sku_pool_dict:
                 # {
@@ -140,7 +145,7 @@ class CDNEntitlement_VARIANT_ARCH_PID(unittest.TestCase):
             if self.sku in sku_pool_dict.keys():
                 test_result &= CDNVerification().subscribe(self.system_info, self.pid, self.sku, sku_pool_dict[self.sku][0])
             else:
-                logging.error("No suitable subscription for sku {0}".format(self.sku))
+                logger.error("No suitable subscription for sku {0}".format(self.sku))
                 exit(1)
 
             # Try to subscribe base product, and then check the sku in the entitlement cert
@@ -148,7 +153,7 @@ class CDNEntitlement_VARIANT_ARCH_PID(unittest.TestCase):
                 if self.base_sku in sku_pool_dict.keys():
                     test_result &= CDNVerification().subscribe(self.system_info, self.base_pid, self.base_sku, sku_pool_dict[self.base_sku][0])
                 else:
-                    logging.error("No suitable subscription for base sku {0}".format(self.base_sku))
+                    logger.error("No suitable subscription for base sku {0}".format(self.base_sku))
                     exit(1)
 
             # Backup /etc/yum.repos.d/redhat.repo to /tmp/redhat.repo, and archive it in Jenkins job
@@ -187,30 +192,23 @@ class CDNEntitlement_VARIANT_ARCH_PID(unittest.TestCase):
                 test_result &= CDNVerification().disable_repo(self.system_info, repo)
 
         except Exception, e:
-            logging.error(str(e))
-            logging.error(traceback.format_exc())
-            logging.error("Test Failed - Raised error when do CDN Entitlement testing!")
+            logger.error(str(e))
+            logger.error(traceback.format_exc())
+            logger.error("Test Failed - Raised error when do CDN Entitlement testing!")
             exit(1)
-        logging.info("--------------- End testCDNEntitlement for product {0} ---------------".format(pid))
+        logger.info("--------------- End testCDNEntitlement for product {0} ---------------".format(pid))
 
     def tearDown(self):
-        logging.info("--------------- Begin tearDown for product {0} ---------------".format(pid))
+        logger.info("--------------- Begin tearDown for product {0} ---------------".format(pid))
 
         try:
             CDNVerification().unregister(self.system_info)
             CDNVerification().restore_non_redhat_repo(self.system_info)
         except Exception, e:
-            logging.error(str(e))
-            logging.error(traceback.format_exc())
-            logging.error("Test Failed - Raised error when do CDN Entitlement testing!")
+            logger.error(str(e))
+            logger.error(traceback.format_exc())
+            logger.error("Test Failed - Raised error when do CDN Entitlement testing!")
             exit(1)
-        logging.info("--------------- End tearDown for product {0} ---------------".format(pid))
-
-        # Remove log file handler from current logger
-        logging.getLogger().removeHandler(self.log_file_handler)
-
-        # Remove console log handler from current logger
-        logging.getLogger().removeHandler(self.console_handler)
-
+        logger.info("--------------- End tearDown for product {0} ---------------".format(pid))
 if __name__ == '__main__':
     unittest.main()

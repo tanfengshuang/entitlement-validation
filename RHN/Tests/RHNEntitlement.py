@@ -1,6 +1,7 @@
 import os
 import unittest
 import logging
+import logging.config
 
 from Utils import beaker_username
 from Utils import beaker_password
@@ -14,6 +15,17 @@ from RHN import account_rhn
 
 from RHN.RHNParseManifestXML import RHNParseManifestXML
 from RHN.RHNVerification import RHNVerification
+
+# Set our logging config file
+log_path = os.path.join(os.getcwd(), "log")
+if not os.path.exists(log_path):
+    os.makedirs(log_path)
+logging_conf_file = "{0}/logging.conf".format(os.getcwd())
+logging.config.fileConfig(logging_conf_file, defaults={'logfilepath': log_path})
+
+# Create logger
+logger = logging.getLogger("entLogger")
+
 
 def get_username_password():
     if rhn == "Live":
@@ -29,8 +41,7 @@ def get_server_url():
 
 class RHNEntitlement(unittest.TestCase):
     def setUp(self):
-        RHNVerification().log_setting(variant, arch, rhn)
-        logging.info("--------------- Begin Init ---------------")
+        logger.info("--------------- Begin Init ---------------")
         try:
             self.system_info = {
                 "ip": beaker_ip,
@@ -56,13 +67,13 @@ class RHNEntitlement(unittest.TestCase):
 
             RHNVerification().remove_non_redhat_repo(self.system_info)
         except Exception, e:
-            logging.error(str(e))
-            logging.error("Test Failed - Raised error when do content testing!")
+            logger.error(str(e))
+            logger.error("Test Failed - Raised error when do content testing!")
             exit(1)
-        logging.info("--------------- End Init ---------------")
+        logger.info("--------------- End Init ---------------")
 
     def testRHNEntitlement(self):
-        logging.info("--------------- Begin testRHNEntitlement --------------- ")
+        logger.info("--------------- Begin testRHNEntitlement --------------- ")
         testresult = True
 
         try:
@@ -81,25 +92,25 @@ class RHNEntitlement(unittest.TestCase):
                     testresult &= RHNVerification().remove_channels(self.system_info, self.username, self.password, channel)
 
             if not testresult:
-                logging.error("Test Failed - Failed to do main rhn content test.")
+                logger.error("Test Failed - Failed to do main rhn content test.")
                 exit(1)
         except Exception, e:
-            logging.error(str(e))
-            logging.error("Test Failed - Raised error when do RHN Entitlement testing!")
+            logger.error(str(e))
+            logger.error("Test Failed - Raised error when do RHN Entitlement testing!")
             exit(1)
 
-        logging.info("--------------- End testRHNEntitlement --------------- ")
+        logger.info("--------------- End testRHNEntitlement --------------- ")
 
     def tearDown(self):
-        logging.info("--------------- Begin tearDown ---------------")
+        logger.info("--------------- Begin tearDown ---------------")
         try:
             RHNVerification().unregister(self.system_info)
             RHNVerification().restore_non_redhat_repo(self.system_info)
         except Exception, e:
-            logging.error(str(e))
-            logging.error("Test Failed - Raised error when do RHN Entitlement testing!")
+            logger.error(str(e))
+            logger.error("Test Failed - Raised error when do RHN Entitlement testing!")
             exit(1)
-        logging.info("--------------- End tearDown ---------------")
+        logger.info("--------------- End tearDown ---------------")
 
 if __name__ == '__main__':
     unittest.main()

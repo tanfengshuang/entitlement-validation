@@ -55,8 +55,8 @@ prepare_cdn() {
     for pid in ${PID_array[@]}
     do
         echo "Ready to generate test case for PID $pid"
-        case_name=CDNEntitlement_$Variant_$Arch_$pid
-        case_full_name=${cdn_test_case_path}CDNEntitlement_$Variant_$Arch_$pid.py
+        case_name=CDNEntitlement_${pid}
+        case_full_name=${cdn_test_case_path}${case_name}.py
 
         # Generate test case
         cp $cdn_case_template $case_full_name
@@ -66,7 +66,7 @@ prepare_cdn() {
         if [ "`cat $cdn_test_suite_path | grep $case_name`" ==  "" ]; then sed -i "2a\from CDN.Tests.$case_name import $case_name" $cdn_test_suite_path; fi
 
         # Add test cases to test suite
-        line="suite.addTest(CDNEntitlement_$pid('testCDNEntitlement_$Variant_$Arch_$pid'))"
+        line="suite.addTest(CDNEntitlement_${pid}('testCDNEntitlement_${pid}'))"
         if [ "`cat $cdn_test_suite_path | grep $case_name | grep -v import`" == "" ]; then sed -i "/suite = unittest.TestSuite()/a\    $line" $cdn_test_suite_path; fi
     done
 }
