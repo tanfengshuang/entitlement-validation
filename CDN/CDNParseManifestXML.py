@@ -8,13 +8,14 @@ import traceback
 from xml.dom import minidom
 
 # Create logger
-# logger = logging.getLogger("entLogger")
-logger = logging.getLogger()
+logger = logging.getLogger("entLogger")
+
 
 try:
     from kobo.rpmlib import parse_nvra
 except ImportError:
     logger.info('Need to install packages kobo kobo-rpmlib koji firstly')
+
 
 class ParseManifestXMLBase(object):
     def __init__(self, manifest_url, cdn_manifest_path, manifest_json, manifest_xml):

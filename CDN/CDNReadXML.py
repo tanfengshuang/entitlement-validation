@@ -6,9 +6,10 @@ try:
 except:
         from elementtree import ElementTree
 
+
 # Create logger
-# logger = logging.getLogger("entLogger")
-logger = logging.getLogger()
+logger = logging.getLogger("entLogger")
+
 
 class CDNReadXML(object):
     def get_element(self, ele, tags):

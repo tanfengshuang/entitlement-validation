@@ -3,8 +3,8 @@ import commands
 import logging
 
 # Create logger
-# logger = logging.getLogger("entLogger")
-logger = logging.getLogger()
+logger = logging.getLogger("entLogger")
+
 
 class RemoteSHH(object):
     def __init__(self):

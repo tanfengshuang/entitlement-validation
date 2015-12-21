@@ -5,8 +5,8 @@ from Utils.EntitlementBase import EntitlementBase
 from RHN.RHNReadXML import RHNReadXML
 
 # Create logger
-# logger = logging.getLogger("entLogger")
-logger = logging.getLogger()
+logger = logging.getLogger("entLogger")
+
 
 class RHNVerification(EntitlementBase):
     def register(self, system_info, username, password, server_url):

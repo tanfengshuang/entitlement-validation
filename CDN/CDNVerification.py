@@ -8,9 +8,10 @@ from Utils.RemoteSHH import RemoteSHH
 from Utils.EntitlementBase import EntitlementBase
 from CDN.CDNReadXML import CDNReadXML
 
+
 # Create logger
-# logger = logging.getLogger("entLogger")
-logger = logging.getLogger()
+logger = logging.getLogger("entLogger")
+
 
 class CDNVerification(EntitlementBase):
     def redhat_repo_backup(self, system_info):

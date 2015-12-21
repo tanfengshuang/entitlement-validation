@@ -6,8 +6,8 @@ import logging
 from Utils.RemoteSHH import RemoteSHH
 
 # Create logger
-# logger = logging.getLogger("entLogger")
-logger = logging.getLogger()
+logger = logging.getLogger("entLogger")
+
 
 class EntitlementBase(object):
     def __init__(self):

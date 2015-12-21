@@ -1,6 +1,7 @@
 import os
 import unittest
 import logging
+import logging.config
 
 
 from Utils import beaker_username
@@ -16,26 +17,10 @@ from RHN import account_rhn
 from RHN.RHNParseManifestXML import RHNParseManifestXML
 from RHN.RHNVerification import RHNVerification
 
-"""
-import logging.config
-# Set our logging config file
-log_path = os.path.join(os.getcwd(), "log")
-if not os.path.exists(log_path):
-    os.makedirs(log_path)
-logging_conf_file = "{0}/logging.conf".format(os.getcwd())
-logging.config.fileConfig(logging_conf_file, defaults={'logfilepath': log_path})
 
 # Create logger
 logger = logging.getLogger("entLogger")
-"""
 
-file_handler_debug, file_handler_info, file_handler_error, console_handler = CDNVerification.log_setting(variant, arch, cdn, pid)
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-logger.addHandler(file_handler_debug)
-logger.addHandler(file_handler_info)
-logger.addHandler(file_handler_error)
-logger.addHandler(console_handler)
 
 def get_username_password():
     if rhn == "Live":
@@ -51,6 +36,13 @@ def get_server_url():
 
 class RHNEntitlement(unittest.TestCase):
     def setUp(self):
+        # Set our logging config file
+        log_path = os.path.join(os.getcwd(), "log")
+        if not os.path.exists(log_path):
+            os.makedirs(log_path)
+        logging_conf_file = "{0}/logging.conf".format(os.getcwd())
+        logging.config.fileConfig(logging_conf_file, defaults={'logfilepath': log_path})
+
         logger.info("--------------- Begin Init ---------------")
         try:
             self.system_info = {
@@ -122,11 +114,6 @@ class RHNEntitlement(unittest.TestCase):
             exit(1)
         logger.info("--------------- End tearDown ---------------")
 
-        # Remove log handlers from current logger
-        logger.removeHandler(file_handler_debug)
-        logger.removeHandler(file_handler_info)
-        logger.removeHandler(file_handler_error)
-        logger.removeHandler(console_handler)
 
 if __name__ == '__main__':
     unittest.main()

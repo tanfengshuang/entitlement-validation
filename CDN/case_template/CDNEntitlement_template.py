@@ -1,6 +1,7 @@
 import os
 import unittest
 import logging
+import logging.config
 import traceback
 
 from Utils import beaker_username
@@ -20,23 +21,12 @@ from CDN import account_cdn_prod
 from CDN.CDNParseManifestXML import CDNParseManifestXML
 from CDN.CDNVerification import CDNVerification
 
-pid = "PID"
 
-"""
-import logging.config
-# Set our logging config file
-log_path = os.path.join(os.getcwd(), "log/{0}/".format(pid))
-if not os.path.exists(log_path):
-    os.makedirs(log_path)
-logging_conf_file = "{0}/logging.conf".format(os.getcwd())
-logging.config.fileConfig(logging_conf_file, defaults={'logfilepath': log_path})
+pid = "PID"
 
 # Create logger
 logger = logging.getLogger("entLogger")
-"""
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
 
 def get_username_password():
     if cdn == "QA":
@@ -65,11 +55,22 @@ def get_baseurl():
 
 class CDNEntitlement_PID(unittest.TestCase):
     def setUp(self):
+        # Set our logging config file
+        log_path = os.path.join(os.getcwd(), "log/{0}".format(pid))
+        if not os.path.exists(log_path):
+            os.makedirs(log_path)
+        logging_conf_file = "{0}/logging.conf".format(os.getcwd())
+        logging.config.fileConfig(logging_conf_file, defaults={'logfilepath': log_path})
+
+        """
+        #logger = logging.getLogger()
+        #logger.setLevel(logging.DEBUG)
         self.file_handler_debug, self.file_handler_info, self.file_handler_error, self.console_handler = CDNVerification().log_setting(variant, arch, cdn, pid)
         logger.addHandler(self.file_handler_debug)
         logger.addHandler(self.file_handler_info)
         logger.addHandler(self.file_handler_error)
         logger.addHandler(self.console_handler)
+        """
         logger.info("--------------- Begin Init for product {0} ---------------".format(pid))
         try:
             self.system_info = {
@@ -222,11 +223,13 @@ class CDNEntitlement_PID(unittest.TestCase):
             exit(1)
         logger.info("--------------- End tearDown for product {0} ---------------".format(pid))
 
+        """
         # Remove log handlers from current logger
         logger.removeHandler(self.file_handler_debug)
         logger.removeHandler(self.file_handler_info)
         logger.removeHandler(self.file_handler_error)
         logger.removeHandler(self.console_handler)
+        """
 
 if __name__ == '__main__':
     unittest.main()
