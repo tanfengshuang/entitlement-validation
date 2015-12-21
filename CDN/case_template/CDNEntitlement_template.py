@@ -196,6 +196,8 @@ class CDNEntitlement_VARIANT_ARCH_PID(unittest.TestCase):
             logger.error(traceback.format_exc())
             logger.error("Test Failed - Raised error when do CDN Entitlement testing!")
             exit(1)
+
+        self.assertTrue(test_result)
         logger.info("--------------- End testCDNEntitlement for product {0} ---------------".format(pid))
 
     def tearDown(self):
