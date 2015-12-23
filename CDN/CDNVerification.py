@@ -19,7 +19,7 @@ class CDNVerification(EntitlementBase):
         remote_path = "/etc/yum.repos.d/redhat.repo"
         local_path = os.path.join(os.getcwd(), "redhat.repo")
         RemoteSHH().download_file(system_info, remote_path, local_path)
-        ret, output = RemoteSHH().run_cmd(None, "ls /tmp/redhat.repo", "Trying to check /tmp/redhat.repo.")
+        ret, output = RemoteSHH().run_cmd(None, "ls {0}".format(local_path), "Trying to check {0}.".format(local_path))
         if "No such file or directory" in output:
             logger.warning("Failed to download {0} to {1}".format(remote_path, local_path))
         else:
@@ -371,9 +371,9 @@ class CDNVerification(EntitlementBase):
 
     def test_repos(self, system_info, repo_list, blacklist, releasever_set, release_ver, current_arch):
         # Check all enabled repos to see if there are broken repos
-        repo_file = "/tmp/redhat.repo"
+        repo_file = os.path.join(os.getcwd(), "redhat.repo")
         if not os.path.exists(repo_file):
-            logger.error("There is no /tmp/redhat.repo backuped.")
+            logger.error("There is no {0} backuped.".format(repo_file))
             return False
 
         config = ConfigParser.ConfigParser()
