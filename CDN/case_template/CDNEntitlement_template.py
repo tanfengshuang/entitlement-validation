@@ -128,7 +128,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             CDNVerification().extend_system_space(self.system_info)
         except Exception, e:
             logger.error(str(e))
-            logger.error("Test Failed - Raised error when do CDN Entitlement testing!")
+            logger.error("Test Failed - Raised error when setup environment before CDN Entitlement testing!")
             logger.error(traceback.format_exc())
             assert False, str(e)
 
@@ -245,7 +245,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             CDNVerification().restore_non_redhat_repo(self.system_info)
         except Exception, e:
             logger.error(str(e))
-            logger.error("Test Failed - Raised error when do CDN Entitlement testing!")
+            logger.error("Test Failed - Raised error when tear down after CDN Entitlement testing!")
             logger.error(traceback.format_exc())
             assert False, str(e)
 

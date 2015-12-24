@@ -36,7 +36,7 @@ def get_server_url():
 
 class RHNEntitlement(unittest.TestCase):
     def setUp(self):
-        # Set our logging config file
+        # Set logging config file
         log_path = os.path.join(os.getcwd(), "log")
         if not os.path.exists(log_path):
             os.makedirs(log_path)
@@ -78,7 +78,7 @@ class RHNEntitlement(unittest.TestCase):
             RHNVerification().remove_non_redhat_repo(self.system_info)
         except Exception, e:
             logger.error(str(e))
-            logger.error("Test Failed - Raised error when do RHN Entitlement testing!")
+            logger.error("Test Failed - Raised error when setup environment before RHN Entitlement testing!")
             logger.error(traceback.format_exc())
             assert False, str(e)
 
@@ -126,7 +126,7 @@ class RHNEntitlement(unittest.TestCase):
             RHNVerification().restore_non_redhat_repo(self.system_info)
         except Exception, e:
             logger.error(str(e))
-            logger.error("Test Failed - Raised error when do RHN Entitlement testing!")
+            logger.error("Test Failed - Raised error when tear down after RHN Entitlement testing!")
             logger.error(traceback.format_exc())
             assert False, str(e)
 

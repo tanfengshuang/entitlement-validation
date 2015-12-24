@@ -117,7 +117,7 @@ class RHNVerification(EntitlementBase):
             logger.error("Test Failed - Got 0 channel from packages manifest.")
             return []
         else:
-            logger.info('Got {0} channels from packages manifest:'.format(all_channel_list))
+            logger.info('Got {0} channels from packages manifest:'.format(len(all_channel_list)))
             self.print_list(all_channel_list)
             return channel_list
 

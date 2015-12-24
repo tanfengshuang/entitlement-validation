@@ -296,7 +296,7 @@ class CDNVerification(EntitlementBase):
             logger.error("Got 0 repository from manifest for pid {0} on release {1}!".format(pid, release_ver))
             return []
         else:
-            logger.info("Got {0} Repos from manifest for pid {0} on release {1}:".format(len(repo_list)), pid, release_ver)
+            logger.info("Got {0} Repos from manifest for pid {1} on release {2}:".format(len(repo_list), pid, release_ver))
             self.print_list(repo_list)
         logger.info("--------------- End to get repo list from manifest: {0} {1} {2} ---------------".format(pid, current_arch, release_ver))
         return repo_list
