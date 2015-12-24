@@ -18,8 +18,7 @@ class CDNReadXML(object):
             if ele != None:
                 continue
             else:
-                logger.error("There is no element {0} in manifest.".format(tag))
-                exit(1)
+                assert False, "There is no element {0} in manifest.".format(tag)
         return ele
 
     def get_next_element(self, ele, tag):
@@ -35,8 +34,7 @@ class CDNReadXML(object):
             repoid_ele = self.get_element(root_ele, args)
             return repoid_ele
         else:
-            logger.error("There is no rhel root element in manifest.")
-            exit(1)
+            assert False, "There is no rhel root element in manifest."
 
     def get_repo_list(self, manifest_xml, release_ver, *args):
         # args: (pid, current_arch)
@@ -46,9 +44,9 @@ class CDNReadXML(object):
             return repo_list
         except Exception, e:
             logger.error(str(e))
-            logger.error(traceback.format_exc())
             logger.error("Test Failed - Raised error when get repo list from cdn xml manifest!")
-            exit(1)
+            logger.error(traceback.format_exc())
+            assert False, str(e)
 
     def get_package_list(self, manifest_xml, repo, release_ver, *args):
         # args: (pid, current_arch)
@@ -65,9 +63,10 @@ class CDNReadXML(object):
                 return package_list
         except Exception, e:
             logger.error(str(e))
-            logger.error(traceback.format_exc())
             logger.error("Test Failed - Raised error when get package list from cdn xml manifest!")
-            exit(1)
+            logger.error(traceback.format_exc())
+            assert False, str(e)
+
 
 if __name__ == "__main__":
     # 69 x86_64 rhel-6-server-debug-rpms 6Server

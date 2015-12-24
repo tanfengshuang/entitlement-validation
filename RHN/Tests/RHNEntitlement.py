@@ -1,8 +1,8 @@
 import os
 import unittest
+import traceback
 import logging
 import logging.config
-
 
 from Utils import beaker_username
 from Utils import beaker_password
@@ -45,73 +45,91 @@ class RHNEntitlement(unittest.TestCase):
 
         logger.info("--------------- Begin Init ---------------")
         try:
+            # Get ip, username and password of beaker testing system
             self.system_info = {
                 "ip": beaker_ip,
                 "username": beaker_username,
                 "password": beaker_password
             }
+
+            # Get testing params passed by Jenkins
             self.rhn = rhn
             self.variant = variant
             self.arch = arch
 
+            # Get manifest url, set json and xml manifest local path
             self.manifest_url = manifest_url
             self.manifest_path = os.path.join(os.getcwd(), "manifest")
             self.manifest_json = os.path.join(self.manifest_path, "rhn_test_manifest.json")
             self.manifest_xml = os.path.join(self.manifest_path, "rhn_test_manifest.xml")
 
+            # Get username, password and serverUrl
             self.username, self.password = get_username_password()
             self.server_url = get_server_url()
 
+            # Get system release version and arch
             self.current_rel_version = RHNVerification().get_os_release_version(self.system_info)
             self.current_arch = RHNVerification().get_os_base_arch(self.system_info)
 
+            # Download and parse manifest
             RHNParseManifestXML(self.manifest_url, self.manifest_path, self.manifest_json, self.manifest_xml).parse_json_to_xml()
 
+            # Remove non-redhat.repo
             RHNVerification().remove_non_redhat_repo(self.system_info)
         except Exception, e:
             logger.error(str(e))
-            logger.error("Test Failed - Raised error when do content testing!")
-            exit(1)
+            logger.error("Test Failed - Raised error when do RHN Entitlement testing!")
+            logger.error(traceback.format_exc())
+            assert False, str(e)
+
         logger.info("--------------- End Init ---------------")
 
     def testRHNEntitlement(self):
         logger.info("--------------- Begin testRHNEntitlement --------------- ")
-        testresult = True
 
         try:
             # Register
-            testresult &= RHNVerification().register(self.system_info, self.username, self.password, self.server_url)
+            result = RHNVerification().register(self.system_info, self.username, self.password, self.server_url)
+            self.assertTrue(result, msg="Test Failed - Failed to Register with RHN server!")
 
-            # Get all testing channels
+            # Get and print all testing channels
+            # If 0 channel, exit
             channel_list = RHNVerification().get_channels_from_manifest(self.manifest_xml, self.current_arch, self.variant)
+            self.assertNotEqual(channel_list, [], msg="Test Failed - There is no any channel.")
 
             if '6.5' in self.current_rel_version or "5" not in self.current_rel_version:
-                testresult &= RHNVerification().verify_channels(self.system_info, self.manifest_xml, self.username, self.password, self.current_arch, self.variant)
+                result = RHNVerification().verify_channels(self.system_info, self.manifest_xml, self.username, self.password, self.current_arch, self.variant)
+                self.assertTrue(result, msg="Test Failed - Failed to verify channels!")
 
+            test_result = True
             for channel in channel_list:
                 if RHNVerification().add_channels(self.system_info, self.username, self.password, channel):
-                    testresult &= RHNVerification().installation(self.system_info, self.manifest_xml, channel)
-                    testresult &= RHNVerification().remove_channels(self.system_info, self.username, self.password, channel)
+                    test_result &= RHNVerification().installation(self.system_info, self.manifest_xml, channel)
+                    test_result &= RHNVerification().remove_channels(self.system_info, self.username, self.password, channel)
 
-            if not testresult:
-                logger.error("Test Failed - Failed to do main rhn content test.")
-                exit(1)
+            self.assertTrue(test_result, msg="Test Failed - Failed to do RHN Entitlement testing!")
         except Exception, e:
             logger.error(str(e))
             logger.error("Test Failed - Raised error when do RHN Entitlement testing!")
-            exit(1)
+            logger.error(traceback.format_exc())
+            assert False, str(e)
 
         logger.info("--------------- End testRHNEntitlement --------------- ")
 
     def tearDown(self):
         logger.info("--------------- Begin tearDown ---------------")
         try:
+            # Unregister
             RHNVerification().unregister(self.system_info)
+
+            # Restore non-redhat.repo
             RHNVerification().restore_non_redhat_repo(self.system_info)
         except Exception, e:
             logger.error(str(e))
             logger.error("Test Failed - Raised error when do RHN Entitlement testing!")
-            exit(1)
+            logger.error(traceback.format_exc())
+            assert False, str(e)
+
         logger.info("--------------- End tearDown ---------------")
 
 

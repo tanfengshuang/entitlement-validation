@@ -57,6 +57,7 @@ class RemoteSHH(object):
             if len(output.splitlines()) < 100:
                 logger.info(output)
             else:
+                logging.info("<< Note: since the output is too long(more than 100 lines) here, logged it as debug info. >>")
                 logger.debug(output)
         return ret, output
 
@@ -96,6 +97,7 @@ class RemoteSHH(object):
             if len(output.splitlines()) < 100:
                 logger.info(output)
             else:
+                logging.info("<< Note: since the output is too long(more than 100 lines) here, logged it as debug info. >>")
                 logger.debug(output)
 
         return channel.recv_exit_status(), output

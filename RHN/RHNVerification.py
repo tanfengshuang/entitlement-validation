@@ -25,13 +25,13 @@ class RHNVerification(EntitlementBase):
             if ret == 0:
                 logger.info("It's successful to clean the yum cache.")
             else:
-                logger.info("Failed to clean the yum cache.")
+                logger.warning("Failed to clean the yum cache.")
             return True
         else:
             # Error Message:
             # Invalid username/password combination
-            logger.error("Test Failed - Failed to register to rhn server.")
-            exit(1)
+            logger.error("Test Failed - Failed to register with rhn server.")
+            return False
 
     def isregistered(self, system_info,):
         cmd = "ls /etc/sysconfig/rhn/systemid"
@@ -107,24 +107,23 @@ class RHNVerification(EntitlementBase):
     def get_channels_from_manifest(self, manifest_xml, current_arch, variant):
         # Get all channels from manifest which need testing
         repo_filter = "%s-%s" % (current_arch, variant.lower())
-        logger.info("testing repo filter: {0}".format(repo_filter))
+        logger.info("Testing repo filter: {0}".format(repo_filter))
 
         all_channel_list = RHNReadXML().get_channel_list(manifest_xml)
         channel_list = [channel for channel in all_channel_list if repo_filter in channel]
 
-        logger.info('Expected channel list got from packages manifest:')
-        self.print_list(all_channel_list)
-
         if len(channel_list) == 0:
             logger.error("Got 0 channel from packages manifest")
             logger.error("Test Failed - Got 0 channel from packages manifest.")
-            exit(1)
+            return []
         else:
+            logger.info('Got {0} channels from packages manifest:'.format(all_channel_list))
+            self.print_list(all_channel_list)
             return channel_list
 
     def verify_channels(self, system_info, manifest_xml, username, password, current_arch, variant):
         # For now, this function can be only tested on RHEL6, as there is no param --available-channels on RHEL5
-        logger.info("--------------- Begin to verify channel manifest ---------------")
+        logger.info("--------------- Begin to verify channel ---------------")
         # Get all channels which are not added
         available_channels = []
         cmd = "rhn-channel --available-channels --user=%s --password=%s" % (username, password)
@@ -149,48 +148,70 @@ class RHNVerification(EntitlementBase):
         channels_manifest = self.get_channels_from_manifest(manifest_xml, current_arch, variant)
         list1 = self.cmp_arrays(channels_manifest, channels_rhn)
         if len(list1) > 0:
-            logger.error("Failed to verify channel manifest.")
-            logger.info('Below are channels in expected channel manifest but not in rhn-channel:')
+            logger.error("Failed to verify channel.")
+            logger.info('Below are channels in provided manifest but not in rhn-channel:')
             self.print_list(list1)
-            logger.error("--------------- End to verify channel manifest: FAIL ---------------")
-            logger.error("Test Failed - Failed to verify channel manifest.")
-            exit(1)
+            logger.error("--------------- End to verify channel: FAIL ---------------")
+            logger.error("Test Failed - Failed to verify channel.")
+            return False
         else:
-            logger.info("All Expected channels exist in test list!")
-            logger.info("--------------- End to verify channel manifest: PASS ---------------")
+            logger.info("All expected channels exist in test list!")
+            logger.info("--------------- End to verify channel: PASS ---------------")
             return True
 
     def installation(self, system_info, manifest_xml, channel):
-        logger.info("--------------- Begin to verify packages full installation for channel {0} ---------------".format(channel))
-        # Get packages from manifest
-        package_list = RHNReadXML().get_package_list(manifest_xml, channel)
-        logger.info("Packages need to install of channel {0}".format(package_list))
-        logger.info(package_list)
+        # Install binary packages with yum
         # There are source rpms in channels, but they can only be downloaded through the customer portal web site.  They aren't exposed to yum/yumdownloader/repoquery.
         # RHN APIs that can be used to query the source packages available, but the APIs are only available to RHN admins. So, let's not worry about SRPMs for now.
         # Download source rpms from the customer portal web site - ignored for now
+        logger.info("--------------- Begin to verify packages full installation for channel {0} ---------------".format(channel))
 
-        # Install binary packages with yum
+        # Get all packages already installed in testing system before installation testing
+        system_pkglist = self.get_sys_pkglist(system_info)
+
+        # Store the failed packages when 'yum remove'.
+        remove_failed_pkglist = []
+
+        # Get packages from manifest
+        package_list = RHNReadXML().get_package_list(manifest_xml, channel)
+        logger.info("There are {0} packages need to install for channel {0}.".format(len(package_list), package_list))
+        self.print_list(package_list)
+
         result = True
+        number = 0
+        total_number = len(package_list)
         for pkg in package_list:
+            number += 1
             cmd = "yum install -y %s" % pkg
-            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to yum install package {0}".format(pkg))
+            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to yum install package {0} of channel {1}".format(pkg, channel))
 
             if ret == 0:
                 if ("Complete!" in output) or ("Nothing to do" in output) or ("conflicts" in output):
-                    logger.info("It's successful to install package %s." % pkg)
+                    logger.info("It's successful to install package [{0}/{1}] {2} of channel {3}...".format(number, total_number, pkg, channel))
                 else:
-                    logger.error("Test Failed - Failed to install package %s of channel %s." % (pkg, channel))
+                    logger.error("Test Failed - Failed to install package [{0}/{1}] {2} of channel {3}...".format(number, total_number, pkg, channel))
                     result = False
             else:
                 if "conflicts" in output:
-                    logger.info("It's successful to install package %s." % pkg)
+                    logger.info("It's successful to install package [{0}/{1}] {2} of channel {3}...".format(number, total_number, pkg, channel))
                 else:
-                    logger.error("Test Failed - Failed to install package %s of channel %s." % (pkg, channel))
+                    logger.error("Test Failed - Failed to install package [{0}/{1}] {2} of channel {3}...".format(number, total_number, pkg, channel))
                     result = False
 
-                if result:
-                    logger.info("--------------- End to verify packages full installation for channel {0}: PASS ---------------".format(channel))
-                else:
-                    logger.error("--------------- End to verify packages full installation for channel {0}: FAIL ---------------".format(channel))
+            if result:
+                if pkg not in system_pkglist:
+                    # Remove package if it is not in the system package list.
+                    # It is used to solve the dependency issue which describe in https://bugzilla.redhat.com/show_bug.cgi?id=1272902.
+                    if not self.remove_pkg(system_info, pkg, channel):
+                        remove_failed_pkglist.append(pkg)
+                        logging.warning("Failed to remove {0} of channel {1}.".format(pkg, channel))
+
+        if len(remove_failed_pkglist) != 0:
+            logger.warning("Failed to remove following {0} packages for channel {1}:".format(len(remove_failed_pkglist), channel))
+            self.print_list(remove_failed_pkglist)
+
+        if result:
+            logger.info("--------------- End to verify packages full installation for channel {0}: PASS ---------------".format(channel))
+        else:
+            logger.error("--------------- End to verify packages full installation for channel {0}: FAIL ---------------".format(channel))
         return result

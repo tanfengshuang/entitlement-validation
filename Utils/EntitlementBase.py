@@ -10,8 +10,6 @@ logger = logging.getLogger("entLogger")
 
 
 class EntitlementBase(object):
-    def __init__(self):
-        pass
     def log_setting(self, variant, arch, server, pid=None):
         # Write log into specific files
         log_path = './log/'
@@ -57,6 +55,37 @@ class EntitlementBase(object):
         console_handler.setLevel(logging.INFO)
         return file_handler_debug, file_handler_info, file_handler_error, console_handler
 
+    def stop_yum_updatesd(self, system_info):
+        # Stop service yum-updatesd on RHEL5 in order to avoid yum lock to save testing time
+        master_release = self.get_master_release(system_info)
+        if master_release == '5':
+            cmd = 'service yum-updatesd status'
+            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get status of service yum-updatesd...")
+            if 'stopped' in output or "yum-updatesd: unrecognized service" in output:
+                return
+
+            cmd = 'service yum-updatesd stop'
+            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to stop yum-updatesd service...")
+            if ret == 0:
+                cmd = 'service yum-updatesd status'
+                ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get status of service yum-updatesd...")
+                if 'stopped' in output:
+                        logger.info("It's successful to stop yum-updatesd service.")
+                else:
+                    logger.warning("Failed to stop yum-updatesd service.")
+            else:
+                logger.warning("Failed to stop yum-updatesd service.")
+
+    def ntpdate_redhat_clock(self, system_info):
+        # Synchronize system time with clock.redhat.com, it's a workaround when system time is not correct,
+        # commands "yum repolist" and "subscription-manager repos --list" return nothing
+        cmd = 'ntpdate clock.redhat.com'
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to ntpdate system time with clock of redhat.com...")
+        if ret == 0 or "the NTP socket is in use, exiting" in output:
+            logger.info("It's successful to ntpdate system time with clock of redhat.com.")
+        else:
+            logger.warning("Test Failed - Failed to ntpdate system time with clock of redhat.com.")
+
     def get_os_release_version(self, system_info):
         # Get release version of current system
         cmd = '''python -c "import yum; yb = yum.YumBase(); print(yb.conf.yumvar)['releasever']"'''
@@ -68,16 +97,14 @@ class EntitlementBase(object):
             logger.info("Release version for current system is {0}.".format(result[0]))
             return result[0]
         else:
-            logger.error("Test Failed - Failed to get current release version.")
-            exit(1)
+            assert False, "Test Failed - Failed to get current release version."
 
     def get_os_base_arch(self, system_info):
         # Get base arch of current system
         cmd = '''python -c "import yum; yb = yum.YumBase(); print(yb.conf.yumvar)['basearch']"'''
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get current base arch...")
-        if(ret == 0 and "Loaded plugins" in output):
+        if ret == 0 and "Loaded plugins" in output:
             logger.info("It's successful to get current base arch.")
-            base_arch = ""
             if "ppc64le" in output:
                 base_arch = "ppc64le"
             elif "ppc64" in output:
@@ -95,14 +122,12 @@ class EntitlementBase(object):
             elif "aarch64" in output:
                 base_arch = "aarch64"
             else:
-                logger.info("No base arch could get from current system.")
-                logger.error("Test Failed - Failed to get current base arch.")
-                exit(1)
+                logger.error("No base arch could get from current system.")
+                assert False, "Test Failed - Failed to get current base arch."
             logger.info("Base arch for current system is {0}.".format(base_arch))
             return base_arch
         else:
-            logger.error("Test Failed - Failed to get current base arch.")
-            exit(1)
+            assert False, "Test Failed - Failed to get current base arch."
 
     def cmp_arrays(self, array1, array2):
         # Compare two arrays, get the data in array1 but not in array2
@@ -113,8 +138,13 @@ class EntitlementBase(object):
         return list_not_in_array2
 
     def print_list(self, list):
-        for i in list:
-            logger.info(i)
+        if len(list) > 100:
+            logging.info("<< Note: since the output is too long(more than 100 lines) here, logged it as debug info. >>")
+            for i in list:
+                logger.debug(i)
+        else:
+            for i in list:
+                logger.info(i)
 
     def remove_non_redhat_repo(self, system_info):
         # Backup non-redhat repo
@@ -135,6 +165,29 @@ class EntitlementBase(object):
         path = os.path.join(os.getcwd(), "backup_repo/*.repo")
         cmd = 'cp {0} /etc/yum.repos.d/'.format(path)
         RemoteSHH().run_cmd(system_info, cmd, "Trying to restore those non-redhat repos...")
+
+    def get_sys_pkglist(self, system_info):
+        # Get system packages list before installation testing, and then make sure these packages will not be removed during installation testing.
+        cmd = 'rpm -qa --qf "%{name}\n"'
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to list all packages in system before installation testing...")
+        if ret == 0:
+            sys_pkglist = output.splitlines()
+            logger.info("It's successful to get {0} packages from the system.\n".format(len(sys_pkglist)))
+            return sys_pkglist
+        else:
+            assert False, "Test Failed - Failed to list all packages in system before level3."
+
+    def remove_pkg(self, system_info, pkg, repo_channel):
+        # Remove a package after install in order to resolve dependency issue which described in
+        # https://bugzilla.redhat.com/show_bug.cgi?id=1272902
+        cmd = "yum remove -y {0}".format(pkg)
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to remove package {0} of repo/channel {1}...".format(pkg, repo_channel))
+        if ret == 0:
+            logger.info("It's successful to remove package '{0}' of repo/channel {1}.\n".format(pkg, repo_channel))
+            return True
+        else:
+            logger.warning("Warning -- Can't remove package '{0}' of repo/channel {1}.\n".format(pkg, repo_channel))
+            return False
 
     def get_avail_space(self, system_info):
         ret, output = RemoteSHH().run_cmd(system_info, "df -H | grep home")
@@ -180,15 +233,7 @@ class EntitlementBase(object):
             lvm_home = output.splitlines()[0]
             ret, output = RemoteSHH().run_cmd(system_info, "ls /dev/mapper/ | grep root", "Trying to get root partition name...")
             lvm_root = output.splitlines()[0]
-            """
-            print "**************", lvm_home
-            print "**************", lvm_root
-            print "resize2fs -f /dev/mapper/{0} 1G".format(lvm_home)
-            print "lvreduce -L1G /dev/mapper/{0}".format(lvm_home)
-            print "lvextend -L+{0}G  /dev/mapper/{1}".format(extend_space, lvm_root)
-            print "resize2fs /dev/mapper/{0}".format(lvm_root), "Trying to resize2fs root partition..."
-            print "mount /home"
-            """
+
             if master_release in ["5", "6"]:
                 # Shrink the home partition
                 ret, output = RemoteSHH().run_cmd(system_info, "resize2fs -f /dev/mapper/{0} 1G".format(lvm_home), "Trying to resize2fs home partition...", timeout=None)

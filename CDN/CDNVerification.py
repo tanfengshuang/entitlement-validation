@@ -45,46 +45,16 @@ class CDNVerification(EntitlementBase):
         else:
             logger.error("Failed to stop rhsmcertd service.")
 
-    def stop_yum_updatesd(self, system_info):
-        # Stop service yum-updatesd on RHEL5 in order to avoid yum lock to save testing time
-        master_release = self.get_master_release(system_info)
-        if master_release == '5':
-            cmd = 'service yum-updatesd status'
-            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get status of service yum-updatesd...")
-            if 'stopped' in output or "yum-updatesd: unrecognized service" in output:
-                return
-
-            cmd = 'service yum-updatesd stop'
-            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to stop yum-updatesd service...")
-            if ret == 0:
-                cmd = 'service yum-updatesd status'
-                ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get status of service yum-updatesd...")
-                if 'stopped' in output:
-                        logger.info("It's successful to stop yum-updatesd service.")
-                else:
-                    logger.error("Failed to stop yum-updatesd service.")
-            else:
-                logger.error("Failed to stop yum-updatesd service.")
-
-    def ntpdate_redhat_clock(self, system_info):
-        # Synchronize system time with clock.redhat.com, it's a workaround when system time is not correct,
-        # commands "yum repolist" and "subscription-manager repos --list" return nothing
-        cmd = 'ntpdate clock.redhat.com'
-        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to ntpdate system time with clock of redhat.com...")
-        if ret == 0 or "the NTP socket is in use, exiting" in output:
-            logger.info("It's successful to ntpdate system time with clock of redhat.com.")
-        else:
-            logger.warning("Test Failed - Failed to ntpdate system time with clock of redhat.com.")
-
     def config_testing_environment(self, system_info, hostname, baseurl):
-
+        # Config hostname and baseurl in /etc/rhsm/rhsm.conf
         cmd = "subscription-manager config --server.hostname={0}".format(hostname)
-        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to set hostname in /etc/rhsm/rhsm.conf...")
+        RemoteSHH().run_cmd(system_info, cmd, "Trying to set hostname in /etc/rhsm/rhsm.conf...")
 
         cmd = "subscription-manager config --rhsm.baseurl={0}".format(baseurl)
-        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to set baseurl in /etc/rhsm/rhsm.conf...")
+        RemoteSHH().run_cmd(system_info, cmd, "Trying to set baseurl in /etc/rhsm/rhsm.conf...")
 
     def check_registered(self, system_info):
+        # Check if registered
         cmd = "subscription-manager identity"
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to check if registered with cdn server...")
         if ret == 0:
@@ -95,51 +65,38 @@ class CDNVerification(EntitlementBase):
             return False
 
     def unregister(self, system_info):
+        # Unregister with CDN server
         if self.check_registered(system_info):
             cmd = "subscription-manager unregister"
             ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to unregister...")
 
             if ret == 0:
-                if ("System has been unregistered." in output) or ("System has been un-registered." in output):
-                        logger.info("It's successful to unregister.")
-                else:
-                    logger.error("Test Failed - The information shown after unregistered is not correct.")
-                    exit(1)
+                logger.info("It's successful to unregister.")
+                return True
             else:
                 logger.error("Test Failed - Failed to unregister.")
-                exit(1)
+                return False
         else:
             logger.info("The system is not registered with cdn server now.")
+            return True
 
-    def register(self, system_info, username, password, subtype=""):
-        if subtype == "":
-            cmd = "subscription-manager register --username={0} --password='{1}'".format(username, password)
-        else:
-            cmd = "subscription-manager register --type={0} --username={1} --password='{2}'".format(subtype, username, password)
+    def register(self, system_info, username, password):
+        # Register with CDN server
+        cmd = "subscription-manager register --username={0} --password='{1}'".format(username, password)
 
         if self.check_registered(system_info):
             logger.info("The system is already registered, need to unregister first!")
-            cmd_unregister = "subscription-manager unregister"
-            ret, output = RemoteSHH().run_cmd(system_info, cmd_unregister, "Trying to unregister cdn server firstly...")
-
-            if ret == 0:
-                if "System has been unregistered." in output or "System has been un-registered." in output:
-                    logger.info("It's successful to unregister.")
-                else:
-                    logger.info("The system is failed to unregister, try to use '--force'!")
-                    cmd += " --force"
+            if not self.unregister(system_info):
+                logger.info("Failed to unregister, try to use '--force'!")
+                cmd += " --force"
 
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to register cdn server...")
         if ret == 0:
-            if "The system has been registered with ID:" in output or "The system has been registered with id:" in output:
-                logger.info("It's successful to register.")
-                return True
-            else:
-                logger.error("Test Failed - The information shown after registered is not correct.")
-                exit(1)
+            logger.info("It's successful to register.")
+            return True
         else:
             logger.error("Test Failed - Failed to register.")
-            exit(1)
+            return False
 
     def check_subscription(self, system_info, sku):
         cmd = "subscription-manager list --available --all | grep {0}".format(sku)
@@ -157,9 +114,9 @@ class CDNVerification(EntitlementBase):
         cmd = "subscription-manager  list --avail --all| egrep 'SKU|Pool ID' | grep -v Subscription"
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to list all available SKU and Pool ID...")
 
+        sku_pool_dict = {}
         if ret == 0:
             if output != "":
-                sku_pool_dict = {}
                 i = 0
                 sku = ""
                 for line in output.splitlines():
@@ -174,37 +131,42 @@ class CDNVerification(EntitlementBase):
                                 else:
                                     sku_pool_dict[sku] = [pool]
                         i += 1
-                return sku_pool_dict
             else:
                 logger.error("No suitable pools!")
                 logger.error("Test Failed - Failed to get available pools.")
-                exit(1)
         else:
             logger.error("Test Failed - Failed to get available pools.")
-            exit(1)
+
+        return sku_pool_dict
 
     def subscribe_pool(self, system_info, poolid):
         cmd = "subscription-manager subscribe --pool={0}".format(poolid)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to subscribe with poolid {0}".format(poolid))
 
         if ret == 0:
-            # Note: the exact output should be as below:
-            # For 6.2: "Successfully subscribed the system to Pool"
-            # For 5.8: "Successfully consumed a subscription from the pool with id"
-            if "Successfully " in output:
-                logger.info("It's successful to subscribe.")
-                return True
-            else:
-                logger.error("Test Failed - The information shown after subscribing is not correct.")
-                exit(1)
+            logger.info("It's successful to subscribe.")
+            return True
         else:
             logger.error("Test Failed - Failed to subscribe.")
-            exit(1)
+            return False
 
     def get_certificate_list(self, system_info):
         cmd = "ls /etc/pki/entitlement/ | grep -v key.pem"
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to list all certificate files under /etc/pki/entitlement/...")
         return output.splitlines()
+
+    def subscribe(self, system_info, poolid):
+        # Get certificate list before subscribe
+        cert_list1 = self.get_certificate_list(system_info)
+
+        result = self.subscribe_pool(system_info, poolid)
+
+        # Get certificate list after subscribe
+        cert_list2 = self.get_certificate_list(system_info)
+
+        entitlement_cert = list(set(cert_list2)-set(cert_list1))
+        return result, entitlement_cert
+
 
     def verify_productid_in_entitlement_cert(self, system_info, entitlement_cert, pid):
         # Verify if one specific product id in one entitlement cert
@@ -225,7 +187,7 @@ class CDNVerification(EntitlementBase):
                 return True
             else:
                 logger.error("Test Failed - Failed to verify PID {0} in entitlement certificate {1}.".format(pid, entitlement_cert))
-                exit(1)
+                return False
         else:
             # Output:
             # sh: rct: command not found
@@ -237,6 +199,7 @@ class CDNVerification(EntitlementBase):
                 return True
             else:
                 logger.error("Test Failed - Failed to verify PID {0} in entitlement certificate {1}.".format(pid, entitlement_cert))
+                return False
 
     def verify_sku_in_entitlement_cert(self, system_info, entitlement_cert, sku):
         # Verify if one specific sku id in one entitlement cert
@@ -251,7 +214,7 @@ class CDNVerification(EntitlementBase):
                 return True
             else:
                 logger.error("Test Failed - Failed to verify sku {0} in entitlement cert {1}.".format(sku, entitlement_cert))
-                exit(1)
+                return False
         else:
             # Output:
             # sh: rct: command not found
@@ -262,24 +225,7 @@ class CDNVerification(EntitlementBase):
                 return True
             else:
                 logger.error("Test Failed - Failed to verify sku {0} in entitlement cert {1}." .format(sku, entitlement_cert))
-                exit(1)
-
-    def subscribe(self, system_info, pid, sku, poolid):
-        result = True
-        # Get certificate list before subscribe
-        list1 = self.get_certificate_list(system_info)
-
-        result &= self.subscribe_pool(system_info, poolid)
-
-        # Get certificate list after subscribe
-        list2 = self.get_certificate_list(system_info)
-        
-        entitlement_cert = list(set(list2)-set(list1))[0]
-
-        result &= self.verify_productid_in_entitlement_cert(system_info, entitlement_cert, pid)
-        result &= self.verify_sku_in_entitlement_cert(system_info, entitlement_cert, sku)
-
-        return result
+                return False
 
     def set_config_file(self, system_info, release_ver, config_file):
         cmd = '''sed -i "s/yumvars\['releasever'\] = /yumvars\['releasever'\] = '%s' # /" %s''' % (release_ver, config_file)
@@ -325,10 +271,10 @@ class CDNVerification(EntitlementBase):
                 logger.info("It's successfully to set variable --releasever={0}.".format(release_ver))
             else:
                 logger.error("Test Failed - Failed to set system release as {0}.".format(release_ver))
-                exit(1)
+                return False
         else:
             logger.error("Test Failed - Failed to set system release as {0}.".format(release_ver))
-            exit(1)
+            return False
         return releasever_set
 
     def clean_yum_cache(self, system_info, releasever_set):
@@ -340,19 +286,19 @@ class CDNVerification(EntitlementBase):
             return True
         else:
             logger.error("Test Failed - Failed to clean yum cache")
-            exit(1)
+            return False
 
     def get_repo_list_from_manifest(self, manifest_xml, pid, current_arch, release_ver):
-        # Get repo list from xml manifest
+        # Get repo list from xml format manifest
         logger.info("--------------- Begin to get repo list from manifest: {0} {1} {2} ---------------".format(pid, current_arch, release_ver))
         repo_list = CDNReadXML().get_repo_list(manifest_xml, release_ver, pid, current_arch)
         if len(repo_list) == 0:
-            logger.error("Repo list is empty!")
-            logger.error("Test Failed - There is no repo for pid {0} in release {1}.".format(pid, release_ver))
-            exit(1)
+            logger.error("Got 0 repository from manifest for pid {0} on release {1}!".format(pid, release_ver))
+            return []
         else:
-            logger.info("Repos got from manifest:")
+            logger.info("Got {0} Repos from manifest for pid {0} on release {1}:".format(len(repo_list)), pid, release_ver)
             self.print_list(repo_list)
+        logger.info("--------------- End to get repo list from manifest: {0} {1} {2} ---------------".format(pid, current_arch, release_ver))
         return repo_list
 
     def get_package_list_from_manifest(self, manifest_xml, pid, repo, current_arch, release_ver, type="name"):
@@ -658,38 +604,8 @@ class CDNVerification(EntitlementBase):
                 logger.error("--------------- End to verify productcert installation for the repo {0} of the product {1}: FAIL -------------".format(repo, pid))
         return result
 
-    def get_sys_pkglist(self, system_info):
-        # Get system packages list before installation testing, and then make sure these packages will not be removed during installation testing.
-        cmd = 'rpm -qa --qf "%{name}\n"'
-        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to list all packages in system before installation testing...")
-        if ret == 0:
-            sys_pkglist = output.splitlines()
-            logger.info("It's successful to get {0} packages from the system.\n".format(len(sys_pkglist)))
-            return sys_pkglist
-        else:
-            logger.error("Test Failed - Failed to list all packages in system before level3.")
-            exit(1)
-
-    def remove_pkg(self, system_info, pkg, repo):
-        # Remove a package after install in order to resolve dependency issue which described in
-        # https://bugzilla.redhat.com/show_bug.cgi?id=1272902
-        cmd = "yum remove -y {0}".format(pkg)
-        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to remove package {0} of repo {1}...".format(pkg, repo))
-        if ret == 0:
-            logger.info("It's successful to remove package '{0}'.\n".format(pkg))
-            return True
-        else:
-            logger.warning("Warning -- Can't remove package '{0}'.\n".format(pkg))
-            return False
-
     def verify_all_packages_installation(self, system_info, manifest_xml, pid, repo, arch, release_ver, releasever_set, blacklist):
         logger.info("--------------- Begin to verify all packages installation of repo %s ---------------" % repo)
-        # Get all packages already installed in testing system before installation testing
-        system_pkglist = self.get_sys_pkglist(system_info)
-
-        # Store the failed packages after 'yum remove'.
-        remove_failed_pkglist = []
-
         checkresult = True
         if "source" in repo:
             pkg_list = self.get_package_list_from_manifest(manifest_xml, pid, repo, arch, release_ver, "full-name")
@@ -712,12 +628,18 @@ class CDNVerification(EntitlementBase):
             else:
                 logger.info("There is no source packages for pid:repo {0}:{1}".format(pid, repo))
         else:
+            # Get all packages already installed in testing system before installation testing
+            system_pkglist = self.get_sys_pkglist(system_info)
+
+            # Store the failed packages when 'yum remove'.
+            remove_failed_pkglist = []
+
+            # Get packages from manifest and distinct them
             pkg_list = self.get_package_list_from_manifest(manifest_xml, pid, repo, arch, release_ver, "name")
-            # Distinct pkgs
             pkg_list = list(set(pkg_list))
 
             # Print out the package list
-            logger.info("Ready to install below rpm packages:")
+            logger.info("Ready to install below {0} rpm packages.".format(len(pkg_list)))
             self.print_list(pkg_list)
 
             number = 0
@@ -729,19 +651,19 @@ class CDNVerification(EntitlementBase):
                     cmd = 'yum install -y --disablerepo=* --enablerepo=*beta* --skip-broken {0} {1}'.format(pkg, releasever_set)
                 else:
                     cmd = 'yum install -y --skip-broken {0} {1}'.format(pkg, releasever_set)
-                ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to install package [{0}/{1}] {2} for repo {3}...".format(number, total_number, pkg, repo))
+                ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to install package [{0}/{1}] {2} of repo {3}...".format(number, total_number, pkg, repo))
 
                 if ret == 0:
                     if ("Complete!" in output) or ("Nothing to do" in output) or ("conflicts" in output):
-                        logger.info("It's successful to install package [{0}/{1}] {2} for repo {3}...".format(number, total_number, pkg, repo))
+                        logger.info("It's successful to install package [{0}/{1}] {2} of repo {3}...".format(number, total_number, pkg, repo))
                     else:
-                        logger.error("Test Failed - Failed to install package [{0}/{1}] {2} for repo {3}...".format(number, total_number, pkg, repo))
+                        logger.error("Test Failed - Failed to install package [{0}/{1}] {2} of repo {3}...".format(number, total_number, pkg, repo))
                         checkresult = False
                 else:
                     if ("conflicts" in output):
-                        logger.info("It's successful to install package [{0}/{1}] {2} for repo {3}...".format(number, total_number, pkg, repo))
+                        logger.info("It's successful to install package [{0}/{1}] {2} of repo {3}...".format(number, total_number, pkg, repo))
                     else:
-                        logger.error("Test Failed - Failed to install package [{0}/{1}] {2} for repo {3}...".format(number, total_number, pkg, repo))
+                        logger.error("Test Failed - Failed to install package [{0}/{1}] {2} of repo {3}...".format(number, total_number, pkg, repo))
                         checkresult = False
 
                 if checkresult:
@@ -750,13 +672,15 @@ class CDNVerification(EntitlementBase):
                         # It is used to solve the dependency issue which describe in https://bugzilla.redhat.com/show_bug.cgi?id=1272902.
                         if not self.remove_pkg(system_info, pkg, repo):
                             remove_failed_pkglist.append(pkg)
+                            logging.warning("Failed to remove {0} of repo {1}.".format(pkg, repo))
 
-            if checkresult:
-                logger.info("--------------- End to verify packages full installation of repo {0}: PASS ---------------".format(repo))
-            else:
-                logger.error("--------------- End to verify packages full installation of repo {0}: FAIL ---------------".format(repo))
+            if len(remove_failed_pkglist) != 0:
+                logger.warning("Failed to remove following {0} packages for repo {1}:".format(len(remove_failed_pkglist), repo))
+                self.print_list(remove_failed_pkglist)
 
-        if len(remove_failed_pkglist) != 0:
-            logger.warning("----------------------Warning -- Can't remove following packages: {0}".format(remove_failed_pkglist))
+        if checkresult:
+            logger.info("--------------- End to verify packages full installation of repo {0}: PASS ---------------".format(repo))
+        else:
+            logger.error("--------------- End to verify packages full installation of repo {0}: FAIL ---------------".format(repo))
 
         return checkresult

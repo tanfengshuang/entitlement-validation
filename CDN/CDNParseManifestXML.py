@@ -38,10 +38,10 @@ class ParseManifestXMLBase(object):
                 return True
             else:
                 logger.error("Test Failed - Failed to download manifest file")
-                exit(1)
+                return False
         else:
-            logger.error("Test Failed - Failed to get testing param Manifest_URL.")
-            exit(1)
+            logger.error("Test Failed - Failed to get testing parameter $Manifest_URL, Manifest_URL is empty.")
+            return False
 
     def load_json(self):
         # Get json dir path, set it as output directory
@@ -49,13 +49,13 @@ class ParseManifestXMLBase(object):
         try:
             # Load target file
             manifest_content = json.load(open(self.manifest_json, 'r'))
-            logger.info('Data type is %s' % type(manifest_content))
+            logger.info('Data type is {0}'.format(type(manifest_content)))
             return manifest_content
         except Exception, e:
             logger.error(str(e))
+            logger.error("ERROR - Failed to load json file when call json.load().")
             logger.error(traceback.format_exc())
-            logger.error("Error - Load json file failed when running json.load() function.")
-            exit(1)
+            assert False, str(e)
 
 class CDNParseManifestXML(ParseManifestXMLBase):
     def __init__(self, manifest_url, cdn_manifest_path, manifest_json, manifest_xml):
@@ -64,7 +64,9 @@ class CDNParseManifestXML(ParseManifestXMLBase):
         self.manifest_xml = manifest_xml
 
     def parse_json_to_xml(self):
-        self.downloade_manifest()
+        result = self.downloade_manifest()
+        assert result is True, "Failed to download package manifest."
+
         manifest_content = self.load_json()
         try:
             # XML - create a Dom object
@@ -81,8 +83,7 @@ class CDNParseManifestXML(ParseManifestXMLBase):
                 cdn_data = data["cdn"]["products"]
 
                 if isinstance(cdn_data.keys(), list) == False:
-                    logger.error("Failed to get content from package manifest.")
-                    exit(1)
+                    assert False, "Failed to get content from package manifest."
 
                 # Prepare to analyze manifest of cdn part
                 # Get items from Product ID lists
@@ -175,10 +176,10 @@ class CDNParseManifestXML(ParseManifestXMLBase):
         except Exception, e:
             logger.error(str(e))
             logger.error(traceback.format_exc())
-            logger.error("Error - Parse json file failed after loading .")
-            exit(1)
+            logger.error("ERROR - Failed to parse json file after load it.")
+            assert False, str(e)
 
-        logger.info('* Finished to generate cdn xml file successfully!')
+        logger.info('* Succeed to generate cdn xml file!')
         logger.info('* Please check the output directory: {0}\n\n'.format(self.manifest_xml))
 
 
