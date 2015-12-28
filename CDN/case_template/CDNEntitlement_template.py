@@ -230,7 +230,7 @@ class CDNEntitlement_PID(unittest.TestCase):
                 choice = "Beta"
             elif self.blacklist == "HTB":
                 choice = "HTB"
-            result = CDNVerification().enable_repo(self.system_info, base_repo[master_release][choice][pid])
+            result = CDNVerification().enable_repo(self.system_info, base_repo[master_release][choice][self.base_pid])
             self.assertTrue(result, msg="Test Failed - Failed to enable base repo!")
 
             for repo in repo_list:

@@ -135,6 +135,16 @@ account_cdn_prod = {
         "base_sku": "ES0113909",
         "base_pid": "69"
     },
+    "135": {
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "135"
+    },
+    "155": {
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "155"
+    },
     "146": {
         "sku": "ES0113909",
         "base_sku": "ES0113909",
@@ -242,6 +252,20 @@ account_cdn_stage = {
         "sku": "ES0113909",
         "base_sku": "ES0113909",
         "base_pid": "69"
+    },
+    "135": {
+        "username": "entitlement_testing",
+        "password": "redhat",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "135"
+    },
+    "155": {
+        "username": "entitlement_testing",
+        "password": "redhat",
+        "sku": "ES0113909",
+        "base_sku": "ES0113909",
+        "base_pid": "155"
     },
     "146": {
         "username": "entitlement_testing",
