@@ -26,12 +26,12 @@ class CDNVerification(EntitlementBase):
             logger.info("It's successful to download {0} to {1}".format(remote_path, local_path))
 
     def stop_rhsmcertd(self, system_info):
-        # Stop rhcertd service. As headling(autosubscribe) operation will be run every 2 mins after start up system,
+        # Stop rhsmcertd service. As headling(autosubscribe) operation will be run every 2 mins after start up system,
         # then every 24 hours after that, which will influence our subscribe test.
         cmd = 'service rhsmcertd status'
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get status of service rhsmcertd...")
         if 'stopped' in output or 'Stopped' in output:
-            return
+            return True
 
         cmd = 'service rhsmcertd stop'
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to stop service rhsmcertd...")
@@ -40,10 +40,13 @@ class CDNVerification(EntitlementBase):
             ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get status of service rhsmcertd...")
             if 'stopped' in output or 'Stopped' in output:
                 logger.info("It's successful to stop rhsmcertd service.")
+                return True
             else:
                 logger.error("Failed to stop rhsmcertd service.")
+                return False
         else:
             logger.error("Failed to stop rhsmcertd service.")
+            return False
 
     def config_testing_environment(self, system_info, hostname, baseurl):
         # Config hostname and baseurl in /etc/rhsm/rhsm.conf
@@ -414,6 +417,17 @@ class CDNVerification(EntitlementBase):
             return True
         else:
             logger.error("Test Failed - Failed to disable repo {0}.".format(repo))
+            return False
+
+    def disable_all_repo(self, system_info):
+        # Disabling all default enabled repos
+        cmd = "subscription-manager repos --disable=*"
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to disable all repos...")
+        if ret == 0:
+            logger.info("sucessfully disabled all repos")
+            return True
+        else:
+            logger.error("test Failed - Failed to diable default enabled repo")
             return False
 
     def change_gpgkey(self, system_info, repo_list):

@@ -61,6 +61,7 @@ class AnalyzeCDN(object):
         CANDLEPIN=Stage
         BLACKLIST=GA
         RELEASE_VERSION=7.2
+        Test_Level=Basic
     """
     def __init__(self):
         # Get Jenkins job parameters
@@ -171,6 +172,7 @@ class AnalyzeCDN(object):
                     # CANDLEPIN=Stage
                     # BLACKLIST=GA
                     # RELEASE_VERSION=7.2
+                    # Test_Level=Basic
                     with open("{0}".format(prop_file), 'a+') as f:
                         # Re-write PID line into properties file
                         f.write("PID={0}\n".format(pid_info))
@@ -182,6 +184,7 @@ class AnalyzeCDN(object):
                         f.write("Candlepin={0}\n".format(self.CANDLEPIN))
                         f.write("Blacklist={0}\n".format(self.BLACKLIST))
                         f.write("Release_Version={0}\n".format(self.RELEASE_VERSION))
+                        f.write("Test_Level={0}\n".format(self.RELEASE_VERSION))
             else:
                 print "No eligible testing platform provided!"
         else:

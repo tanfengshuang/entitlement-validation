@@ -10,6 +10,7 @@ from CDN import beaker_ip
 from CDN import cdn
 from CDN import release_ver
 from CDN import blacklist
+from CDN import test_level
 from CDN import variant
 from CDN import arch
 from CDN import manifest_url
@@ -17,6 +18,8 @@ from CDN import candlepin
 
 from CDN import account_cdn_stage
 from CDN import account_cdn_prod
+
+from CDN import base_repo
 
 from CDN.CDNParseManifestXML import CDNParseManifestXML
 from CDN.CDNVerification import CDNVerification
@@ -82,8 +85,10 @@ class CDNEntitlement_PID(unittest.TestCase):
             # Get testing params passed by Jenkins
             self.release_ver = release_ver
             self.blacklist = blacklist
+            self.test_level = test_level
             self.variant = variant
             self.arch = arch
+            self.cdn = cdn
 
             # Get manifest url, set json and xml manifest local path
             self.manifest_url = manifest_url
@@ -106,9 +111,10 @@ class CDNEntitlement_PID(unittest.TestCase):
             if self.release_ver == "":
                 self.release_ver = self.current_release_ver
 
-            # Stop rhcertd service. As headling(autosubscribe) operation will be run every 2 mins after start up system,
+            # Stop rhsmcertd service. As headling(autosubscribe) operation will be run every 2 mins after start up system,
             # then every 24 hours after that, which will influence our subscribe test.
-            CDNVerification().stop_rhsmcertd(self.system_info)
+            result = CDNVerification().stop_rhsmcertd(self.system_info)
+            self.assertTrue(result, msg="Test Failed - Failed to stop service rhsmcertd!")
 
             # Stop service yum-updatesd on RHEL5 in order to avoid yum lock to save testing time
             # Need to investigate it on RHEL6 and RHEL7
@@ -140,10 +146,9 @@ class CDNEntitlement_PID(unittest.TestCase):
         try:
             # Register
             result = CDNVerification().register(self.system_info, self.username, self.password)
-            self.assertTrue(result, msg="Test Failed - Failed to Register with CDN server!")
+            self.assertTrue(result, msg="Test Failed - Failed to register with CDN server!")
 
             # Get subscription list
-            sku_pool_dict = {}
             if self.current_arch == 'i386' and self.pid in ["92", "94", "132", "146"]:
                 # Products SF, SAP, HPN are not supported on i386, and keep them pass currently.
                 logger.info("Product {0} could not be supported on arch i386.".format(self.pid))
@@ -207,20 +212,41 @@ class CDNEntitlement_PID(unittest.TestCase):
             # Enable all test repos listed in manifest to ensure the repo correctness
             test_result &= CDNVerification().test_repos(self.system_info, repo_list, self.blacklist, releasever_set, self.release_ver, self.current_arch)
 
-            # Change gpgkey for all testrepos for rhel snapshot testing against qa cdn
-            if self.blacklist == 'GA':
-                # NOTICE: it's very dangerous if it's tested on Prod CDN, think about it...
+            # Change gpgkey for all test repos for rhel snapshot testing against QA CDN
+            if self.blacklist == 'GA' and self.cdn == "QA":
+                # NOTICE: it's very dangerous if it's tested on Prod CDN, so add option self.cdn == "QA"
                 test_result &= CDNVerification().change_gpgkey(self.system_info, repo_list)
+
+            # Disable all repos
+            result = CDNVerification().disable_all_repo(self.system_info)
+            self.assertTrue(result, msg="Test Failed - Failed to disable all repos!")
+
+            # Enable base repo
+            master_release = CDNVerification().get_master_release(self.system_info)
+            choice = ""
+            if self.blacklist in ["", "GA"]:
+                choice = "GA"
+            elif self.blacklist == "Beta":
+                choice = "Beta"
+            elif self.blacklist == "HTB":
+                choice = "HTB"
+            result = CDNVerification().enable_repo(self.system_info, base_repo[master_release][choice][pid])
+            self.assertTrue(result, msg="Test Failed - Failed to enable base repo!")
 
             for repo in repo_list:
                 # Enable the test repo
-                test_result &= CDNVerification().enable_repo(self.system_info, repo)
+                result = CDNVerification().enable_repo(self.system_info, repo)
+                if not result:
+                    logger.error("Test Failed - Failed to enable test repo {0}".format(repo))
+                    test_result &= result
+                    continue
 
                 # Product id certificate installation
                 test_result &= CDNVerification().pid_cert_installation(self.system_info, repo, releasever_set, self.blacklist, self.manifest_xml, self.pid, self.base_pid, self.current_arch, self.release_ver)
 
-                # All package installation
-                test_result &= CDNVerification().verify_all_packages_installation(self.system_info, self.manifest_xml, self.pid, repo, self.arch, self.release_ver, releasever_set, self.blacklist)
+                if self.test_level == "Advanced":
+                    # All package installation
+                    test_result &= CDNVerification().verify_all_packages_installation(self.system_info, self.manifest_xml, self.pid, repo, self.arch, self.release_ver, releasever_set, self.blacklist)
 
                 # Disable the test repo
                 test_result &= CDNVerification().disable_repo(self.system_info, repo)
