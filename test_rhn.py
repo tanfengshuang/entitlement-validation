@@ -6,7 +6,7 @@ from RHN.Tests.RHNEntitlement import RHNEntitlement
 # Create our test suite.
 def rhn_suite():
     suite = unittest.TestSuite()
-    suite.addTest(RHNEntitlement('testRHNEntitlement'))
+    suite.addTest(RHNEntitlement('testRHNEntitlement_VARIANT_ARCH'))
     return suite
 
 # Launch our test suite

@@ -84,7 +84,7 @@ class RHNEntitlement(unittest.TestCase):
 
         logger.info("--------------- End Init ---------------")
 
-    def testRHNEntitlement(self):
+    def testRHNEntitlement_VARIANT_ARCH(self):
         logger.info("--------------- Begin testRHNEntitlement --------------- ")
 
         try:

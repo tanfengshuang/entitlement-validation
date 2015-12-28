@@ -44,7 +44,7 @@ prepare_cdn() {
     echo "Rlease_Version=$Rlease_Version"
 
     cdn_test_case_path=$WORKSPACE/entitlement-validation/CDN/Tests/
-    cdn_test_suite_path=$WORKSPACE/entitlement-validation/test_cdn.py
+    cdn_test_suite=$WORKSPACE/entitlement-validation/test_cdn.py
     cdn_case_template=$WORKSPACE/entitlement-validation/CDN/case_template/CDNEntitlement_template.py
 
     # Generate all test cases from template for cdn testing, and add test cases to test suite
@@ -63,11 +63,11 @@ prepare_cdn() {
         sed -i -e "s/PID/$pid/g" -e "s/VARIANT/$Variant/g" -e "s/ARCH/$Arch/g" $case_full_name
 
         # Add import sentence to __init__.py
-        if [ "`cat $cdn_test_suite_path | grep $case_name`" ==  "" ]; then sed -i "2a\from CDN.Tests.$case_name import $case_name" $cdn_test_suite_path; fi
+        if [ "`cat $cdn_test_suite | grep $case_name`" ==  "" ]; then sed -i "2a\from CDN.Tests.$case_name import $case_name" $cdn_test_suite; fi
 
         # Add test cases to test suite
         line="suite.addTest(CDNEntitlement_${pid}('testCDNEntitlement_${pid}'))"
-        if [ "`cat $cdn_test_suite_path | grep $case_name | grep -v import`" == "" ]; then sed -i "/suite = unittest.TestSuite()/a\    $line" $cdn_test_suite_path; fi
+        if [ "`cat $cdn_test_suite | grep $case_name | grep -v import`" == "" ]; then sed -i "/suite = unittest.TestSuite()/a\    $line" $cdn_test_suite; fi
     done
 }
 
@@ -81,6 +81,12 @@ prepare_rhn() {
     echo "Manifest_URL=$Manifest_URL"
     echo "Distro=$Distro"
     echo "RHN=$RHN"
+
+    rhn_test_case=$WORKSPACE/entitlement-validation/RHN/Tests/RHNEntitlement.py
+    rhn_test_suite=$WORKSPACE/entitlement-validation/test_rhn.py
+
+    # Replace VARIANT and ARCH in rhn test suite and test case
+    sed -i -e "s/VARIANT/$Variant/g" -e "s/ARCH/$Arch/g" $rhn_test_case $rhn_test_suite
 }
 
 prepare_sat() {
