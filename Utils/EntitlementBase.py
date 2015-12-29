@@ -55,27 +55,6 @@ class EntitlementBase(object):
         console_handler.setLevel(logging.INFO)
         return file_handler_debug, file_handler_info, file_handler_error, console_handler
 
-    def stop_yum_updatesd(self, system_info):
-        # Stop service yum-updatesd on RHEL5 in order to avoid yum lock to save testing time
-        master_release = self.get_master_release(system_info)
-        if master_release == '5':
-            cmd = 'service yum-updatesd status'
-            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get status of service yum-updatesd...")
-            if 'stopped' in output or "yum-updatesd: unrecognized service" in output:
-                return
-
-            cmd = 'service yum-updatesd stop'
-            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to stop yum-updatesd service...")
-            if ret == 0:
-                cmd = 'service yum-updatesd status'
-                ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get status of service yum-updatesd...")
-                if 'stopped' in output:
-                        logger.info("It's successful to stop yum-updatesd service.")
-                else:
-                    logger.warning("Failed to stop yum-updatesd service.")
-            else:
-                logger.warning("Failed to stop yum-updatesd service.")
-
     def ntpdate_redhat_clock(self, system_info):
         # Synchronize system time with clock.redhat.com, it's a workaround when system time is not correct,
         # commands "yum repolist" and "subscription-manager repos --list" return nothing

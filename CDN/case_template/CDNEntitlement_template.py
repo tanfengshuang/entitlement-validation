@@ -116,10 +116,6 @@ class CDNEntitlement_PID(unittest.TestCase):
             result = CDNVerification().stop_rhsmcertd(self.system_info)
             self.assertTrue(result, msg="Test Failed - Failed to stop service rhsmcertd!")
 
-            # Stop service yum-updatesd on RHEL5 in order to avoid yum lock to save testing time
-            # Need to investigate it on RHEL6 and RHEL7
-            CDNVerification().stop_yum_updatesd(self.system_info)
-
             # Synchronize system time with clock.redhat.com, it's a workaround when system time is not correct,
             # commands "yum repolist" and "subscription-manager repos --list" return nothing
             CDNVerification().ntpdate_redhat_clock(self.system_info)
