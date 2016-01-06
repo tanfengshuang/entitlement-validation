@@ -27,7 +27,7 @@ class SAT5Verification(EntitlementBase):
         # RHEL7: sslCACert=/usr/share/rhn/RHN-ORG-TRUSTED-SSL-CERT
         up2date_path = "/etc/sysconfig/rhn/up2date"
         cert = "/usr/share/rhn/RHN-ORG-TRUSTED-SSL-CERT"
-        cmd = "sed -e '/sslCACert=/d' -e '/^sslCACert/a\sslCACert={0}/usr/share/rhn/shuang' {1}".format(cert, up2date_path)
+        cmd = "sed -i -e '/sslCACert=/d' -e '/^sslCACert/a\sslCACert={0}' {1}".format(cert, up2date_path)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to set sslCACert in {0}...".format(up2date_path))
         if ret == 0:
             logger.info("It's successful to set sslCACert to {0} in {1}.".format(cert, up2date_path))
@@ -35,7 +35,7 @@ class SAT5Verification(EntitlementBase):
             logger.error("Test Failed - Failed to set sslCACert to {0} in {1}.".format(cert, up2date_path))
             return False
 
-        cmd = "sed -e '/serverURL=/d' -e '/^serverURL/a\serverURL={0}' {1}".format(server_url, up2date_path)
+        cmd = "sed -i -e '/serverURL=/d' -e '/^serverURL/a\serverURL={0}' {1}".format(server_url, up2date_path)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to set serverUrl in {0}...".format(up2date_path))
         if ret == 0:
             logger.info("It's successful to set serverURL to {0} in {1}.".format(server_url, up2date_path))

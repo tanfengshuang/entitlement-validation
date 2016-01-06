@@ -63,10 +63,12 @@ class SAT5Entitlement(unittest.TestCase):
             self.manifest_xml = os.path.join(self.manifest_path, "sat5_test_manifest.xml")
 
             # Download certificate from SAT5 Server
-            SAT5Verification().download_cert(self.system_info, self.sat5_server)
+            result = SAT5Verification().download_cert(self.system_info, self.sat5_server)
+            self.assertTrue(result, msg="Test Failed - Failed to download certificate from SAT5 Server!")
 
             # Update sslCACert and serverUrl in file up2date on SAT5 Server
-            SAT5Verification().update_up2date(self.system_info, self.server_url)
+            result = SAT5Verification().update_up2date(self.system_info, self.server_url)
+            self.assertTrue(result, msg="Test Failed - Failed to set sslCACert or sslServerUrl in up2date file!")
 
             # Get system release version and arch
             self.current_rel_version = SAT5Verification().get_os_release_version(self.system_info)
