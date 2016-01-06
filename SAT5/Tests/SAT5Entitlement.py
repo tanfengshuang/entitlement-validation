@@ -106,7 +106,7 @@ class SAT5Entitlement(unittest.TestCase):
 
             # Add base channel, such as rhel-x86_64-server-6
             master_release = SAT5Verification().get_master_release(self.system_info)
-            base_channel = "rhel-{0}-{1}-{2}".format(self.arch, self.variant, master_release)
+            base_channel = "rhel-{0}-{1}-{2}".format(self.arch, self.variant.lower(), master_release)
             result = SAT5Verification().add_channels(self.system_info, self.username, self.password, base_channel)
             self.assertTrue(result, msg="Test Failed - Failed to add base channel {0}!".format(base_channel))
 
