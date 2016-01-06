@@ -101,10 +101,25 @@ class RHNEntitlement(unittest.TestCase):
                 result = RHNVerification().verify_channels(self.system_info, self.manifest_xml, self.username, self.password, self.current_arch, self.variant)
                 self.assertTrue(result, msg="Test Failed - Failed to verify channels!")
 
+            # Add base channel, such as rhel-x86_64-server-6
+            master_release = RHNVerification().get_master_release(self.system_info)
+            base_channel = "rhel-{0}-{1}-{2}".format(self.arch, self.variant, master_release)
+            result = RHNVerification().add_channels(self.system_info, self.username, self.password, base_channel)
+            self.assertTrue(result, msg="Test Failed - Failed to add base channel {0}!".format(base_channel))
+
             test_result = True
             for channel in channel_list:
-                if RHNVerification().add_channels(self.system_info, self.username, self.password, channel):
-                    test_result &= RHNVerification().installation(self.system_info, self.manifest_xml, channel)
+                # Add test channel
+                if channel != base_channel:
+                    result = RHNVerification().add_channels(self.system_info, self.username, self.password, channel)
+                    if not result:
+                        logger.error("Test Failed - Failed to add test channel {0}".format(channel))
+                        test_result &= result
+                        continue
+                # Installation testing
+                test_result &= RHNVerification().installation(self.system_info, self.manifest_xml, channel)
+                # Remove test channel
+                if channel != base_channel:
                     test_result &= RHNVerification().remove_channels(self.system_info, self.username, self.password, channel)
 
             self.assertTrue(test_result, msg="Test Failed - Failed to do RHN Entitlement testing!")
