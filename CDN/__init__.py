@@ -8,7 +8,7 @@ test_level = os.environ["Test_Level"]
 blacklist = os.environ["Blacklist"]
 release_ver = os.environ["Release_Version"]
 candlepin = os.environ["Candlepin"]
-beaker_ip = os.environ["Beaker_IP"]
+
 
 # baseurl hostname server_url
 cdn_baseurl = {

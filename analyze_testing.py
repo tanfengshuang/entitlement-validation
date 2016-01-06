@@ -307,6 +307,91 @@ class AnalyzeRHN(object):
                     f.write("RHN={0}\n".format(self.RHN))
 
 
+class AnalyzeSAT5(object):
+    """
+    1. Get base testing platforms from manifest, such as ['Client_x86_64', 'Server_s390x', 'Server_x86_64', 'Workstation_x86_64']
+    2. Get Jenkins upstream job parameter 'Channels' as CHANNELs and 'RHEL_Variant' as VARIANTs
+    3. Get testing platform intersection
+       If 'Channels' and 'RHEL_Variant' are both empty
+       If 'Channels' is not empty, 'RHEL_Variant' is empty
+       If 'Channels' is not empty, 'RHEL_Variant' is not empty
+       If 'Channels' is empty, 'RHEL_Variant' is not empty
+    4. Generate properties files, such as Server-x86_64.properties, Server-i386.properties, and write VARIANT and ARCH variables
+    5. Append other parameters into properties files in order to pass down these params listed in properties files to downstream jobs
+    6. Content of properties file:
+        Variant=Server
+        Arch=i386
+        MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+        DISTRO=RHEL-7.2-20150904.0
+        SAT5_Server=cloud-qe-16-vm-10.idmqe.lab.eng.bos.redhat.com
+    """
+    def __init__(self):
+        self.DISTRO = os.environ["Distro"]
+        self.SAT5_Server = os.environ["SAT5_Server"]
+        self.CHANNELs = "" #os.environ["Channels"]
+        self.VARIANTs = os.environ["RHEL_Variant"]
+        self.MANIFEST_URL = os.environ["Manifest_URL"]
+
+        # Download and load manifest
+        self.MANIFEST_PATH = os.path.join(os.getcwd(), "manifest")
+        self.MANIFEST_NAME = os.path.join(self.MANIFEST_PATH, "SAT5_MANIFEST.json")
+        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.MANIFEST_URL)
+
+    def analyze_sat5(self):
+        if "rhn" in self.content.keys():
+            # Get testing platforms from mainfest
+            platforms = []
+            rhn = self.content["rhn"]
+            for channel in rhn["channels"].keys():
+                print channel
+                arch = channel.split("-")[1]
+                variant = channel.split("-")[2]
+                if variant == "server":
+                    variant = "Server"
+                elif variant == "client":
+                    variant = "Client"
+                elif variant == "workstation":
+                    variant = "Workstation"
+                elif variant == "computenode":
+                    variant = "ComputeNode"
+                platforms.append("{0}-{1}".format(variant, arch))
+            platforms = list(set(platforms))
+            # ['Server_ppc64le', 'ComputeNode_x86_64', 'Server_aarch64', 'Server_ppc64', 'Client_x86_64', 'Server_s390x', 'Server_x86_64', 'Workstation_x86_64']
+            print "Variants and arches list in manifest:", platforms
+
+            testing_platforms = []
+            if self.CHANNELs == "" and self.VARIANTs == "":
+                testing_platforms = platforms
+            elif self.CHANNELs != "":
+                pass
+            else:
+                # Get the intersection of $platforms in manifest and $VARIANTs provided as parameter
+                # VARIANTs: ['Server-i386', 'Server-x86_64']
+                testing_platforms = list(set(self.VARIANTs.split(",")).intersection(set(platforms)))
+            print "Need to do testing on:", testing_platforms
+
+            # Generate properties file to trigger downstream jobs and pass down testing parameters
+            # Content of *.properties file
+            # Variant=Server
+            # Arch=i386
+            # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+            # DISTRO=RHEL-7.2-20150904.0
+            # SAT5_Server=cloud-qe-16-vm-10.idmqe.lab.eng.bos.redhat.com
+            for file_content in testing_platforms:
+                variant = file_content.split("-")[0]
+                arch = file_content.split("-")[1]
+                with open("{0}.properties".format(file_content), 'w') as f:
+                    # Write $variant to new properties file
+                    f.write("Variant={0}\n".format(variant))
+
+                    # Write $arch to new properties file
+                    f.write("Arch={0}\n".format(arch))
+
+                    # Write other Jenkins job parameters to properties file
+                    f.write("Manifest_URL={0}\n".format(self.MANIFEST_URL))
+                    f.write("Distro={0}\n".format(self.DISTRO))
+                    f.write("SAT5_Server={0}\n".format(self.SAT5_Server))
+
 class GetPID(object):
     def __init__(self):
         self.PID = []
@@ -354,6 +439,9 @@ if __name__ == '__main__':
         elif sys.argv[1] == "rhn":
             rhn = AnalyzeRHN()
             rhn.analyze_rhn()
+        elif sys.argv[1] == "sat":
+            rhn = AnalyzeSAT5()
+            rhn.analyze_sat5()
         elif sys.argv[1] == "pid":
             GetPID().get_pid()
         else:

@@ -91,6 +91,21 @@ prepare_rhn() {
 
 prepare_sat() {
     echo "waiting for the implement..."
+    # Trying to get beaker ip
+    get_ip
+
+    # Print params
+    echo "Variant=$Variant"
+    echo "Arch=$Arch"
+    echo "Manifest_URL=$Manifest_URL"
+    echo "Distro=$Distro"
+    echo "SAT5_Server=$SAT5_Server"
+
+    sat5_test_case=$WORKSPACE/entitlement-validation/SAT5/Tests/SAT5Entitlement.py
+    sat5_test_suite=$WORKSPACE/entitlement-validation/test_sat5.py
+
+    # Replace VARIANT and ARCH in rhn test suite and test case
+    sed -i -e "s/VARIANT/$Variant/g" -e "s/ARCH/$Arch/g" $sat5_test_case $sat5_test_suite
 }
 
 if [ $# -eq 1 ] ; then

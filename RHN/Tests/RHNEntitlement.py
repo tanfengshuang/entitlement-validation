@@ -6,7 +6,7 @@ import logging.config
 
 from Utils import beaker_username
 from Utils import beaker_password
-from RHN import beaker_ip
+from Utils import beaker_ip
 from RHN import rhn
 from RHN import variant
 from RHN import arch

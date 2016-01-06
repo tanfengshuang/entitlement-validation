@@ -4,7 +4,6 @@ manifest_url = os.environ["Manifest_URL"]
 variant = os.environ["Variant"]
 arch = os.environ["Arch"]
 rhn = os.environ["RHN"]
-beaker_ip = os.environ["Beaker_IP"]
 
 # rhn server url
 server_url = {
