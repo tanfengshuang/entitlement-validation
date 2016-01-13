@@ -1,0 +1,107 @@
+- job-template:
+   name: EntitlementSAT5TestingTrigger
+   node: entitlement
+   wrappers:
+        - ansicolor
+        - workspace-cleanup
+   parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description: It should be a json format file. and if no 'Product_ID' and 'Variant' parameters, will do the testing according to this manifest content.
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description: Distro version in Beaker used to do testing, such as RHEL-7.2-20150904.0.
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - extended-choice:
+            name: RHEL_Variant
+            description: Optional
+            type: 'PT_CHECKBOX'
+            value: Server-i386,Server-x86_64,Server-ppc64,Server-ppc64le,Server-aarch64,Server-s390x,Client-i386,Client-x86_64,Workstation-i386,Workstation-x86_64,ComputeNode-x86_64
+            visible-item-count: "11"
+   scm:
+        - git:
+            url: 'https://github.com/tanfengshuang/entitlement-validation'
+            branches:
+                - origin/master
+            basedir: entitlement-validation
+   builders:
+        - shell: |
+            #!/bin/bash
+            export Manifest_URL=$Manifest_URL
+            export Distro=$Distro
+            export SAT5_Server=$SAT5_Server
+            export RHEL_Variant=$RHEL_Variant
+
+            python $WORKSPACE/entitlement-validation/analyze_testing.py sat
+
+   publishers:
+      - archive:
+          artifacts: 'manifest/*.json, *.properties'
+          allow-empty: 'true'
+      - trigger-parameterized-builds:
+          - project: 'EntitlementSAT5-Server_x86_64'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: Server-x86_64.properties
+            fail-on-missing: true
+          - project: 'EntitlementSAT5-Server_i386'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: Server-i386.properties
+            fail-on-missing: true
+          - project: 'EntitlementSAT5-Server_ppc64'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: Server-ppc64.properties
+            fail-on-missing: true 
+          - project: 'EntitlementSAT5-Server_ppc64le'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: Server-ppc64le.properties
+            fail-on-missing: true 
+          - project: 'EntitlementSAT5-Server_aarch64'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: Server-aarch64.properties
+            fail-on-missing: true 
+          - project: 'EntitlementSAT5-Server_s390x'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: Server-s390x.properties
+            fail-on-missing: true 
+          - project: 'EntitlementSAT5-Client_x86_64'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: Client-x86_64.properties
+            fail-on-missing: true 
+          - project: 'EntitlementSAT5-Client_i386'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: Client-i386.properties
+            fail-on-missing: true 
+          - project: 'EntitlementSAT5-Workstation_x86_64'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: Workstation-x86_64.properties
+            fail-on-missing: true 
+          - project: 'EntitlementSAT5-Workstation_i386'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: Workstation-i386.properties
+            fail-on-missing: true 
+          - project: 'EntitlementSAT5-ComputeNode_x86_64'
+            current-parameters: true
+            condition: 'SUCCESS'
+            property-file: ComputeNode-x86_64.properties
+            fail-on-missing: true 
+
+- project:
+   name: EntitlementSAT5TestingTriggerJobs
+   jobs:
+    - EntitlementSAT5TestingTrigger
+

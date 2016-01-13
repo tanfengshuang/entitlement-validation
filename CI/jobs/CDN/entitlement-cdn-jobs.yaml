@@ -8,10 +8,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description: 
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -19,6 +15,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced). 
         - choice:
             name: Blacklist
             choices:
@@ -60,10 +66,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -71,6 +73,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced). 
         - choice:
             name: Blacklist
             choices:
@@ -112,10 +124,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -123,6 +131,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced).
         - choice:
             name: Blacklist
             choices:
@@ -164,10 +182,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -175,6 +189,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced).
         - choice:
             name: Blacklist
             choices:
@@ -216,10 +240,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -227,6 +247,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced).
         - choice:
             name: Blacklist
             choices:
@@ -268,10 +298,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -279,6 +305,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced).
         - choice:
             name: Blacklist
             choices:
@@ -323,10 +359,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -334,6 +366,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced).
         - choice:
             name: Blacklist
             choices:
@@ -375,10 +417,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -386,6 +424,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced).
         - choice:
             name: Blacklist
             choices:
@@ -427,10 +475,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -438,6 +482,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced).
         - choice:
             name: Blacklist
             choices:
@@ -479,10 +533,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -490,6 +540,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced).
         - choice:
             name: Blacklist
             choices:
@@ -531,10 +591,6 @@
             default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-cdn.json
             description:
         - string:
-            name: Product_ID
-            default:
-            description: 
-        - string:
             name: Distro
             default: RHEL-6.7
             description:
@@ -542,6 +598,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default:
+            description: 
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced).
         - choice:
             name: Blacklist
             choices:

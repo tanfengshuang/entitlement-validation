@@ -17,6 +17,16 @@
             name: Release_Version
             default: 
             description: Optional. Specify the release version, if the manifest requires testing on specific release(such as 6.8, 7.3).
+        - string:
+            name: Product_ID
+            default: 
+            description: Optional. You can specify 'Product_ID' only, or use it together with the following 'RHEL_Variant' parameter. And you can input 1 or more PIDs separated by comma.
+        - choice:
+            name: Test_Level
+            choices:
+              - Basic
+              - Advanced
+            description: Select testing level(basic, advanced). 
         - choice:
             name: Blacklist
             choices:
@@ -37,10 +47,6 @@
               - Stage
               - Prod
             description:
-        - string:
-            name: Product_ID
-            default: 
-            description: Optional. You can specify 'Product_ID' only, or use it together with the following 'RHEL_Variant' parameter. And you can input 1 or more PIDs separated by comma.
         - extended-choice:
             name: RHEL_Variant
             description: Optional. You can specify 'RHEL_Variant' only, or use it together with above 'Product_ID' parameter.
@@ -64,6 +70,7 @@
             export Release_Version=$Release_Version
             export Product_ID=$Product_ID
             export RHEL_Variant=$RHEL_Variant
+            export Test_Level=$Test_Level
 
             python $WORKSPACE/entitlement-validation/analyze_testing.py cdn
 

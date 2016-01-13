@@ -1,0 +1,331 @@
+- job-template:
+    name: 'EntitlementSAT5-Server_x86_64'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description: 
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - Server
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - x86_64
+            description:
+
+- job-template:
+    name: 'EntitlementSAT5-Server_i386'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - Server
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - i386
+            description:
+
+- job-template:
+    name: 'EntitlementSAT5-Server_ppc64'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - Server
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - ppc64
+            description:
+
+- job-template:
+    name: 'EntitlementSAT5-Server_ppc64le'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - Server
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - ppc64le
+            description:
+
+- job-template:
+    name: 'EntitlementSAT5-Server_aarch64'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - Server
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - arch64
+            description:
+
+- job-template:
+    name: 'EntitlementSAT5-Server_s390x'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - Server
+              - Client
+              - Workstation
+              - ComputeNode
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - s390x
+            description:
+
+- job-template:
+    name: 'EntitlementSAT5-Client_x86_64'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - Client
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - x86_64
+            description:
+
+- job-template:
+    name: 'EntitlementSAT5-Client_i386'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - Client
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - i386
+            description:
+
+- job-template:
+    name: 'EntitlementSAT5-Workstation_x86_64'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - Workstation
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - x86_64
+            description:
+
+- job-template:
+    name: 'EntitlementSAT5-Workstation_i386'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - Workstation
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - i386
+            description:
+
+- job-template:
+    name: 'EntitlementSAT5-ComputeNode_x86_64'
+    defaults: entitlement-sat5-base
+    node: provision
+    parameters:
+        - string:
+            name: Manifest_URL
+            default: http://hp-z220-11.qe.lab.eng.nay.redhat.com/home/ftan/code_debug/manifest/testing-sat5.json
+            description:
+        - string:
+            name: Distro
+            default: RHEL-6.7
+            description:
+        - string:
+            name: SAT5_Server
+            default:
+            description:
+        - choice:
+            name: Variant
+            choices:
+              - ComputeNode
+            description:
+        - choice:
+            name: Arch
+            choices:
+              - x86_64
+            description:
+
+- job-group:
+    name: EntitlementSAT5Jobs
+    jobs:
+      - 'EntitlementSAT5-Server_x86_64'
+      - 'EntitlementSAT5-Server_i386'
+      - 'EntitlementSAT5-Server_ppc64'
+      - 'EntitlementSAT5-Server_ppc64le'
+      - 'EntitlementSAT5-Server_aarch64'
+      - 'EntitlementSAT5-Server_s390x'
+      - 'EntitlementSAT5-Client_x86_64'
+      - 'EntitlementSAT5-Client_i386'
+      - 'EntitlementSAT5-Workstation_x86_64'
+      - 'EntitlementSAT5-Workstation_i386'
+      - 'EntitlementSAT5-ComputeNode_x86_64'
+
+- project:
+   name: EntitlementSAT5JobsProject
+   jobs:
+    - EntitlementSAT5Jobs
+
