@@ -15,7 +15,7 @@ server_url = {
 account_rhn = {
     "Live": {
         "username": "qa@redhat.com",
-        "password": "QMdMJ8jvSWUwB6WZ"
+        "password": "a85xH8a5w8EaZbdS"
     },
     "QA": {
         "username": "qa@redhat.com",

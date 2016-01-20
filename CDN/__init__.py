@@ -10,18 +10,6 @@ release_ver = os.environ["Release_Version"]
 candlepin = os.environ["Candlepin"]
 
 
-# baseurl hostname server_url
-cdn_baseurl = {
-    "QA": "https://cdn.qa.redhat.com",
-    "Prod": "https://cdn.redhat.com"
-}
-
-candlepin_hostname = {
-    "Stage": "subscription.rhn.redhat.com",
-    "Prod": "subscription.rhn.stage.redhat.com"
-}
-
-
 # RHEL Variant:
 # 68  client
 # 69  server-x86_64
@@ -81,10 +69,10 @@ base_repo = {
 }
 
 
-# accounts used for cdn testing
+# Accounts for Production Candlepin
 account_cdn_prod = {
     "username": "qa@redhat.com",
-    "password": "QMdMJ8jvSWUwB6WZ",
+    "password": "a85xH8a5w8EaZbdS",
     "68": {
         "sku": "ES0113909",
         "base_sku": "ES0113909",
@@ -182,6 +170,8 @@ account_cdn_prod = {
     }
 }
 
+
+# Accounts for Stage Candlepin
 account_cdn_stage = {
     "68": {
         "username": "entitlement_testing",
@@ -305,15 +295,15 @@ account_cdn_stage = {
     "299": {
         "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
+        "sku": "RH00545",
+        "base_sku": "MCT0343",
         "base_pid": "72"
     },
     "300": {
         "username": "entitlement_testing",
         "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
+        "sku": "RH00545",
+        "base_sku": "MCT0343",
         "base_pid": "72"
     }
 }
