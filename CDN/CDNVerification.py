@@ -314,7 +314,7 @@ class CDNVerification(EntitlementBase):
                 package_list = [p.split()[0] for p in package_list]
             elif type == "full-name":
                 # "%{name}-%{version}-%{release}.src"
-                package_list = ["{0}-{1}-{2}-{3}".format(i.split()[0], i.split()[1], i.split()[2], i.split()[3]) for i in package_list]
+                package_list = ["{0}-{1}-{2}.{3}".format(i.split()[0], i.split()[1], i.split()[2], i.split()[3]) for i in package_list]
         logger.info("--------------- End to get package list from manifest: PASS ---------------")
         return package_list
 

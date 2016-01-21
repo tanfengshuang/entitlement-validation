@@ -69,242 +69,315 @@ base_repo = {
 }
 
 
-# Accounts for Production Candlepin
-account_cdn_prod = {
-    "username": "qa@redhat.com",
-    "password": "a85xH8a5w8EaZbdS",
+# Account info
+stage_username = "entitlement_testing"
+stage_password = "redhat"
+prod_username = "qa@redhat.com"
+prod_password = "a85xH8a5w8EaZbdS"
+
+account_info = {
     "68": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "68"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT0474",
+            "base_sku": "MCT0474"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "68",
+        "product_name": "Red Hat Enterprise Linux Desktop"
     },
     "69": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "RH0103708",
+            "base_sku": "RH0103708"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "69",
+        "product_name": "Red Hat Enterprise Linux Server"
     },
     "71": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "71"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT0351",
+            "base_sku": "MCT0351"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "71",
+        "product_name": "Red Hat Enterprise Linux Workstation"
     },
     "72": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "72"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT0343",
+            "base_sku": "MCT0343"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "72",
+        "product_name": "Red Hat Enterprise Linux for IBM z Systems"
     },
     "74": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "74"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT0984",
+            "base_sku": "MCT0984"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "74",
+        "product_name": "Red Hat Enterprise Linux for Power, big endian"
     },
     "76": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "76"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT0978",
+            "base_sku": "MCT0978"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "76",
+        "product_name": "Red Hat Enterprise Linux for Scientific Computing"
     },
     "83": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT0367",
+            "base_sku": "RH0103708"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "69",
+        "product_name": "Red Hat Enterprise Linux High Availability (for RHEL Server)"
     },
     "85": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "RH00028",
+            "base_sku": "RH0103708"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "69",
+        "product_name": "Red Hat Enterprise Linux Load Balancer (for RHEL Server)"
     },
     "90": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT0456",
+            "base_sku": "RH0103708"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "69",
+        "product_name": "Red Hat Enterprise Linux Resilient Storage (for RHEL Server)"
     },
     "92": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT1761",
+            "base_sku": "RH0103708"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "69",
+        "product_name": "Red Hat Enterprise Linux Scalable File System (for RHEL Server)"
     },
     "135": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "135"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "135",
+        "product_name": ""
     },
     "155": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "155"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "155",
+        "product_name": ""
     },
     "146": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT1731",
+            "base_sku": "RH0103708"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "69",
+        "product_name": "Red Hat Enterprise Linux for SAP"
     },
     "241": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "RH00196",
+            "base_sku": "RH0103708"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "69",
+        "product_name": "Red Hat Enterprise Linux for SAP Hana"
     },
     "279": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "279"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "RH00284",
+            "base_sku": "RH00284"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "279",
+        "product_name": "Red Hat Enterprise Linux for Power, little endian"
     },
     "287": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "RH00428",
+            "base_sku": "RH00428"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "69",
+        "product_name": "Red Hat Enterprise Linux for Real Time"
     },
     "294": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "294"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT3115",
+            "base_sku": "MCT3115"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "294",
+        "product_name": "Red Hat Enterprise Linux Server for ARM"
     },
     "299": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "72"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "RH00545",
+            "base_sku": "MCT0343"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "72",
+        "product_name": "Red Hat Enterprise Linux Resilient Storage (for IBM z Systems)"
     },
     "300": {
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "72"
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "RH00546",
+            "base_sku": "MCT0343"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "72",
+        "product_name": "Red Hat Enterprise Linux High Availability (for IBM z Systems)"
     }
 }
-
-
-# Accounts for Stage Candlepin
-account_cdn_stage = {
-    "68": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "68"
-    },
-    "69": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
-    },
-    "71": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "71"
-    },
-    "72": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "72"
-    },
-    "74": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "74"
-    },
-    "76": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "76"
-    },
-    "83": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
-    },
-    "85": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
-    },
-    "90": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
-    },
-    "92": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
-    },
-    "135": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "135"
-    },
-    "155": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "155"
-    },
-    "146": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
-    },
-    "241": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
-    },
-    "279": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "279"
-    },
-    "287": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "69"
-    },
-    "294": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "ES0113909",
-        "base_sku": "ES0113909",
-        "base_pid": "294"
-    },
-    "299": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "RH00545",
-        "base_sku": "MCT0343",
-        "base_pid": "72"
-    },
-    "300": {
-        "username": "entitlement_testing",
-        "password": "redhat",
-        "sku": "RH00545",
-        "base_sku": "MCT0343",
-        "base_pid": "72"
-    }
-}
-
