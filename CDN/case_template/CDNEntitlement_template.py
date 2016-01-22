@@ -4,9 +4,9 @@ import traceback
 import logging
 import logging.config
 
-from Utils import beaker_username
-from Utils import beaker_password
-from Utils import beaker_ip
+from Utils import system_username
+from Utils import system_password
+from Utils import system_ip
 from CDN import cdn
 from CDN import release_ver
 from CDN import blacklist
@@ -75,9 +75,9 @@ class CDNEntitlement_PID(unittest.TestCase):
         try:
             # Get ip, username and password of beaker testing system
             self.system_info = {
-                "ip": beaker_ip,
-                "username": beaker_username,
-                "password": beaker_password
+                "ip": system_ip,
+                "username": system_username,
+                "password": system_password
             }
 
             # Get testing params passed by Jenkins

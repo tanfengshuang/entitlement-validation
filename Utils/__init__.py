@@ -1,6 +1,6 @@
 import os
 
-# username and password of beaker system
-beaker_ip = os.environ["Beaker_IP"]
-beaker_username = "root"
-beaker_password = "QwAo2U6GRxyNPKiZaOCx"
+# Get username and password for testing system
+system_ip = os.environ["System_IP"]
+system_username = "root"
+system_password = os.environ["Password"]

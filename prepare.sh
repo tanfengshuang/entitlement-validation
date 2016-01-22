@@ -8,10 +8,10 @@ usage() {
 get_ip() {
     ip_file="$WORKSPACE/RESOURCES.txt"
     if [ -f "$ip_file" ]; then
-        Beaker_IP=`cat $ip_file | grep EXISTING_NODES  | awk -F '=' '{print $2}'`
-        if [ "$Beaker_IP" != "" ]; then
-            export Beaker_IP=$Beaker_IP
-            echo "Succeed to get beaker IP: $Beaker_IP."
+        System_IP=`cat $ip_file | grep EXISTING_NODES  | awk -F '=' '{print $2}'`
+        if [ "$System_IP" != "" ]; then
+            export System_IP=$System_IP
+            echo "Succeed to get beaker IP: $System_IP."
         else
             echo "ERROR: Failed to get the IP of beaker system!"
             exit 1

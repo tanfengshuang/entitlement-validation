@@ -3,6 +3,7 @@ import sys
 import json
 import commands
 
+
 # CDN test data
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
 # http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel5.10/rhel5.10-rc-1.3.json
@@ -65,21 +66,32 @@ class AnalyzeCDN(object):
     """
     def __init__(self):
         # Get Jenkins job parameters
-        self.DISTRO = os.environ["Distro"]
+        self.Distro = os.environ["Distro"]
         self.CDN = os.environ["CDN"]
-        self.CANDLEPIN = os.environ["Candlepin"]
-        self.BLACKLIST = os.environ["Blacklist"]
-        self.RELEASE_VERSION = os.environ["Release_Version"]
-        self.PIDs = os.environ["Product_ID"]
-        self.VARIANTs = os.environ["RHEL_Variant"]
-        self.MANIFEST_URL = os.environ["Manifest_URL"]
+        self.Candlepin = os.environ["Candlepin"]
+        self.Blacklist = os.environ["Blacklist"]
+        self.Release_Version = os.environ["Release_Version"]
+        self.Product_ID = os.environ["Product_ID"]
+        self.RHEL_variant = os.environ["RHEL_Variant"]
+        self.Manifest_URL = os.environ["Manifest_URL"]
+        self.Test_Level = os.environ["Test_Level"]
 
         # Download and load manifest
-        self.MANIFEST_PATH = os.path.join(os.getcwd(), "manifest")
-        self.MANIFEST_NAME = os.path.join(self.MANIFEST_PATH, "CDN_MANIFEST.json")
-        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.MANIFEST_URL)
+        self.Manifest_PATH = os.path.join(os.getcwd(), "manifest")
+        self.Manifest_NAME = os.path.join(self.Manifest_PATH, "CDN_MANIFEST.json")
+        self.content = download_read_manifest(self.Manifest_PATH, self.Manifest_NAME, self.Manifest_URL)
 
-    def analyze_cdn(self):
+    def get_master_release(self):
+        if "cdn" in self.content.keys():
+            pid = self.content["cdn"]["products"].keys()[0]
+            platform_version = self.content["cdn"]["products"][pid]["Platform Version"]
+            master_release = platform_version.split(".")[1]
+            print master_release
+            return master_release
+        else:
+            print "No CDN part provided in manifest!"
+
+    def analyze_testing_platform(self):
         if "cdn" in self.content.keys():
             # Get testing platforms from provided mainfest
             platforms = {}
@@ -105,7 +117,7 @@ class AnalyzeCDN(object):
                 print "{0}: {1}".format(i, platforms[i])
 
             # Jenkins upstream job parameter 'Product_ID' and 'RHEL_Variant' are both empty
-            if self.PIDs == "" and self.VARIANTs == "":
+            if self.Product_ID == "" and self.RHEL_variant == "":
                 # Write testing properties files according to platforms listed in manifest
                 for pid in platforms:
                     # Generate *.properties files used to trigger downstream jobs
@@ -113,14 +125,14 @@ class AnalyzeCDN(object):
                         self.__generate_properties(variant_arch, pid)
 
             # Jenkins upstream job parameter 'Product_ID' is not empty
-            elif self.PIDs != "":
-                for pid in self.PIDs.split(","):
+            elif self.Product_ID != "":
+                for pid in self.Product_ID.split(","):
                     if pid not in platforms.keys():
                         print "Warning: PID {0} is not in manifest!".format(pid)
                         continue
 
                     # Jenkins upstream job parameter 'Product_ID' is not empty, 'RHEL_Variant' is empty
-                    if self.VARIANTs == "":
+                    if self.RHEL_variant == "":
                         # If VARIANTs is empty, then generate *.properties files according to variant_arch under pid in manifest
                         for variant_arch in platforms[pid]:
                             self.__generate_properties(variant_arch, pid)
@@ -128,7 +140,7 @@ class AnalyzeCDN(object):
                     # Jenkins upstream job parameter 'Product_ID' and 'RHEL_Variant' are both not empty
                     else:
                         # Delete those invalid arches which are not in manifest
-                        variants = self.__check_arches(self.VARIANTs, platforms[pid])
+                        variants = self.__check_arches(self.RHEL_variant, platforms[pid])
 
                         # Generate *.properties files used to trigger downstream jobs
                         for variant_arch in variants:
@@ -139,7 +151,7 @@ class AnalyzeCDN(object):
                 for pid in platforms.keys():
                     # Delete those invalid arches which are not in manifest
                     print "PID {0}:{1}".format(pid, platforms[pid])
-                    variants = self.__check_arches(self.VARIANTs, platforms[pid])
+                    variants = self.__check_arches(self.RHEL_variant, platforms[pid])
 
                     # Generate *.properties files used to trigger downstream jobs
                     for variant_arch in variants:
@@ -178,13 +190,13 @@ class AnalyzeCDN(object):
                         f.write("PID={0}\n".format(pid_info))
 
                         # Write other Jenkins job parameters into properties file
-                        f.write("Manifest_URL={0}\n".format(self.MANIFEST_URL))
-                        f.write("Distro={0}\n".format(self.DISTRO))
+                        f.write("Manifest_URL={0}\n".format(self.Manifest_URL))
+                        f.write("Distro={0}\n".format(self.Distro))
                         f.write("CDN={0}\n".format(self.CDN))
-                        f.write("Candlepin={0}\n".format(self.CANDLEPIN))
-                        f.write("Blacklist={0}\n".format(self.BLACKLIST))
-                        f.write("Release_Version={0}\n".format(self.RELEASE_VERSION))
-                        f.write("Test_Level={0}\n".format(self.RELEASE_VERSION))
+                        f.write("Candlepin={0}\n".format(self.Candlepin))
+                        f.write("Blacklist={0}\n".format(self.Blacklist))
+                        f.write("Release_Version={0}\n".format(self.Release_Version))
+                        f.write("Test_Level={0}\n".format(self.Test_Level))
             else:
                 print "No eligible testing platform provided!"
         else:
@@ -240,18 +252,21 @@ class AnalyzeRHN(object):
         RHN=QA
     """
     def __init__(self):
-        self.DISTRO = os.environ["Distro"]
+        self.Distro = os.environ["Distro"]
         self.RHN = os.environ["RHN"]
-        self.CHANNELs = "" #os.environ["Channels"]
-        self.VARIANTs = os.environ["RHEL_Variant"]
-        self.MANIFEST_URL = os.environ["Manifest_URL"]
+        self.Channels = "" #os.environ["Channels"]
+        self.RHEL_Variant = os.environ["RHEL_Variant"]
+        self.Manifest_URL = os.environ["Manifest_URL"]
 
         # Download and load manifest
         self.MANIFEST_PATH = os.path.join(os.getcwd(), "manifest")
         self.MANIFEST_NAME = os.path.join(self.MANIFEST_PATH, "RHN_MANIFEST.json")
-        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.MANIFEST_URL)
+        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.Manifest_URL)
 
-    def analyze_rhn(self):
+    def get_master_release(self):
+        pass
+
+    def analyze_testing_platform(self):
         if "rhn" in self.content.keys():
             # Get testing platforms from mainfest
             platforms = []
@@ -274,14 +289,14 @@ class AnalyzeRHN(object):
             print "Variants and arches list in manifest:", platforms
 
             testing_platforms = []
-            if self.CHANNELs == "" and self.VARIANTs == "":
+            if self.Channels == "" and self.RHEL_Variant == "":
                 testing_platforms = platforms
-            elif self.CHANNELs != "":
+            elif self.Channels != "":
                 pass
             else:
                 # Get the intersection of $platforms in manifest and $VARIANTs provided as parameter
                 # VARIANTs: ['Server-i386', 'Server-x86_64']
-                testing_platforms = list(set(self.VARIANTs.split(",")).intersection(set(platforms)))
+                testing_platforms = list(set(self.RHEL_Variant.split(",")).intersection(set(platforms)))
             print "Need to do testing on:", testing_platforms
 
             # Generate properties file to trigger downstream jobs and pass down testing parameters
@@ -302,9 +317,11 @@ class AnalyzeRHN(object):
                     f.write("Arch={0}\n".format(arch))
 
                     # Write other Jenkins job parameters to properties file
-                    f.write("Manifest_URL={0}\n".format(self.MANIFEST_URL))
-                    f.write("Distro={0}\n".format(self.DISTRO))
+                    f.write("Manifest_URL={0}\n".format(self.Manifest_URL))
+                    f.write("Distro={0}\n".format(self.Distro))
                     f.write("RHN={0}\n".format(self.RHN))
+        else:
+            print "No RHN part provided in manifest!"
 
 
 class AnalyzeSAT5(object):
@@ -326,18 +343,21 @@ class AnalyzeSAT5(object):
         SAT5_Server=cloud-qe-16-vm-10.idmqe.lab.eng.bos.redhat.com
     """
     def __init__(self):
-        self.DISTRO = os.environ["Distro"]
+        self.Distro = os.environ["Distro"]
         self.SAT5_Server = os.environ["SAT5_Server"]
-        self.CHANNELs = "" #os.environ["Channels"]
-        self.VARIANTs = os.environ["RHEL_Variant"]
-        self.MANIFEST_URL = os.environ["Manifest_URL"]
+        self.Channels = "" #os.environ["Channels"]
+        self.RHEL_Variant = os.environ["RHEL_Variant"]
+        self.Manifest_URL = os.environ["Manifest_URL"]
 
         # Download and load manifest
         self.MANIFEST_PATH = os.path.join(os.getcwd(), "manifest")
         self.MANIFEST_NAME = os.path.join(self.MANIFEST_PATH, "SAT5_MANIFEST.json")
-        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.MANIFEST_URL)
+        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.Manifest_URL)
 
-    def analyze_sat5(self):
+    def get_master_release(self):
+        pass
+
+    def analyze_testing_platform(self):
         if "rhn" in self.content.keys():
             # Get testing platforms from mainfest
             platforms = []
@@ -360,14 +380,14 @@ class AnalyzeSAT5(object):
             print "Variants and arches list in manifest:", platforms
 
             testing_platforms = []
-            if self.CHANNELs == "" and self.VARIANTs == "":
+            if self.Channels == "" and self.RHEL_Variant == "":
                 testing_platforms = platforms
-            elif self.CHANNELs != "":
+            elif self.Channels != "":
                 pass
             else:
                 # Get the intersection of $platforms in manifest and $VARIANTs provided as parameter
                 # VARIANTs: ['Server-i386', 'Server-x86_64']
-                testing_platforms = list(set(self.VARIANTs.split(",")).intersection(set(platforms)))
+                testing_platforms = list(set(self.RHEL_Variant.split(",")).intersection(set(platforms)))
             print "Need to do testing on:", testing_platforms
 
             # Generate properties file to trigger downstream jobs and pass down testing parameters
@@ -388,9 +408,11 @@ class AnalyzeSAT5(object):
                     f.write("Arch={0}\n".format(arch))
 
                     # Write other Jenkins job parameters to properties file
-                    f.write("Manifest_URL={0}\n".format(self.MANIFEST_URL))
-                    f.write("Distro={0}\n".format(self.DISTRO))
+                    f.write("Manifest_URL={0}\n".format(self.Manifest_URL))
+                    f.write("Distro={0}\n".format(self.Distro))
                     f.write("SAT5_Server={0}\n".format(self.SAT5_Server))
+        else:
+            print "No RHN part provided in manifest!"
 
 class GetPID(object):
     def __init__(self):
@@ -435,13 +457,13 @@ if __name__ == '__main__':
     else:
         if sys.argv[1] == "cdn":
             cdn = AnalyzeCDN()
-            cdn.analyze_cdn()
+            cdn.analyze_testing_platform()
         elif sys.argv[1] == "rhn":
             rhn = AnalyzeRHN()
-            rhn.analyze_rhn()
+            rhn.analyze_testing_platform()
         elif sys.argv[1] == "sat":
             rhn = AnalyzeSAT5()
-            rhn.analyze_sat5()
+            rhn.analyze_testing_platform()
         elif sys.argv[1] == "pid":
             GetPID().get_pid()
         else:
