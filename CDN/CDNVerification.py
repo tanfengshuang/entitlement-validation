@@ -230,22 +230,9 @@ class CDNVerification(EntitlementBase):
                 logger.error("Test Failed - Failed to verify sku {0} in entitlement cert {1}." .format(sku, entitlement_cert))
                 return False
 
-    def get_arch_from_manifest(self, manifest_xml, pid):
-        # Get arch list from xml format manifest
-        logger.info("--------------- Begin to get arch list for pid {0} from manifest ---------------".format(pid))
-        arch_list = CDNReadXML().get_arch_list(manifest_xml)
-        if len(arch_list) == 0:
-            logger.error("Got none arch from manifest for pid {0}!".format(pid))
-            return []
-        else:
-            logger.info("Got {0} arch(es) from manifest for pid {1}:".format(len(arch_list), pid))
-            self.print_list(arch_list)
-        logger.info("--------------- End to get arch list for pid {0} from manifest ---------------".format(pid))
-        return arch_list
-
     def verify_arch_in_entitlement_cert(self, system_info, entitlement_cert, manifest_xml, pid):
         # Get arch list from manifest
-        arch_manifest = self.get_arch_from_manifest(manifest_xml, pid)
+        arch_manifest = self.get_arch_list_from_manifest(manifest_xml, pid)
 
         # Get supported arches in entitlement certificate
         cmd = "rct cat-cert /etc/pki/entitlement/{0}  | grep -A 3 'ID: {0}' | grep Arch | awk -F ':' '{print $2}'".format(entitlement_cert, pid)
@@ -368,8 +355,22 @@ class CDNVerification(EntitlementBase):
             elif type == "full-name":
                 # "%{name}-%{version}-%{release}.src"
                 package_list = ["{0}-{1}-{2}.{3}".format(i.split()[0], i.split()[1], i.split()[2], i.split()[3]) for i in package_list]
+            self.print_list(package_list)
         logger.info("--------------- End to get package list from manifest: PASS ---------------")
         return package_list
+
+    def get_arch_list_from_manifest(self, manifest_xml, pid):
+        # Get arch list from xml format manifest
+        logger.info("--------------- Begin to get arch list for pid {0} from manifest ---------------".format(pid))
+        arch_list = CDNReadXML().get_arch_list(manifest_xml)
+        if len(arch_list) == 0:
+            logger.error("Got none arch from manifest for pid {0}!".format(pid))
+            return []
+        else:
+            logger.info("Got {0} arch(es) from manifest for pid {1}:".format(len(arch_list), pid))
+            self.print_list(arch_list)
+        logger.info("--------------- End to get arch list for pid {0} from manifest ---------------".format(pid))
+        return arch_list
 
     def test_repos(self, system_info, repo_list, blacklist, releasever_set, release_ver, current_arch):
         # Check all enabled repos to see if there are broken repos
@@ -499,7 +500,7 @@ class CDNVerification(EntitlementBase):
                 result = False
         return result
 
-    def yum_download_source_package(self, system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver):
+    def yum_download_one_source_package(self, system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver):
         # Download one package for source repo with yumdownloader
         formatstr = "%{name}-%{version}-%{release}.src"
         cmd = '''repoquery --pkgnarrow=available --all --repoid=%s --archlist=src --qf "%s" %s''' % (repo, formatstr, releasever_set)
@@ -521,13 +522,13 @@ class CDNVerification(EntitlementBase):
         manifest_pkgs = self.get_package_list_from_manifest(manifest_xml, pid, repo, current_arch, release_ver, "full-name")
         if len(manifest_pkgs) == 0:
             logger.info("There is no package in manifest for pid:repo {0}:{1} on release {2}".format(pid, repo, release_ver))
-            return True
+            return False
 
         # Get a available package list which are uninstalled got from repoquery and also in manifest.
         avail_pkgs = list(set(pkg_list) & set(manifest_pkgs))
         if len(avail_pkgs) == 0:
-            logger.error("There is no available package for repo {0}, as all packages listed in manifest have been installed before, please uninstall first, then re-test!".format(repo))
-            return False
+            logger.error("There is no available package for repo {0}!".format(repo))
+            return True
 
         # Get one package randomly to download
         pkg_name = random.sample(avail_pkgs, 1)[0]
@@ -638,7 +639,7 @@ class CDNVerification(EntitlementBase):
 
     def remove_layered_product_cert(self, system_info, base_pid):
         # Remove the layered product certificate before install package
-        logger.info("------------------ Begin to remove the none base product cert before install the packages-----------------------")
+        logger.info("------------------ Begin to remove the none base product cert before install the packages -----------------------")
         cmd = "ls /etc/pki/product/"
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to list product cert...")
 
@@ -655,12 +656,12 @@ class CDNVerification(EntitlementBase):
                     logger.info("It is successful to remove the none base product cert: {0}".format(cert))
         logger.info("--------------------End to remove the none product cert before install the packages-----------------------------")
 
-    def pid_cert_installation(self, system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver):
-        # Verify product certificate installation after install one package with yum
-        logger.info("--------------- Begin to verify productcert installation for the repo {0} of the product {1} ---------------".format(repo, pid))
+    def package_smoke_installation(self, system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver):
+        # Verify package's installable or downloadable
+        logger.info("--------------- Begin to verify package's installable or downloadable for the repo {0} of the product {1} ---------------".format(repo, pid))
         if ("source" in repo) or ("src" in repo):
             # yumdownloader source package
-            result = self.yum_download_source_package(system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver)
+            result = self.yum_download_one_source_package(system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver)
         else:
             self.remove_layered_product_cert(system_info, ["{0}.pem".format(base_pid)])
             result = self.yum_install_one_package(system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver)

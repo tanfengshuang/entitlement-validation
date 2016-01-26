@@ -241,7 +241,7 @@ class CDNEntitlement_PID(unittest.TestCase):
                     continue
 
                 # Product id certificate installation
-                test_result &= CDNVerification().pid_cert_installation(self.system_info, repo, releasever_set, self.blacklist, self.manifest_xml, self.pid, self.base_pid, self.current_arch, self.release_ver)
+                test_result &= CDNVerification().package_smoke_installation(self.system_info, repo, releasever_set, self.blacklist, self.manifest_xml, self.pid, self.base_pid, self.current_arch, self.release_ver)
 
                 if self.test_level == "Advanced":
                     # All package installation
