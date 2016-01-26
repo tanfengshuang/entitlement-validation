@@ -124,6 +124,9 @@ class CDNEntitlement_PID(unittest.TestCase):
             # Remove non-redhat.repo
             CDNVerification().remove_non_redhat_repo(self.system_info)
 
+            # Generate file polarion.prop for Polarion case properties to create run automatically
+            CDNVerification().copy_polarion_props(self.system_info)
+
             # Space extend
             CDNVerification().extend_system_space(self.system_info)
         except Exception, e:
@@ -166,6 +169,7 @@ class CDNEntitlement_PID(unittest.TestCase):
                 if len(entitlement_cert) != 0:
                     result &= CDNVerification().verify_productid_in_entitlement_cert(self.system_info, entitlement_cert[0], self.pid)
                     result &= CDNVerification().verify_sku_in_entitlement_cert(self.system_info, entitlement_cert[0], self.sku)
+                    result &= CDNVerification().verify_arch_in_entitlement_cert(self.system_info, entitlement_cert[0], self.manifest_xml, self.pid)
                 else:
                     test_result = False
                     logging.error("Test Failed - Failed to generate entitlement certificate after subscribe sku {0}".format(self.sku))
@@ -180,6 +184,7 @@ class CDNEntitlement_PID(unittest.TestCase):
                     if len(entitlement_cert) != 0:
                         result &= CDNVerification().verify_productid_in_entitlement_cert(self.system_info, entitlement_cert[0], self.base_pid)
                         result &= CDNVerification().verify_sku_in_entitlement_cert(self.system_info, entitlement_cert[0], self.base_sku)
+                        result &= CDNVerification().verify_arch_in_entitlement_cert(self.system_info, entitlement_cert[0], self.manifest_xml, self.base_pid)
                     else:
                         test_result = False
                         logging.error("Test Failed - Failed to generate entitlement certificate after subscribe base sku {0}".format(self.base_sku))
@@ -262,7 +267,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             CDNVerification().unregister(self.system_info)
 
             # Restore non-redhat.repo
-            CDNVerification().restore_non_redhat_repo(self.system_info)
+            #CDNVerification().restore_non_redhat_repo(self.system_info)
         except Exception, e:
             logger.error(str(e))
             logger.error("Test Failed - Raised error when tear down after CDN Entitlement testing!")

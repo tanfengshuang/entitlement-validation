@@ -230,6 +230,59 @@ class CDNVerification(EntitlementBase):
                 logger.error("Test Failed - Failed to verify sku {0} in entitlement cert {1}." .format(sku, entitlement_cert))
                 return False
 
+    def get_arch_from_manifest(self, manifest_xml, pid):
+        # Get arch list from xml format manifest
+        logger.info("--------------- Begin to get arch list for pid {0} from manifest ---------------".format(pid))
+        arch_list = CDNReadXML().get_arch_list(manifest_xml)
+        if len(arch_list) == 0:
+            logger.error("Got none arch from manifest for pid {0}!".format(pid))
+            return []
+        else:
+            logger.info("Got {0} arch(es) from manifest for pid {1}:".format(len(arch_list), pid))
+            self.print_list(arch_list)
+        logger.info("--------------- End to get arch list for pid {0} from manifest ---------------".format(pid))
+        return arch_list
+
+    def verify_arch_in_entitlement_cert(self, system_info, entitlement_cert, manifest_xml, pid):
+        # Get arch list from manifest
+        arch_manifest = self.get_arch_from_manifest(manifest_xml, pid)
+
+        # Get supported arches in entitlement certificate
+        cmd = "rct cat-cert /etc/pki/entitlement/{0}  | grep -A 3 'ID: {0}' | grep Arch | awk -F ':' '{print $2}'".format(entitlement_cert, pid)
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get supported arches for pid {0} in entitlement certificate {1} with rct cat-cert...".format(pid, entitlement_cert))
+        if ret == 0:
+            # Output:
+            # x86_64,x86
+            arch_cert = output.strip().split(',')
+            error_arch_list = self.cmp_arrays(arch_manifest, arch_cert)
+            if len(error_arch_list) > 0:
+                logging.error("Failed to verify arches for product {0} in entitlement certificate.".format(pid))
+                logging.info('Below are arches got from in manifest but not in entitlement cert:')
+                self.print_list(error_arch_list)
+                logging.error("Test Failed - Failed to verify arch in entitlement certificate for product {0}.".format(pid))
+                return False
+            else:
+                logging.info("It's successful to verify arch in entitlement certificate for product {0}.".format(pid))
+                return True
+        else:
+            # Output:
+            # sh: rct: command not found
+            str = '1.3.6.1.4.1.2312.9.1.%s.3:' % pid
+            cmd = 'openssl x509 -text -noout -in /etc/pki/entitlement/{0} | grep "%s" -A 2'.format(entitlement_cert, str)
+            ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get supported arches for pid {0} in entitlement certificate {1} with openssl...".format(pid, entitlement_cert))
+            if ret == 0 and output != '':
+                for i in arch_manifest:
+                    if i in output:
+                        continue
+                    else:
+                        logger.error("Test Failed - Failed to verify in entitlement certificate for product {0}.".format(pid))
+                        return False
+                logger.info("It's successful to verify arch in entitlement certificate for product {0}.".format(pid))
+                return True
+            else:
+                logger.error("Test Failed - Failed to verify in entitlement certificate for product {0}.".format(pid))
+                return False
+
     def set_config_file(self, system_info, release_ver, config_file):
         cmd = '''sed -i "s/yumvars\['releasever'\] = /yumvars\['releasever'\] = '%s' # /" %s''' % (release_ver, config_file)
         RemoteSHH().run_cmd(system_info, cmd, "Trying to modify config.py to set the system release as {0}...".format(release_ver))

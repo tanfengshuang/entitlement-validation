@@ -79,6 +79,12 @@ class SAT5Entitlement(unittest.TestCase):
 
             # Remove non-redhat.repo
             SAT5Verification().remove_non_redhat_repo(self.system_info)
+
+            # Generate file polarion.prop for Polarion case properties to create run automatically
+            SAT5Verification().copy_polarion_props(self.system_info)
+
+            # Space extend
+            SAT5Verification().extend_system_space(self.system_info)
         except Exception, e:
             logger.error(str(e))
             logger.error("Test Failed - Raised error when setup environment before SAT5 Entitlement testing!")
@@ -141,7 +147,7 @@ class SAT5Entitlement(unittest.TestCase):
             SAT5Verification().unregister(self.system_info)
 
             # Restore non-redhat.repo
-            SAT5Verification().restore_non_redhat_repo(self.system_info)
+            #SAT5Verification().restore_non_redhat_repo(self.system_info)
         except Exception, e:
             logger.error(str(e))
             logger.error("Test Failed - Raised error when tear down after SAT5 Entitlement testing!")

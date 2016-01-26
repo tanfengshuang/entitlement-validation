@@ -67,10 +67,25 @@ class CDNReadXML(object):
             logger.error(traceback.format_exc())
             assert False, str(e)
 
+    def get_arch_list(self, manifest_xml, *args):
+        # args: (pid)
+        try:
+            doc = ElementTree.parse(manifest_xml)
+            root_ele = doc.getroot()
+            arch_ele = self.get_element(root_ele, args)
+            arches = [i.get('value') for i in list(arch_ele)]
+            return list(set(arches))
+        except Exception, e:
+            logger.error(str(e))
+            logger.error("Test Failed - Raised error when get arch list from cdn xml manifest!")
+            logger.error(traceback.format_exc())
+            assert False, str(e)
 
 if __name__ == "__main__":
     # 69 x86_64 rhel-6-server-debug-rpms 6Server
-    repolist = CDNReadXML().get_repo_list("manifest/cdn_test_manifest.xml", "6Server", "69", "x86_64")
-    pkg_list = CDNReadXML().get_package_list("manifest/cdn_test_manifest.xml", "rhel-6-server-debug-rpms", "6Server", "69", "x86_64")
-    print repolist
-    print pkg_list
+    #repolist = CDNReadXML().get_repo_list("manifest/cdn_test_manifest.xml", "6Server", "69", "x86_64")
+    #pkg_list = CDNReadXML().get_package_list("manifest/cdn_test_manifest.xml", "rhel-6-server-debug-rpms", "6Server", "69", "x86_64")
+    archlist = CDNReadXML().get_arch_list("example2.xml", "69")
+    #print repolist
+    #print pkg_list
+    print archlist
