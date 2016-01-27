@@ -109,13 +109,10 @@ class EntitlementBase(object):
             assert False, "Test Failed - Failed to get current base arch."
 
     def copy_polarion_props(self, system_info):
-        # Generate file polarion.prop for Polarion case properties to create run automatically
+        # Generate file polarion.prop on jenkins slave machine for Polarion case properties to create run automatically
         master_relase = self.get_master_release(system_info)
-        with open("../polarion.prop", 'w') as f:
-            if master_relase == '6':
-                f.write("POLARION_PROPS={0}".format(os.path.join(os.getcwd(), "CI/polarion/POLARION_PROPS_RHEL6.txt")))
-            elif master_relase == '7':
-                f.write("POLARION_PROPS={0}".format(os.path.join(os.getcwd(), "CI/polarion/POLARION_PROPS_RHEL7.txt")))
+        with open("../polarion.prop", 'a+') as f:
+            f.write("Master_Release={0}".format(master_relase))
 
     def cmp_arrays(self, array1, array2):
         # Compare two arrays, get the data in array1 but not in array2
