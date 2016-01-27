@@ -39,14 +39,14 @@ def get_username_password():
         return account_info[pid]["Prod"]["username"], account_info[pid]["Prod"]["password"], account_info[pid]["Prod"]["sku"], account_info[pid]["Prod"]["base_sku"], account_info[pid]["base_pid"]
 
 def get_hostname():
-    if cdn == "QA":
+    if candlepin == "Stage":
         hostname = "subscription.rhn.stage.redhat.com"
     else:
         hostname = "subscription.rhn.redhat.com"
     return hostname
 
 def get_baseurl():
-    if candlepin == "Stage":
+    if cdn == "QA":
         baseurl = "https://cdn.qa.redhat.com"
     else:
         baseurl = "https://cdn.redhat.com"
