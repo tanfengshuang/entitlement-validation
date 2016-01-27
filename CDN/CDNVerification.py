@@ -230,7 +230,7 @@ class CDNVerification(EntitlementBase):
                 logger.error("Test Failed - Failed to verify sku {0} in entitlement cert {1}." .format(sku, entitlement_cert))
                 return False
 
-    def verify_arch_in_entitlement_cert(self, system_info, entitlement_cert, manifest_xml, pid):
+    def verify_arch_in_entitlement_cert(self, system_info, entitlement_cert, manifest_xml, pid, current_release_ver):
         # Get arch list from manifest
         arch_manifest = self.get_arch_list_from_manifest(manifest_xml, pid)
 
@@ -241,7 +241,23 @@ class CDNVerification(EntitlementBase):
             if output != "":
                 # Output:
                 # Arch: x86_64,x86
-                arch_cert = output.split(":")[1].strip().split(",")
+                arches = output.split(":")[1].strip().split(",")
+                arch_cert = []
+                for arch in arches:
+                        if arch == 'x86':
+                                arch_cert.append('i386')
+                        elif arch == 'ppc' and current_release_ver.find('6') >= 0:
+                                arch_cert.append('ppc64')
+                        elif arch == 'ppc64' and current_release_ver.find('5') >= 0:
+                                arch_cert.append('ppc')
+                        elif arch == 's390':
+                                arch_cert.append('s390x')
+                        elif arch == 'ia64' and current_release_ver.find('6') >= 0:
+                                continue
+                        else:
+                                arch_cert.append(arch)
+                logging.info("Supported arch in entitlement cert are: {0}".format(arch_cert))
+
                 error_arch_list = self.cmp_arrays(arch_manifest, arch_cert)
                 if len(error_arch_list) > 0:
                     logging.error("Failed to verify arches for product {0} in entitlement certificate.".format(pid))
@@ -366,7 +382,7 @@ class CDNVerification(EntitlementBase):
     def get_arch_list_from_manifest(self, manifest_xml, pid):
         # Get arch list from xml format manifest
         logger.info("--------------- Begin to get arch list for pid {0} from manifest ---------------".format(pid))
-        arch_list = CDNReadXML().get_arch_list(manifest_xml)
+        arch_list = CDNReadXML().get_arch_list(manifest_xml, pid)
         if len(arch_list) == 0:
             logger.error("Got none arch from manifest for pid {0}!".format(pid))
             return []

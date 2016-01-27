@@ -169,7 +169,7 @@ class CDNEntitlement_PID(unittest.TestCase):
                 if len(entitlement_cert) != 0:
                     result &= CDNVerification().verify_productid_in_entitlement_cert(self.system_info, entitlement_cert[0], self.pid)
                     result &= CDNVerification().verify_sku_in_entitlement_cert(self.system_info, entitlement_cert[0], self.sku)
-                    result &= CDNVerification().verify_arch_in_entitlement_cert(self.system_info, entitlement_cert[0], self.manifest_xml, self.pid)
+                    result &= CDNVerification().verify_arch_in_entitlement_cert(self.system_info, entitlement_cert[0], self.manifest_xml, self.pid, self.current_release_ver)
                 else:
                     test_result = False
                     logging.error("Test Failed - Failed to generate entitlement certificate after subscribe sku {0}".format(self.sku))
@@ -184,7 +184,7 @@ class CDNEntitlement_PID(unittest.TestCase):
                     if len(entitlement_cert) != 0:
                         result &= CDNVerification().verify_productid_in_entitlement_cert(self.system_info, entitlement_cert[0], self.base_pid)
                         result &= CDNVerification().verify_sku_in_entitlement_cert(self.system_info, entitlement_cert[0], self.base_sku)
-                        result &= CDNVerification().verify_arch_in_entitlement_cert(self.system_info, entitlement_cert[0], self.manifest_xml, self.base_pid)
+                        result &= CDNVerification().verify_arch_in_entitlement_cert(self.system_info, entitlement_cert[0], self.manifest_xml, self.base_pid, self.current_release_ver)
                     else:
                         test_result = False
                         logging.error("Test Failed - Failed to generate entitlement certificate after subscribe base sku {0}".format(self.base_sku))
