@@ -30,12 +30,12 @@ logger = logging.getLogger("entLogger")
 
 
 def get_username_password():
-    if cdn == "QA":
+    if candlepin == "QA":
         if pid in account_info.keys():
             return account_info[pid]["Stage"]["username"], account_info[pid]["Stage"]["password"], account_info[pid]["Stage"]["sku"], account_info[pid]["Stage"]["base_sku"], account_info[pid]["base_pid"]
         else:
             assert False, "Failed to get PID {0} in account_cdn_stage.".format(pid)
-    elif cdn == "Prod":
+    elif candlepin == "Prod":
         return account_info[pid]["Prod"]["username"], account_info[pid]["Prod"]["password"], account_info[pid]["Prod"]["sku"], account_info[pid]["Prod"]["base_sku"], account_info[pid]["base_pid"]
 
 def get_hostname():
