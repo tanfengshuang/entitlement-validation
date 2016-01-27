@@ -108,11 +108,14 @@ class EntitlementBase(object):
         else:
             assert False, "Test Failed - Failed to get current base arch."
 
-    def copy_polarion_props(self, system_info):
+    def write_polarion_props(self, system_info):
         # Generate file polarion.prop on jenkins slave machine for Polarion case properties to create run automatically
         master_relase = self.get_master_release(system_info)
-        with open("../polarion.prop", 'a+') as f:
-            f.write("Master_Release={0}".format(master_relase))
+        cmd = "cat ../polarion.prop | grep Master_Release"
+        ret, output = RemoteSHH().run_cmd(None, cmd, "Trying to get current base arch...")
+        if "Master_Release" not in output:
+            with open("../polarion.prop", 'a+') as f:
+                f.write("Master_Release={0}".format(master_relase))
 
     def cmp_arrays(self, array1, array2):
         # Compare two arrays, get the data in array1 but not in array2

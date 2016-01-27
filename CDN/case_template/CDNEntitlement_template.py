@@ -125,7 +125,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             CDNVerification().remove_non_redhat_repo(self.system_info)
 
             # Generate file polarion.prop for Polarion case properties to create run automatically
-            CDNVerification().copy_polarion_props(self.system_info)
+            CDNVerification().write_polarion_props(self.system_info)
 
             # Space extend
             CDNVerification().extend_system_space(self.system_info)
