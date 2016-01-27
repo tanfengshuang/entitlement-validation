@@ -162,7 +162,7 @@ class CDNEntitlement_PID(unittest.TestCase):
                 # 'RH00284': ['8a99f984508e9fbf01509432f3b80561']
                 # }
 
-            # Try to subscribe layered product, and then check the sku and pid in the entitlement cert
+            # Try to subscribe layered product, and then check the sku, pid and arches got from manifest are included in the entitlement cert
             if self.sku in sku_pool_dict.keys():
                 result, entitlement_cert = CDNVerification().subscribe(self.system_info, sku_pool_dict[self.sku][0])
                 self.assertTrue(result, msg="Test Failed - Failed to Subscribe with sku {0}!".format(self.sku))
@@ -176,7 +176,7 @@ class CDNEntitlement_PID(unittest.TestCase):
             else:
                 self.assertTrue(False, "No suitable subscription for sku {0}".format(self.sku))
 
-            # Try to subscribe base product, and then check the sku and pid in the entitlement cert
+            # Try to subscribe base product, and then check the sku, pid and arches got from manifest are included in the entitlement cert
             if self.base_sku != self.sku:
                 if self.base_sku in sku_pool_dict.keys():
                     result, entitlement_cert = CDNVerification().subscribe(self.system_info, sku_pool_dict[self.base_sku][0])

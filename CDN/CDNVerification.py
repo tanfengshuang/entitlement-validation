@@ -235,7 +235,7 @@ class CDNVerification(EntitlementBase):
         arch_manifest = self.get_arch_list_from_manifest(manifest_xml, pid)
 
         # Get supported arches in entitlement certificate
-        cmd = "rct cat-cert /etc/pki/entitlement/{0}  | grep -A 3 'ID: {0}' | grep Arch".format(entitlement_cert, pid)
+        cmd = "rct cat-cert /etc/pki/entitlement/{0}  | grep -A 3 'ID: {1}' | grep Arch".format(entitlement_cert, pid)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get supported arches for pid {0} in entitlement certificate {1} with rct cat-cert...".format(pid, entitlement_cert))
         if ret == 0:
             if output != "":
@@ -252,11 +252,14 @@ class CDNVerification(EntitlementBase):
                 else:
                     logging.info("It's successful to verify arch in entitlement certificate for product {0}.".format(pid))
                     return True
+            else:
+                logging.error("Test Failed - Failed to verify arch in entitlement certificate for product {0}.".format(pid))
+                return False
         else:
             # Output:
             # sh: rct: command not found
-            str = '1.3.6.1.4.1.2312.9.1.%s.3:' % pid
-            cmd = 'openssl x509 -text -noout -in /etc/pki/entitlement/{0} | grep "%s" -A 2'.format(entitlement_cert, str)
+            str = '1.3.6.1.4.1.2312.9.1.{0}.3:'.format(pid)
+            cmd = 'openssl x509 -text -noout -in /etc/pki/entitlement/{0} | grep {1} -A 2'.format(entitlement_cert, str)
             ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get supported arches for pid {0} in entitlement certificate {1} with openssl...".format(pid, entitlement_cert))
             if ret == 0 and output != '':
                 for i in arch_manifest:
