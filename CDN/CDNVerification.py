@@ -235,22 +235,23 @@ class CDNVerification(EntitlementBase):
         arch_manifest = self.get_arch_list_from_manifest(manifest_xml, pid)
 
         # Get supported arches in entitlement certificate
-        cmd = "rct cat-cert /etc/pki/entitlement/{0}  | grep -A 3 'ID: {0}' | grep Arch | awk -F ':' '{print $2}'".format(entitlement_cert, pid)
+        cmd = "rct cat-cert /etc/pki/entitlement/{0}  | grep -A 3 'ID: {0}' | grep Arch".format(entitlement_cert, pid)
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to get supported arches for pid {0} in entitlement certificate {1} with rct cat-cert...".format(pid, entitlement_cert))
         if ret == 0:
-            # Output:
-            # x86_64,x86
-            arch_cert = output.strip().split(',')
-            error_arch_list = self.cmp_arrays(arch_manifest, arch_cert)
-            if len(error_arch_list) > 0:
-                logging.error("Failed to verify arches for product {0} in entitlement certificate.".format(pid))
-                logging.info('Below are arches got from in manifest but not in entitlement cert:')
-                self.print_list(error_arch_list)
-                logging.error("Test Failed - Failed to verify arch in entitlement certificate for product {0}.".format(pid))
-                return False
-            else:
-                logging.info("It's successful to verify arch in entitlement certificate for product {0}.".format(pid))
-                return True
+            if output != "":
+                # Output:
+                # Arch: x86_64,x86
+                arch_cert = output.split(":")[1].strip().split(",")
+                error_arch_list = self.cmp_arrays(arch_manifest, arch_cert)
+                if len(error_arch_list) > 0:
+                    logging.error("Failed to verify arches for product {0} in entitlement certificate.".format(pid))
+                    logging.info('Below are arches got from in manifest but not in entitlement cert:')
+                    self.print_list(error_arch_list)
+                    logging.error("Test Failed - Failed to verify arch in entitlement certificate for product {0}.".format(pid))
+                    return False
+                else:
+                    logging.info("It's successful to verify arch in entitlement certificate for product {0}.".format(pid))
+                    return True
         else:
             # Output:
             # sh: rct: command not found
