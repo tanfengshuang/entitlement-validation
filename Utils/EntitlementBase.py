@@ -111,11 +111,10 @@ class EntitlementBase(object):
     def copy_polarion_props(self, system_info):
         # Generate file polarion.prop for Polarion case properties to create run automatically
         master_relase = self.get_master_release(system_info)
-        if master_relase == '6':
-            with open("polarion.prop") as f:
+        with open("../polarion.prop", 'w') as f:
+            if master_relase == '6':
                 f.write("POLARION_PROPS={0}".format(os.path.join(os.getcwd(), "CI/polarion/POLARION_PROPS_RHEL6.txt")))
-        elif master_relase == '7':
-            with open("polarion.prop") as f:
+            elif master_relase == '7':
                 f.write("POLARION_PROPS={0}".format(os.path.join(os.getcwd(), "CI/polarion/POLARION_PROPS_RHEL7.txt")))
 
     def cmp_arrays(self, array1, array2):
@@ -138,7 +137,7 @@ class EntitlementBase(object):
     def remove_non_redhat_repo(self, system_info):
         # Backup non-redhat repo
         backup_path = "/tmp/backup_repo"
-        cmd = "rm -rf {0}; mkdir -p {0}; cp /etc/yum.repos.d/beaker* {0}".format(backup_path)
+        cmd = "mkdir -p {0}; cp /etc/yum.repos.d/beaker* {0}".format(backup_path)
         RemoteSHH().run_cmd(system_info, cmd, "Trying to backup non-redhat repos to {0}...".format(backup_path))
 
         # Remove non-redhat repo
