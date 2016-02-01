@@ -10,7 +10,7 @@ class RemoteSHH(object):
     def __init__(self):
         pass
 
-    def run_cmd(self, system_info, cmd, cmd_desc="", timeout=None):
+    def run_cmd(self, system_info, cmd, cmd_desc="", timeout=3600):
         logger.info(cmd_desc)
         logger.info("# {0}".format(cmd))
 
@@ -47,10 +47,12 @@ class RemoteSHH(object):
                 output += data
                 if channel.exit_status_ready():
                     break
-            if channel.recv_ready():
-                data = channel.recv(104857600)
-                output += data
-            ret = channel.channel.recv_exit_status()
+            while True:
+                if channel.recv_ready():
+                    data = channel.recv(104857600)
+                    output += data
+                    break
+            ret = channel.recv_exit_status()
 
         if output.strip() != "":
             output = output.strip()
@@ -129,3 +131,17 @@ class RemoteSHH(object):
         sftp = paramiko.SFTPClient.from_transport(t)
         sftp.put(local_path, remote_path)
         t.close()
+
+if __name__ == '__main__':
+    system_info = {
+                "ip": "amd-dinar-01.lab.bos.redhat.com",
+                "username": "root",
+                "password": "QwAo2U6GRxyNPKiZaOCx"
+            }
+    cmd = 'repoquery --pkgnarrow=available --all --repoid=rhel-7-server-optional-rpms --qf "%{name}"'
+    #cmd = 'repoquery --pkgnarrow=available --all --repoid=rhel-7-server-supplementary-source-rpms --archlist=src --qf "%{name}-%{version}-%{release}.src"'
+    print cmd
+    ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to clean the yum cache after register...")
+    print ret
+    #print output
+    print len(output.splitlines())

@@ -76,6 +76,12 @@ class RHNEntitlement(unittest.TestCase):
 
             # Remove non-redhat.repo
             RHNVerification().remove_non_redhat_repo(self.system_info)
+
+            # Generate file polarion.prop for Polarion case properties to create run automatically
+            RHNVerification().write_polarion_props(self.system_info)
+
+            # Space extend
+            RHNVerification().extend_system_space(self.system_info)
         except Exception, e:
             logger.error(str(e))
             logger.error("Test Failed - Raised error when setup environment before RHN Entitlement testing!")
