@@ -32,13 +32,9 @@
             # Generate property file to inject environment variables
             echo BUILD_TAG=$BUILD_TAG > build.prop
 
-            # Prepare polarion plugin property file
-            master_release=`python -c """import os; distro = os.environ['Distro']; print distro.split('-')[2].split('.')[0] if 'LE' in distro else distro.split('-')[1].split('.')[0]"""`
-            if [ "$master_release" == "6" ]; then
-                cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL6.txt $WORKSPACE/POLARION_PROPS.txt
-            elif [ "$master_release" == "7" ]; then
-                cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL7.txt $WORKSPACE/POLARION_PROPS.txt
-            fi
+            # Copy polarion property file to path $WORKSPACE/
+            cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL6.txt $WORKSPACE/POLARION_PROPS_RHEL6
+            cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL7.txt $WORKSPACE/POLARION_PROPS_RHEL7
 
             # Run kinit before provision to avoid the following errors
             # krbV.Krb5Error: (-1765328189, 'No credentials cache found')
@@ -90,7 +86,7 @@
             fi
 
         - inject:
-            properties-file: build.prop
+            properties-file: polarion.prop
     publishers:
         - archive:
             artifacts: '*.txt, *.json, *.xml, *.properties, **/redhat.repo, **/**/*.log, **/manifest/*.xml, **/manifest/*.json'
@@ -107,7 +103,7 @@
             include-error: true
             include-stdout: true
             include-stderr: true
-            properties-file: $WORKSPACE/POLARION_PROPS.txt
+            properties-file: $WORKSPACE/POLARION_PROPS_RHEL$Master_Release
             properties-list: |
                 polarion.run.prefix=$BUILD_TAG
         - xunit:

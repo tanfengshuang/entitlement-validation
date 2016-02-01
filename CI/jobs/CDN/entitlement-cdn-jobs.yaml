@@ -55,6 +55,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-template:
     name: 'EntitlementCDN-Server_i386'
@@ -113,6 +121,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-template:
     name: 'EntitlementCDN-Server_ppc64'
@@ -171,6 +187,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-template:
     name: 'EntitlementCDN-Server_ppc64le'
@@ -229,6 +253,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-template:
     name: 'EntitlementCDN-Server_aarch64'
@@ -287,6 +319,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-template:
     name: 'EntitlementCDN-Server_s390x'
@@ -348,6 +388,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-template:
     name: 'EntitlementCDN-Client_x86_64'
@@ -406,6 +454,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-template:
     name: 'EntitlementCDN-Client_i386'
@@ -464,6 +520,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-template:
     name: 'EntitlementCDN-Workstation_x86_64'
@@ -522,6 +586,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-template:
     name: 'EntitlementCDN-Workstation_i386'
@@ -580,6 +652,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-template:
     name: 'EntitlementCDN-ComputeNode_x86_64'
@@ -638,6 +718,14 @@
               - Stage
               - Prod
             description:
+        - string:
+            name: Testing_System
+            default: 
+            description: Optional, fill in the hostname or IP of one system which has correct RHEL version and arch here, then will do testing on it rather than provison beaker system.
+        - string:
+            name: Password
+            default: QwAo2U6GRxyNPKiZaOCx
+            description: Optional, used for Testing_System, the default value above is beaker's default password, please modify it if needed, but please make sure correct password here.
 
 - job-group:
     name: EntitlementCDNJobs

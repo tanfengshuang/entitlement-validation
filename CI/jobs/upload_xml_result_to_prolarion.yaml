@@ -1,0 +1,74 @@
+- job-template:
+    name: 'Entitlement_update_xml_result_to_polarion'
+    node: provision
+    description: |
+        Purpose: Basic config for entitlement testing.
+    concurrent: true
+    scm:
+        - git:
+            url: 'https://github.com/tanfengshuang/entitlement-validation'
+            branches:
+                - origin/master
+            basedir: entitlement-validation
+    parameters:
+        - string:
+            name: XML_URL
+            default: 
+            description: 
+        - string:
+            name: Polarion_Run_Name
+            default: 
+            description:
+        - choice:
+            name: RHEL_Version
+            choices:
+              - RHEL6
+              - RHEL7
+            description:  
+    builders:
+        - shell: |
+            #!/bin/bash
+            #XML_URL=$XML_URL
+            #Polarion_Run_Name=$Polarion_Run_Name
+            #RHEL_Version=$RHEL_Version
+
+            wget --no-check-certificate $XML_URL -O nosetests.xml
+            
+            # Prepare polarion plugin property file
+            cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL6.txt $WORKSPACE/POLARION_PROPS_RHEL6
+            cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL7.txt $WORKSPACE/POLARION_PROPS_RHEL7
+
+            # Write polarion.prop to pass them down to polarion plugin
+            echo Polarion_Run_Name=$Polarion_Run_Name > polarion.prop
+            echo PROP_FILE_NAME=$WORKSPACE/POLARION_PROPS_$RHEL_Version >> polarion.prop
+
+        - inject:
+            properties-file: polarion.prop
+    publishers:
+        - archive:
+            artifacts: '*.txt, *.json, *.xml'
+            allow-empty: 'true'
+        - ci-polarion:
+            url: 'https://polarion.engineering.redhat.com/polarion/ws/services/'
+            user: ftan
+            password: ''
+            xunit-name-regex: 'nosetests.xml'
+            create-test-cases: true
+            export-skipped: true
+            mark-failed: false
+            include-failure: true
+            include-error: true
+            include-stdout: true
+            include-stderr: true
+            properties-file: $PROP_FILE_NAME
+            properties-list: |
+                polarion.run.prefix=$Polarion_Run_Name
+    wrappers:
+        - ansicolor
+        - workspace-cleanup
+        - timestamps
+
+- project:
+   name: Entitlement_polarion_project
+   jobs:
+    - Entitlement_update_xml_result_to_polarion
