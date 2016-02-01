@@ -43,12 +43,12 @@ class RemoteSHH(object):
 
             output = ""
             while True:
-                data = channel.recv(1048576)
+                data = channel.recv(104857600)
                 output += data
                 if channel.exit_status_ready():
                     break
             if channel.recv_ready():
-                data = channel.recv(1048576)
+                data = channel.recv(104857600)
                 output += data
             ret = channel.channel.recv_exit_status()
 
@@ -81,7 +81,7 @@ class RemoteSHH(object):
 
         output = ""
         while True:
-            data = channel.recv(1048576)
+            data = channel.recv(104857600)
             output += data
             if channel.send_ready():
                 if data.strip().endswith('[y/n]:'):
@@ -89,7 +89,7 @@ class RemoteSHH(object):
                 if channel.exit_status_ready():
                     break
         if channel.recv_ready():
-            data = channel.recv(1048576)
+            data = channel.recv(104857600)
             output += data
 
         if output.strip() != "":
