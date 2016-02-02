@@ -11,7 +11,7 @@ class RemoteSHH(object):
     def __init__(self):
         pass
 
-    def run_cmd(self, system_info, cmd, cmd_desc="", timeout=3600):
+    def run_cmd(self, system_info, cmd, cmd_desc="", timeout=None):
         logger.info(cmd_desc)
         logger.info("# {0}".format(cmd))
 
