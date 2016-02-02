@@ -1,6 +1,7 @@
 import paramiko
 import commands
 import logging
+import time
 
 # Create logger
 logger = logging.getLogger("entLogger")
@@ -10,7 +11,7 @@ class RemoteSHH(object):
     def __init__(self):
         pass
 
-    def run_cmd(self, system_info, cmd, cmd_desc="", timeout=3600):
+    def run_cmd(self, system_info, cmd, cmd_desc="", timeout=None):
         logger.info(cmd_desc)
         logger.info("# {0}".format(cmd))
 
@@ -39,20 +40,39 @@ class RemoteSHH(object):
             ssh.close()
         else:
             channel = ssh.get_transport().open_session()
+            channel.settimeout(timeout)
             channel.exec_command(cmd)
 
+            terminate_time = time.time() + timeout
             output = ""
-            while True:
-                data = channel.recv(104857600)
-                output += data
-                if channel.exit_status_ready():
-                    break
+            ret = 0
+
             while True:
                 if channel.recv_ready():
-                    data = channel.recv(104857600)
+                    data = channel.recv(1048576)
                     output += data
+                    if channel.exit_status_ready():
+                        ret = channel.recv_exit_status()
+                        break
+
+                else:
+                    time.sleep(10)
+
+                if channel.recv_stderr_ready():
+                    error_data = channel.recv_stderr(1048576)
+                    output += error_data
+                    ret = channel.recv_exit_status()
                     break
-            ret = channel.recv_exit_status()
+
+                if terminate_time < time.time():
+                    output += "\nCommand timeout exceeded ..."
+                    ret = -1
+                    break
+
+            time.sleep(10)
+            if channel.recv_ready():
+                data = channel.recv(1048576)
+                output += data
 
         if output.strip() != "":
             output = output.strip()
@@ -83,7 +103,7 @@ class RemoteSHH(object):
 
         output = ""
         while True:
-            data = channel.recv(104857600)
+            data = channel.recv(1048576)
             output += data
             if channel.send_ready():
                 if data.strip().endswith('[y/n]:'):
@@ -91,7 +111,7 @@ class RemoteSHH(object):
                 if channel.exit_status_ready():
                     break
         if channel.recv_ready():
-            data = channel.recv(104857600)
+            data = channel.recv(1048576)
             output += data
 
         if output.strip() != "":
@@ -138,10 +158,17 @@ if __name__ == '__main__':
                 "username": "root",
                 "password": "QwAo2U6GRxyNPKiZaOCx"
             }
-    cmd = 'repoquery --pkgnarrow=available --all --repoid=rhel-7-server-optional-rpms --qf "%{name}"'
+    cmd = 'repoquery --all --repoid=rhel-7-server-optional-rpms --qf "%{name}"'
+    #cmd = 'repoquery --all --repoid=rhel-7-server-rpms --qf "%{name}"'
     #cmd = 'repoquery --pkgnarrow=available --all --repoid=rhel-7-server-supplementary-source-rpms --archlist=src --qf "%{name}-%{version}-%{release}.src"'
+    #cmd = "ll /root/"
     print cmd
     ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to clean the yum cache after register...")
+    print "----------------"
     print ret
-    #print output
+    print output
     print len(output.splitlines())
+    j=0
+    for i in output.splitlines():
+        j += len(i)
+    print j

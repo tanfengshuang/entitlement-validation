@@ -524,7 +524,7 @@ class CDNVerification(EntitlementBase):
         # Download one package for source repo with yumdownloader
         formatstr = "%{name}-%{version}-%{release}.src"
         cmd = '''repoquery --pkgnarrow=available --all --repoid=%s --archlist=src --qf "%s" %s''' % (repo, formatstr, releasever_set)
-        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to repoquery available source packages for repo {0}...".format(repo))
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to repoquery available source packages for repo {0}...".format(repo), timeout=3600)
 
         # Delete string "You have mail in /var/spool/mail/root" from repoquery output
         output = output.split("You have mail in")[0]
@@ -608,7 +608,7 @@ class CDNVerification(EntitlementBase):
         # Install one package with yum
         formatstr = "%{name}"
         cmd = '''repoquery --pkgnarrow=available --all --repoid=%s --qf "%s" %s''' % (repo, formatstr, releasever_set)
-        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to repoquery available packages...")
+        ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to repoquery available packages...", timeout=3600)
 
         if ret == 0:
             logger.info("It's successful to repoquery available packages for the repo {0}.".format(repo))
