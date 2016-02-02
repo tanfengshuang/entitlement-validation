@@ -11,7 +11,7 @@ class RemoteSHH(object):
     def __init__(self):
         pass
 
-    def run_cmd(self, system_info, cmd, cmd_desc="", timeout=None):
+    def run_cmd(self, system_info, cmd, cmd_desc="", timeout=3600):
         logger.info(cmd_desc)
         logger.info("# {0}".format(cmd))
 
@@ -48,27 +48,33 @@ class RemoteSHH(object):
             ret = 0
 
             while True:
-                if channel.recv_ready():
-                    data = channel.recv(1048576)
-                    output += data
-                    if channel.exit_status_ready():
-                        ret = channel.recv_exit_status()
-                        break
-
-                else:
-                    time.sleep(10)
-
+                print "Sleep 10 seconds to receive data from the channel..."
+                time.sleep(10)
                 if channel.recv_stderr_ready():
                     error_data = channel.recv_stderr(1048576)
                     output += error_data
                     ret = channel.recv_exit_status()
+                    print "break recv_stderr_ready"
                     break
-
+                if channel.exit_status_ready():
+                    data = channel.recv(1048576)
+                    output += data
+                    ret = channel.recv_exit_status()
+                    print "break exit_status_ready()"
+                    break
+                if channel.recv_ready():
+                    data = channel.recv(1048576)
+                    output += data
+                    ret = channel.recv_exit_status()
+                    print "write..."
+                    break
                 if terminate_time < time.time():
                     output += "\nCommand timeout exceeded ..."
                     ret = -1
+                    print "break timeout"
                     break
 
+            print "Sleep 10 seconds to receive data from the channel ......"
             time.sleep(10)
             if channel.recv_ready():
                 data = channel.recv(1048576)
@@ -159,6 +165,7 @@ if __name__ == '__main__':
                 "password": "QwAo2U6GRxyNPKiZaOCx"
             }
     cmd = 'repoquery --all --repoid=rhel-7-server-optional-rpms --qf "%{name}"'
+    #cmd = 'repoquery --pkgnarrow=available --all --repoid=rhel-7-server-supplementary-debug-rpms --qf "%{name}"'
     #cmd = 'repoquery --all --repoid=rhel-7-server-rpms --qf "%{name}"'
     #cmd = 'repoquery --pkgnarrow=available --all --repoid=rhel-7-server-supplementary-source-rpms --archlist=src --qf "%{name}-%{version}-%{release}.src"'
     #cmd = "ll /root/"
