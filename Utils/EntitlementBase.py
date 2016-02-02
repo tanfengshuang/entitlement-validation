@@ -115,7 +115,8 @@ class EntitlementBase(object):
         ret, output = RemoteSHH().run_cmd(None, cmd, "Trying to get current base arch...")
         if "Master_Release" not in output:
             with open("../polarion.prop", 'a+') as f:
-                f.write("Master_Release={0}".format(master_relase))
+                #f.write("Master_Release={0}".format(master_relase))
+                f.write("PROP_FILE_NAME=$WORKSPACE/POLARION_PROPS_RHEL{0}\n".format(master_relase))
 
     def cmp_arrays(self, array1, array2):
         # Compare two arrays, get the data in array1 but not in array2
