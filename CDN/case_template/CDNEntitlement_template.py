@@ -40,9 +40,9 @@ def get_username_password():
 
 def get_hostname():
     if candlepin == "Stage":
-        hostname = "subscription.rhn.stage.redhat.com"
+        hostname = "subscription.rhsm.stage.redhat.com"
     else:
-        hostname = "subscription.rhn.redhat.com"
+        hostname = "subscription.rhsm.redhat.com"
     return hostname
 
 def get_baseurl():
