@@ -7,6 +7,7 @@ testCDNEntitlement_Server_x86_64_85=RHEL6-24142
 testCDNEntitlement_Server_i386_85=RHEL6-24143
 testCDNEntitlement_Server_x86_64_90=RHEL6-24138
 testCDNEntitlement_Server_i386_90=RHEL6-24139
+testCDNEntitlement_Server_x86_64_92=RHEL6-24834
 testCDNEntitlement_Server_x86_64_146=RHEL6-24137
 testCDNEntitlement_Server_s390x_72=RHEL6-24135
 testCDNEntitlement_Server_ppc64_74=RHEL6-24136
@@ -14,7 +15,9 @@ testCDNEntitlement_Client_x86_64_68=RHEL6-24132
 testCDNEntitlement_Client_i386_68=RHEL6-24133
 testCDNEntitlement_Workstation_x86_64_71=RHEL6-24130
 testCDNEntitlement_Workstation_i386_71=RHEL6-24131
+testCDNEntitlement_Workstation_x86_64_94=RHEL6-24835
 testCDNEntitlement_ComputeNode_x86_64_76=RHEL6-24134
+testCDNEntitlement_ComputeNode_x86_64_175=RHEL6-24833
 
 testSAT5Entitlement_Server_x86_64=RHEL6-24144
 testSAT5Entitlement_Server_i386=RHEL6-24145
