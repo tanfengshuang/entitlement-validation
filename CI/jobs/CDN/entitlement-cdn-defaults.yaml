@@ -109,7 +109,7 @@
             fi
 
         - inject:
-            properties-file: polarion.prop 
+            properties-file: polarion.prop
     publishers:
         - archive:
             artifacts: '*.txt, *.json, *.xml, *.properties, **/redhat.repo, **/**/**/*.log, **/manifest/*.xml, **/manifest/*.json'
@@ -126,7 +126,7 @@
             include-error: true
             include-stdout: true
             include-stderr: true
-            properties-file: $WORKSPACE/POLARION_PROPS_RHEL$Master_Release
+            properties-file: $PROP_FILE_NAME
             properties-list: |
                 polarion.run.prefix=$BUILD_TAG
         - xunit:

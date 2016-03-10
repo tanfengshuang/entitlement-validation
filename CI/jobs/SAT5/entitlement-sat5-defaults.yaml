@@ -50,14 +50,14 @@
             bkr_path=$WORKSPACE/entitlement-validation/CI/config/bkr.json
             sed -i -e "s/DISTRO/$Distro/g" -e "s/VARIANT/$Variant/g" -e "s/ARCH/$Arch/g" $bkr_path
 
-            if [ -z $Test_System ]; then
+            if [ -z $Testing_System ]; then
                 # Provision testing system in beaker
                 $WORKSPACE/ci-ops-central/bootstrap/provision_resources.sh --site=qeos --project_defaults=entitlement-validation/CI/config/project-defaults \
                 --topology=entitlement-validation/CI/config/bkr --ssh_keyfile=entitlement-validation/CI/keys/ent-ci --name=$Distro_$Variant_$Arch
                 PROVISION_STATUS=$?
             else
-                # Write $Test_System into file RESOURCES.txt
-                echo EXISTING_NODES=$Test_System > RESOURCES.txt
+                # Write $Testing_System into file RESOURCES.txt
+                echo EXISTING_NODES=$Testing_System > RESOURCES.txt
                 PROVISION_STATUS=0
             fi
 

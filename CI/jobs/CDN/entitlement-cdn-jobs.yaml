@@ -1,7 +1,7 @@
 - job-template:
     name: 'EntitlementCDN-Server_x86_64'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -67,7 +67,7 @@
 - job-template:
     name: 'EntitlementCDN-Server_i386'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -133,7 +133,7 @@
 - job-template:
     name: 'EntitlementCDN-Server_ppc64'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -199,7 +199,7 @@
 - job-template:
     name: 'EntitlementCDN-Server_ppc64le'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -265,7 +265,7 @@
 - job-template:
     name: 'EntitlementCDN-Server_aarch64'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -331,7 +331,7 @@
 - job-template:
     name: 'EntitlementCDN-Server_s390x'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -400,7 +400,7 @@
 - job-template:
     name: 'EntitlementCDN-Client_x86_64'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -466,7 +466,7 @@
 - job-template:
     name: 'EntitlementCDN-Client_i386'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -532,7 +532,7 @@
 - job-template:
     name: 'EntitlementCDN-Workstation_x86_64'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -598,7 +598,7 @@
 - job-template:
     name: 'EntitlementCDN-Workstation_i386'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -664,7 +664,7 @@
 - job-template:
     name: 'EntitlementCDN-ComputeNode_x86_64'
     defaults: entitlement-cdn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL

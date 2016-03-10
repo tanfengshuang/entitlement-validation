@@ -1,7 +1,7 @@
 - job-template:
     name: 'EntitlementRHN-Server_x86_64'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -31,7 +31,7 @@
 - job-template:
     name: 'EntitlementRHN-Server_i386'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -61,7 +61,7 @@
 - job-template:
     name: 'EntitlementRHN-Server_ppc64'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -91,7 +91,7 @@
 - job-template:
     name: 'EntitlementRHN-Server_ppc64le'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -121,7 +121,7 @@
 - job-template:
     name: 'EntitlementRHN-Server_aarch64'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -151,7 +151,7 @@
 - job-template:
     name: 'EntitlementRHN-Server_s390x'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -184,7 +184,7 @@
 - job-template:
     name: 'EntitlementRHN-Client_x86_64'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -214,7 +214,7 @@
 - job-template:
     name: 'EntitlementRHN-Client_i386'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -244,7 +244,7 @@
 - job-template:
     name: 'EntitlementRHN-Workstation_x86_64'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -274,7 +274,7 @@
 - job-template:
     name: 'EntitlementRHN-Workstation_i386'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -304,7 +304,7 @@
 - job-template:
     name: 'EntitlementRHN-ComputeNode_x86_64'
     defaults: entitlement-rhn-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL

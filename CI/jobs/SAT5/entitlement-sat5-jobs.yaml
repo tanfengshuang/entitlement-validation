@@ -1,7 +1,7 @@
 - job-template:
     name: 'EntitlementSAT5-Server_x86_64'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -13,7 +13,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
@@ -37,7 +37,7 @@
 - job-template:
     name: 'EntitlementSAT5-Server_i386'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -49,7 +49,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
@@ -73,7 +73,7 @@
 - job-template:
     name: 'EntitlementSAT5-Server_ppc64'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -85,7 +85,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
@@ -109,7 +109,7 @@
 - job-template:
     name: 'EntitlementSAT5-Server_ppc64le'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -121,7 +121,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
@@ -145,7 +145,7 @@
 - job-template:
     name: 'EntitlementSAT5-Server_aarch64'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -157,7 +157,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
@@ -181,7 +181,7 @@
 - job-template:
     name: 'EntitlementSAT5-Server_s390x'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -193,7 +193,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
@@ -220,7 +220,7 @@
 - job-template:
     name: 'EntitlementSAT5-Client_x86_64'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -232,7 +232,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
@@ -256,7 +256,7 @@
 - job-template:
     name: 'EntitlementSAT5-Client_i386'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -268,7 +268,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
@@ -292,7 +292,7 @@
 - job-template:
     name: 'EntitlementSAT5-Workstation_x86_64'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -304,7 +304,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
@@ -328,7 +328,7 @@
 - job-template:
     name: 'EntitlementSAT5-Workstation_i386'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -340,7 +340,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
@@ -364,7 +364,7 @@
 - job-template:
     name: 'EntitlementSAT5-ComputeNode_x86_64'
     defaults: entitlement-sat5-base
-    node: provision
+    node: entitlement
     parameters:
         - string:
             name: Manifest_URL
@@ -376,7 +376,7 @@
             description:
         - string:
             name: SAT5_Server
-            default:
+            default: Fill in the hostname of Satellite Server 5 here, such as xmlrpc.rhn.qa.redhat.com.
             description:
         - choice:
             name: Variant
