@@ -60,7 +60,6 @@ class AnalyzeCDN(object):
         DISTRO=RHEL-7.2-20150904.0
         CDN=QA
         CANDLEPIN=Stage
-        BLACKLIST=GA
         RELEASE_VERSION=7.2
         Test_Level=Basic
     """
@@ -69,7 +68,6 @@ class AnalyzeCDN(object):
         self.Distro = os.environ["Distro"]
         self.CDN = os.environ["CDN"]
         self.Candlepin = os.environ["Candlepin"]
-        self.Blacklist = os.environ["Blacklist"]
         self.Release_Version = os.environ["Release_Version"]
         self.Product_ID = os.environ["Product_ID"]
         self.RHEL_variant = os.environ["RHEL_Variant"]
@@ -182,7 +180,6 @@ class AnalyzeCDN(object):
                     # DISTRO=RHEL-7.2-20150904.0
                     # CDN=QA
                     # CANDLEPIN=Stage
-                    # BLACKLIST=GA
                     # RELEASE_VERSION=7.2
                     # Test_Level=Basic
                     with open("{0}".format(prop_file), 'a+') as f:
@@ -194,7 +191,6 @@ class AnalyzeCDN(object):
                         f.write("Distro={0}\n".format(self.Distro))
                         f.write("CDN={0}\n".format(self.CDN))
                         f.write("Candlepin={0}\n".format(self.Candlepin))
-                        f.write("Blacklist={0}\n".format(self.Blacklist))
                         f.write("Release_Version={0}\n".format(self.Release_Version))
                         f.write("Test_Level={0}\n".format(self.Test_Level))
             else:

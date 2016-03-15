@@ -40,7 +40,6 @@ prepare_cdn() {
     echo "Distro=$Distro"
     echo "CDN=$CDN"
     echo "Candlepin=$Candlepin"
-    echo "Blacklist=$Blacklist"
     echo "Rlease_Version=$Rlease_Version"
 
     cdn_test_case_path=$WORKSPACE/entitlement-validation/CDN/Tests/

@@ -402,10 +402,7 @@ class CDNVerification(EntitlementBase):
         config = ConfigParser.ConfigParser()
         config.read(repo_file)
 
-        if blacklist == "Beta" or blacklist == "HTB":
-            cmd = "yum repolist --disablerepo=* --enablerepo={0} {1}".format(",".join(repo_list), releasever_set)
-        else:
-            cmd = "yum repolist --enablerepo={0} {1}".format(",".join(repo_list), releasever_set)
+        cmd = "yum repolist --enablerepo={0} {1}".format(",".join(repo_list), releasever_set)
 
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to test enabled repos...")
         if "ERROR" in output:
@@ -552,12 +549,7 @@ class CDNVerification(EntitlementBase):
 
         # Get one package randomly to download
         pkg_name = random.sample(avail_pkgs, 1)[0]
-        if blacklist == 'Beta':
-            cmd = "yumdownloader --destdir /tmp --disablerepo=* --enablerepo=*beta* --source %s %s" % (pkg_name, releasever_set)
-        elif blacklist == 'HTB':
-            cmd = "yumdownloader --destdir /tmp --disablerepo=* --enablerepo=*htb* --source %s %s" % (pkg_name, releasever_set)
-        else:
-            cmd = "yumdownloader --destdir /tmp --source %s %s" % (pkg_name, releasever_set)
+        cmd = "yumdownloader --destdir /tmp --source %s %s" % (pkg_name, releasever_set)
 
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to yumdownloader source package {0}...".format(pkg_name))
 
@@ -634,13 +626,7 @@ class CDNVerification(EntitlementBase):
 
         # Get one package randomly to install
         pkg_name = random.sample(avail_pkgs, 1)[0]
-
-        if blacklist == 'Beta':
-            cmd = "yum -y install --disablerepo=* --enablerepo=*beta* --skip-broken %s %s" % (pkg_name, releasever_set)
-        elif blacklist == 'HTB':
-            cmd = "yum -y install --disablerepo=* --enablerepo=*htb* --skip-broken %s %s" % (pkg_name, releasever_set)
-        else:
-            cmd = "yum -y install --skip-broken %s %s" % (pkg_name, releasever_set)
+        cmd = "yum -y install --skip-broken %s %s" % (pkg_name, releasever_set)
 
         checkresult = True
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to yum install package {0}...".format(pkg_name))
@@ -699,10 +685,7 @@ class CDNVerification(EntitlementBase):
             pkg_list = self.get_package_list_from_manifest(manifest_xml, pid, repo, arch, release_ver, "full-name")
             if len(pkg_list) != 0:
                 pkgs = " ".join(pkg_list)
-                if blacklist == 'Beta':
-                    cmd = 'yumdownloader --destdir /tmp --disablerepo=* --enablerepo=*beta* --source %s %s' % (pkgs, releasever_set)
-                else:
-                    cmd = 'yumdownloader --destdir /tmp --source %s %s' % (pkgs, releasever_set)
+                cmd = 'yumdownloader --destdir /tmp --source %s %s' % (pkgs, releasever_set)
                 ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to yumdownloader all source packages for repo {0}...".format(repo))
                 if ret == 0:
                     logger.info("It's successful to download source packages.")
@@ -735,10 +718,7 @@ class CDNVerification(EntitlementBase):
 
             for pkg in pkg_list:
                 number += 1
-                if blacklist == 'Beta':
-                    cmd = 'yum install -y --disablerepo=* --enablerepo=*beta* --skip-broken {0} {1}'.format(pkg, releasever_set)
-                else:
-                    cmd = 'yum install -y --skip-broken {0} {1}'.format(pkg, releasever_set)
+                cmd = 'yum install -y --skip-broken {0} {1}'.format(pkg, releasever_set)
                 ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to install package [{0}/{1}] {2} of repo {3}...".format(number, total_number, pkg, repo))
 
                 if ret == 0:
