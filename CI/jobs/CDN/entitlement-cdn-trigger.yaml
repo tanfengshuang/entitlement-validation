@@ -28,14 +28,6 @@
               - Advanced
             description: Select testing level(basic, advanced). 
         - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
-        - choice:
             name: CDN
             choices:
               - QA
@@ -66,7 +58,6 @@
             export Distro=$Distro
             export CDN=$CDN
             export Candlepin=$Candlepin
-            export Blacklist=$Blacklist
             export Release_Version=$Release_Version
             export Product_ID=$Product_ID
             export RHEL_Variant=$RHEL_Variant
