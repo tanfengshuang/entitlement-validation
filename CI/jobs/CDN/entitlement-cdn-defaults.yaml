@@ -27,7 +27,6 @@
             export Distro=$Distro
             export CDN=$CDN
             export Candlepin=$Candlepin
-            export Blacklist=$Blacklist
             export Release_Version=$Release_Version
             export Test_Level=$Test_Level
             export Variant=$Variant

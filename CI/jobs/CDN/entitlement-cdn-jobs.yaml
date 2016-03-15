@@ -26,14 +26,6 @@
               - Advanced
             description: Select testing level(basic, advanced). 
         - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
-        - choice:
             name: Variant
             choices:
               - Server
@@ -91,14 +83,6 @@
               - Basic
               - Advanced
             description: Select testing level(basic, advanced). 
-        - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -158,14 +142,6 @@
               - Advanced
             description: Select testing level(basic, advanced).
         - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
-        - choice:
             name: Variant
             choices:
               - Server
@@ -223,14 +199,6 @@
               - Basic
               - Advanced
             description: Select testing level(basic, advanced).
-        - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -290,14 +258,6 @@
               - Advanced
             description: Select testing level(basic, advanced).
         - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
-        - choice:
             name: Variant
             choices:
               - Server
@@ -355,14 +315,6 @@
               - Basic
               - Advanced
             description: Select testing level(basic, advanced).
-        - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -425,14 +377,6 @@
               - Advanced
             description: Select testing level(basic, advanced).
         - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
-        - choice:
             name: Variant
             choices:
               - Client
@@ -490,14 +434,6 @@
               - Basic
               - Advanced
             description: Select testing level(basic, advanced).
-        - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
@@ -557,14 +493,6 @@
               - Advanced
             description: Select testing level(basic, advanced).
         - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
-        - choice:
             name: Variant
             choices:
               - Workstation
@@ -623,14 +551,6 @@
               - Advanced
             description: Select testing level(basic, advanced).
         - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
-        - choice:
             name: Variant
             choices:
               - Workstation
@@ -688,14 +608,6 @@
               - Basic
               - Advanced
             description: Select testing level(basic, advanced).
-        - choice:
-            name: Blacklist
-            choices:
-              - 
-              - Beta
-              - HTB
-              - GA
-            description: Optional. Select Blacklist value if needed.
         - choice:
             name: Variant
             choices:
