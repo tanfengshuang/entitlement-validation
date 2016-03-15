@@ -236,6 +236,22 @@ account_info = {
         "base_pid": "69",
         "product_name": "Red Hat Enterprise Linux Scalable File System (for RHEL Server)"
     },
+    "94": {
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "RH00027",
+            "base_sku": "MCT0351"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "71",
+        "product_name": "Red Hat Enterprise Linux Scalable File System (for RHEL Workstation)"
+    },
     "135": {
         "Stage": {
             "username": stage_username,
@@ -283,6 +299,22 @@ account_info = {
         },
         "base_pid": "69",
         "product_name": "Red Hat Enterprise Linux for SAP"
+    },
+    "175": {
+        "Stage": {
+            "username": stage_username,
+            "password": stage_password,
+            "sku": "MCT2011",
+            "base_sku": "MCT0978"
+        },
+        "Prod": {
+            "username": prod_username,
+            "password": prod_password,
+            "sku": "ES0113909",
+            "base_sku": "ES0113909"
+        },
+        "base_pid": "76",
+        "product_name": "Red Hat Enterprise Linux Scalable File System (for RHEL Compute Node)"
     },
     "241": {
         "Stage": {

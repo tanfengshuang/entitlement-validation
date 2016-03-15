@@ -402,10 +402,7 @@ class CDNVerification(EntitlementBase):
         config = ConfigParser.ConfigParser()
         config.read(repo_file)
 
-        if blacklist == "Beta" or blacklist == "HTB":
-            cmd = "yum repolist --disablerepo=* --enablerepo={0} {1}".format(",".join(repo_list), releasever_set)
-        else:
-            cmd = "yum repolist --enablerepo={0} {1}".format(",".join(repo_list), releasever_set)
+        cmd = "yum repolist --enablerepo={0} {1}".format(",".join(repo_list), releasever_set)
 
         ret, output = RemoteSHH().run_cmd(system_info, cmd, "Trying to test enabled repos...")
         if "ERROR" in output:
