@@ -28,6 +28,14 @@
               - Advanced
             description: Select testing level(basic, advanced). 
         - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
+        - choice:
             name: CDN
             choices:
               - QA
@@ -58,6 +66,7 @@
             export Distro=$Distro
             export CDN=$CDN
             export Candlepin=$Candlepin
+            export Test_Type=$Test_Type
             export Release_Version=$Release_Version
             export Product_ID=$Product_ID
             export RHEL_Variant=$RHEL_Variant

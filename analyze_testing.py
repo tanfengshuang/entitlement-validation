@@ -56,18 +56,20 @@ class AnalyzeCDN(object):
         Variant=Server
         Arch=i386
         PID=90,83,69
-        MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
-        DISTRO=RHEL-7.2-20150904.0
+        Manifest_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+        Distro=RHEL-7.2-20150904.0
         CDN=QA
-        CANDLEPIN=Stage
-        RELEASE_VERSION=7.2
+        Candlepin=Stage
+        Release_Version=7.2
         Test_Level=Basic
+        Test_Type=GA
     """
     def __init__(self):
         # Get Jenkins job parameters
         self.Distro = os.environ["Distro"]
         self.CDN = os.environ["CDN"]
         self.Candlepin = os.environ["Candlepin"]
+        self.Test_Type = os.environ["Test_Type"]
         self.Release_Version = os.environ["Release_Version"]
         self.Product_ID = os.environ["Product_ID"]
         self.RHEL_variant = os.environ["RHEL_Variant"]
@@ -176,12 +178,13 @@ class AnalyzeCDN(object):
                     # Variant=Server
                     # Arch=i386
                     # PID=90,83,69
-                    # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
-                    # DISTRO=RHEL-7.2-20150904.0
+                    # Manifest_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+                    # Distro=RHEL-7.2-20150904.0
                     # CDN=QA
-                    # CANDLEPIN=Stage
-                    # RELEASE_VERSION=7.2
+                    # Candlepin=Stage
+                    # Release_Version=7.2
                     # Test_Level=Basic
+                    # Test_Type=GA
                     with open("{0}".format(prop_file), 'a+') as f:
                         # Re-write PID line into properties file
                         f.write("PID={0}\n".format(pid_info))
@@ -193,6 +196,7 @@ class AnalyzeCDN(object):
                         f.write("Candlepin={0}\n".format(self.Candlepin))
                         f.write("Release_Version={0}\n".format(self.Release_Version))
                         f.write("Test_Level={0}\n".format(self.Test_Level))
+                        f.write("Test_Type={0}\n".format(self.Test_Type))
             else:
                 print "No eligible testing platform provided!"
         else:
@@ -243,8 +247,8 @@ class AnalyzeRHN(object):
     6. Content of properties file:
         Variant=Server
         Arch=i386
-        MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
-        DISTRO=RHEL-7.2-20150904.0
+        Manifest_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+        Distro=RHEL-7.2-20150904.0
         RHN=QA
     """
     def __init__(self):
@@ -299,8 +303,8 @@ class AnalyzeRHN(object):
             # Content of *.properties file
             # Variant=Server
             # Arch=i386
-            # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
-            # DISTRO=RHEL-7.2-20150904.0
+            # Manifest_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+            # Distro=RHEL-7.2-20150904.0
             # RHN=QA
             for file_content in testing_platforms:
                 variant = file_content.split("-")[0]
@@ -334,8 +338,8 @@ class AnalyzeSAT5(object):
     6. Content of properties file:
         Variant=Server
         Arch=i386
-        MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
-        DISTRO=RHEL-7.2-20150904.0
+        Manifest_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+        Distro=RHEL-7.2-20150904.0
         SAT5_Server=cloud-qe-16-vm-10.idmqe.lab.eng.bos.redhat.com
     """
     def __init__(self):
@@ -390,8 +394,8 @@ class AnalyzeSAT5(object):
             # Content of *.properties file
             # Variant=Server
             # Arch=i386
-            # MANIFEST_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
-            # DISTRO=RHEL-7.2-20150904.0
+            # Manifest_URL=http://hp-z220-11.qe.lab.eng.nay.redhat.com/projects/content-sku/manifests/rhel6.7/rhel-6.7-beta-blacklist-prod.json
+            # Distro=RHEL-7.2-20150904.0
             # SAT5_Server=cloud-qe-16-vm-10.idmqe.lab.eng.bos.redhat.com
             for file_content in testing_platforms:
                 variant = file_content.split("-")[0]
@@ -415,12 +419,12 @@ class GetPID(object):
         self.PID = []
         self.Variant = os.environ["Variant"]
         self.Arch = os.environ["Arch"]
-        self.MANIFEST_URL = os.environ["Manifest_URL"]
+        self.Manifest_URL = os.environ["Manifest_URL"]
 
         # Download and load manifest
         self.MANIFEST_PATH = os.path.join(os.getcwd(), "manifest")
         self.MANIFEST_NAME = os.path.join(self.MANIFEST_PATH, "CDN_MANIFEST.json")
-        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.MANIFEST_URL)
+        self.content = download_read_manifest(self.MANIFEST_PATH, self.MANIFEST_NAME, self.Manifest_URL)
 
     def get_pid(self):
         if "cdn" in self.content.keys():

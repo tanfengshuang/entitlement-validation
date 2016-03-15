@@ -26,6 +26,14 @@
               - Advanced
             description: Select testing level(basic, advanced). 
         - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
+        - choice:
             name: Variant
             choices:
               - Server
@@ -83,6 +91,14 @@
               - Basic
               - Advanced
             description: Select testing level(basic, advanced). 
+        - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
         - choice:
             name: Variant
             choices:
@@ -142,6 +158,14 @@
               - Advanced
             description: Select testing level(basic, advanced).
         - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
+        - choice:
             name: Variant
             choices:
               - Server
@@ -199,6 +223,14 @@
               - Basic
               - Advanced
             description: Select testing level(basic, advanced).
+        - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
         - choice:
             name: Variant
             choices:
@@ -258,6 +290,14 @@
               - Advanced
             description: Select testing level(basic, advanced).
         - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
+        - choice:
             name: Variant
             choices:
               - Server
@@ -315,6 +355,14 @@
               - Basic
               - Advanced
             description: Select testing level(basic, advanced).
+        - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
         - choice:
             name: Variant
             choices:
@@ -377,6 +425,14 @@
               - Advanced
             description: Select testing level(basic, advanced).
         - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
+        - choice:
             name: Variant
             choices:
               - Client
@@ -434,6 +490,14 @@
               - Basic
               - Advanced
             description: Select testing level(basic, advanced).
+        - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
         - choice:
             name: Variant
             choices:
@@ -493,6 +557,14 @@
               - Advanced
             description: Select testing level(basic, advanced).
         - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
+        - choice:
             name: Variant
             choices:
               - Workstation
@@ -551,6 +623,14 @@
               - Advanced
             description: Select testing level(basic, advanced).
         - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
+        - choice:
             name: Variant
             choices:
               - Workstation
@@ -608,6 +688,14 @@
               - Basic
               - Advanced
             description: Select testing level(basic, advanced).
+        - choice:
+            name: Test_Type
+            choices:
+              - 
+              - Beta
+              - HTB
+              - GA
+            description: Optional. Select Test_Type if needed, will set it as GA if leave it null.
         - choice:
             name: Variant
             choices:

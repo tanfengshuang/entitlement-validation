@@ -27,6 +27,7 @@
             export Distro=$Distro
             export CDN=$CDN
             export Candlepin=$Candlepin
+            export Test_Type=$Test_Type
             export Release_Version=$Release_Version
             export Test_Level=$Test_Level
             export Variant=$Variant

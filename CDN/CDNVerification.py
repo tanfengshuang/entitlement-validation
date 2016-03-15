@@ -392,7 +392,7 @@ class CDNVerification(EntitlementBase):
         logger.info("--------------- End to get arch list for pid {0} from manifest ---------------".format(pid))
         return arch_list
 
-    def test_repos(self, system_info, repo_list, blacklist, releasever_set, release_ver, current_arch):
+    def test_repos(self, system_info, repo_list, releasever_set, release_ver, current_arch):
         # Check all enabled repos to see if there are broken repos
         repo_file = os.path.join(os.getcwd(), "redhat.repo")
         if not os.path.exists(repo_file):
@@ -517,7 +517,7 @@ class CDNVerification(EntitlementBase):
                 result = False
         return result
 
-    def yum_download_one_source_package(self, system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver):
+    def yum_download_one_source_package(self, system_info, repo, releasever_set, manifest_xml, pid, base_pid, current_arch, release_ver):
         # Download one package for source repo with yumdownloader
         formatstr = "%{name}-%{version}-%{release}.src"
         cmd = '''repoquery --pkgnarrow=available --all --repoid=%s --archlist=src --qf "%s" %s''' % (repo, formatstr, releasever_set)
@@ -596,7 +596,7 @@ class CDNVerification(EntitlementBase):
                 logger.error("Test Failed - Failed to install correct product cert {0}, but installed cert {1}.".format(pid, error_list))
             return False
 
-    def yum_install_one_package(self, system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver):
+    def yum_install_one_package(self, system_info, repo, releasever_set, manifest_xml, pid, base_pid, current_arch, release_ver):
         # Install one package with yum
         formatstr = "%{name}"
         cmd = '''repoquery --pkgnarrow=available --all --repoid=%s --qf "%s" %s''' % (repo, formatstr, releasever_set)
@@ -662,15 +662,15 @@ class CDNVerification(EntitlementBase):
                     logger.info("It is successful to remove the none base product cert: {0}".format(cert))
         logger.info("--------------------End to remove the none product cert before install the packages-----------------------------")
 
-    def package_smoke_installation(self, system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver):
+    def package_smoke_installation(self, system_info, repo, releasever_set, manifest_xml, pid, base_pid, current_arch, release_ver):
         # Verify package's installable or downloadable
         logger.info("--------------- Begin to verify package's installable or downloadable for the repo {0} of the product {1} ---------------".format(repo, pid))
         if ("source" in repo) or ("src" in repo):
             # yumdownloader source package
-            result = self.yum_download_one_source_package(system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver)
+            result = self.yum_download_one_source_package(system_info, repo, releasever_set, manifest_xml, pid, base_pid, current_arch, release_ver)
         else:
             self.remove_layered_product_cert(system_info, ["{0}.pem".format(base_pid)])
-            result = self.yum_install_one_package(system_info, repo, releasever_set, blacklist, manifest_xml, pid, base_pid, current_arch, release_ver)
+            result = self.yum_install_one_package(system_info, repo, releasever_set, manifest_xml, pid, base_pid, current_arch, release_ver)
 
             if result:
                 logger.info("--------------- End to verify productcert installation for the repo {0} of the product {1}: PASS ---------------".format(repo, pid))
@@ -678,7 +678,7 @@ class CDNVerification(EntitlementBase):
                 logger.error("--------------- End to verify productcert installation for the repo {0} of the product {1}: FAIL -------------".format(repo, pid))
         return result
 
-    def verify_all_packages_installation(self, system_info, manifest_xml, pid, repo, arch, release_ver, releasever_set, blacklist):
+    def verify_all_packages_installation(self, system_info, manifest_xml, pid, repo, arch, release_ver, releasever_set):
         logger.info("--------------- Begin to verify all packages installation of repo %s ---------------" % repo)
         checkresult = True
         if "source" in repo:

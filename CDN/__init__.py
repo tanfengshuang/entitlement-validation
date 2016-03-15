@@ -5,6 +5,7 @@ variant = os.environ["Variant"]
 arch = os.environ["Arch"]
 cdn = os.environ["CDN"]
 test_level = os.environ["Test_Level"]
+test_type = os.environ["Test_Type"]
 release_ver = os.environ["Release_Version"]
 candlepin = os.environ["Candlepin"]
 

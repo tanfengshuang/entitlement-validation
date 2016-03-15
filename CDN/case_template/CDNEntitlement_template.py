@@ -9,7 +9,7 @@ from Utils import system_password
 from Utils import system_ip
 from CDN import cdn
 from CDN import release_ver
-from CDN import blacklist
+from CDN import test_type
 from CDN import test_level
 from CDN import variant
 from CDN import arch
@@ -82,7 +82,7 @@ class CDNEntitlement_PID(unittest.TestCase):
 
             # Get testing params passed by Jenkins
             self.release_ver = release_ver
-            self.blacklist = blacklist
+            self.test_type = test_type
             self.test_level = test_level
             self.variant = variant
             self.arch = arch
@@ -209,10 +209,10 @@ class CDNEntitlement_PID(unittest.TestCase):
             self.assertNotEqual(repo_list, [], msg="Test Failed - There is no any repository for pid {0} in release {1}.".format(self.pid, self.release_ver))
 
             # Enable all test repos listed in manifest to ensure the repo correctness
-            test_result &= CDNVerification().test_repos(self.system_info, repo_list, self.blacklist, releasever_set, self.release_ver, self.current_arch)
+            test_result &= CDNVerification().test_repos(self.system_info, repo_list, releasever_set, self.release_ver, self.current_arch)
 
             # Change gpgkey for all test repos for rhel snapshot testing against QA CDN
-            if self.blacklist == 'GA' and self.cdn == "QA":
+            if self.test_type == 'GA' and self.cdn == "QA":
                 # NOTICE: it's very dangerous if it's tested on Prod CDN, so add option self.cdn == "QA"
                 test_result &= CDNVerification().change_gpgkey(self.system_info, repo_list)
 
@@ -223,11 +223,11 @@ class CDNEntitlement_PID(unittest.TestCase):
             # Enable base repo
             master_release = CDNVerification().get_master_release(self.system_info)
             choice = ""
-            if self.blacklist in ["", "GA"]:
+            if self.test_type in ["", "GA"]:
                 choice = "GA"
-            elif self.blacklist == "Beta":
+            elif self.test_type == "Beta":
                 choice = "Beta"
-            elif self.blacklist == "HTB":
+            elif self.test_type == "HTB":
                 choice = "HTB"
             result = CDNVerification().enable_repo(self.system_info, base_repo[master_release][choice][self.base_pid])
             self.assertTrue(result, msg="Test Failed - Failed to enable base repo!")
@@ -241,11 +241,11 @@ class CDNEntitlement_PID(unittest.TestCase):
                     continue
 
                 # Product id certificate installation
-                test_result &= CDNVerification().package_smoke_installation(self.system_info, repo, releasever_set, self.blacklist, self.manifest_xml, self.pid, self.base_pid, self.current_arch, self.release_ver)
+                test_result &= CDNVerification().package_smoke_installation(self.system_info, repo, releasever_set, self.manifest_xml, self.pid, self.base_pid, self.current_arch, self.release_ver)
 
                 if self.test_level == "Advanced":
                     # All package installation
-                    test_result &= CDNVerification().verify_all_packages_installation(self.system_info, self.manifest_xml, self.pid, repo, self.arch, self.release_ver, releasever_set, self.blacklist)
+                    test_result &= CDNVerification().verify_all_packages_installation(self.system_info, self.manifest_xml, self.pid, repo, self.arch, self.release_ver, releasever_set)
 
                 # Disable the test repo
                 test_result &= CDNVerification().disable_repo(self.system_info, repo)
