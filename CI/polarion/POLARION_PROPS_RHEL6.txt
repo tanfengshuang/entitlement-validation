@@ -1,6 +1,7 @@
-polarion.project=RedHatEnterpriseLinux6
+polarion.project=RHEL6
 testCDNEntitlement_Server_x86_64_69=RHEL6-24128
 testCDNEntitlement_Server_i386_69=RHEL6-24129
+testCDNEntitlement_Server_x86_64_135=RHEL6-24128
 testCDNEntitlement_Server_x86_64_83=RHEL6-24140
 testCDNEntitlement_Server_i386_83=RHEL6-24141
 testCDNEntitlement_Server_x86_64_85=RHEL6-24142
@@ -15,6 +16,7 @@ testCDNEntitlement_Client_x86_64_68=RHEL6-24132
 testCDNEntitlement_Client_i386_68=RHEL6-24133
 testCDNEntitlement_Workstation_x86_64_71=RHEL6-24130
 testCDNEntitlement_Workstation_i386_71=RHEL6-24131
+testCDNEntitlement_Workstation_x86_64_155=RHEL6-24130
 testCDNEntitlement_Workstation_x86_64_94=RHEL6-24835
 testCDNEntitlement_ComputeNode_x86_64_76=RHEL6-24134
 testCDNEntitlement_ComputeNode_x86_64_175=RHEL6-24833
