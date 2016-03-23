@@ -559,13 +559,17 @@ class CDNVerification(EntitlementBase):
 
             if ret == 0 and pkg_name in output:
                 logger.info("It's successful to yumdownloader source package {0} of repo {1}.".format(pkg_name, repo))
-                return True
+                download_result = True
             else:
                 logger.error("Test Failed - Failed to yumdownloader source package {0} of repo {1}.".format(pkg_name, repo))
-                return False
+                download_result = False
         else:
             logger.error("Test Failed - Failed to yumdownloader source package {0} of repo {1}.".format(pkg_name, repo))
-            return False
+            download_result = False
+
+        cmd = "rm -rf /tmp/*.rpm"
+        RemoteSHH().run_cmd(system_info, cmd, "Trying to delete source package {0}...".format(pkg_name))
+        return download_result
 
 
     def verify_productid_in_product_cert(self, system_info, pid, base_pid):
@@ -696,6 +700,9 @@ class CDNVerification(EntitlementBase):
                         failed_src_pkglist = [error.replace('No Match for argument ', '').replace('\r', '') for error in error_list]
                         logger.error("Failed to download following {0} source packages:".format(len(failed_src_pkglist)))
                         self.print_list(failed_src_pkglist)
+                # Delete downloaded source packages
+                cmd = "rm -rf /tmp/*.rpm"
+                RemoteSHH().run_cmd(system_info, cmd, "Trying to delete all downloaded source packages for repo {0}...".format(repo))
             else:
                 logger.info("There is no source packages for pid:repo {0}:{1}".format(pid, repo))
         else:
@@ -741,6 +748,8 @@ class CDNVerification(EntitlementBase):
                         if not self.remove_pkg(system_info, pkg, repo):
                             remove_failed_pkglist.append(pkg)
                             logging.warning("Failed to remove {0} of repo {1}.".format(pkg, repo))
+                    else:
+                        logger.info("Don't need to remove package {0} of repo {1}, as it's installed default for os.".format(pkg, repo))
 
             if len(remove_failed_pkglist) != 0:
                 logger.warning("Failed to remove following {0} packages for repo {1}:".format(len(remove_failed_pkglist), repo))

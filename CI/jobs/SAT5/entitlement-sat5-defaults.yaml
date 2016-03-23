@@ -18,7 +18,7 @@
             url: 'https://github.com/tanfengshuang/entitlement-validation'
             branches:
                 - origin/master
-            basedir: entitlement-validation
+            basedir: entitlement-tests
     builders:
         - shell: |
             #!/bin/bash
@@ -33,8 +33,8 @@
             echo BUILD_TAG=$BUILD_TAG > build.prop
 
             # Copy polarion property file to path $WORKSPACE/
-            cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL6.txt $WORKSPACE/POLARION_PROPS_RHEL6
-            cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL7.txt $WORKSPACE/POLARION_PROPS_RHEL7
+            cp $WORKSPACE/entitlement-tests/CI/polarion/POLARION_PROPS_RHEL6.txt $WORKSPACE/POLARION_PROPS_RHEL6
+            cp $WORKSPACE/entitlement-tests/CI/polarion/POLARION_PROPS_RHEL7.txt $WORKSPACE/POLARION_PROPS_RHEL7
 
             # Run kinit before provision to avoid the following errors
             # krbV.Krb5Error: (-1765328189, 'No credentials cache found')
@@ -47,13 +47,13 @@
             klist 
 
             # Modify bkr.json to provision beaker system
-            bkr_path=$WORKSPACE/entitlement-validation/CI/config/bkr.json
+            bkr_path=$WORKSPACE/entitlement-tests/CI/config/bkr.json
             sed -i -e "s/DISTRO/$Distro/g" -e "s/VARIANT/$Variant/g" -e "s/ARCH/$Arch/g" $bkr_path
 
             if [ -z $Testing_System ]; then
                 # Provision testing system in beaker
-                $WORKSPACE/ci-ops-central/bootstrap/provision_resources.sh --site=qeos --project_defaults=entitlement-validation/CI/config/project-defaults \
-                --topology=entitlement-validation/CI/config/bkr --ssh_keyfile=entitlement-validation/CI/keys/ent-ci --name=$Distro_$Variant_$Arch
+                $WORKSPACE/ci-ops-central/bootstrap/provision_resources.sh --site=qeos --project_defaults=entitlement-tests/CI/config/project-defaults \
+                --topology=entitlement-tests/CI/config/bkr --ssh_keyfile=entitlement-tests/CI/keys/ent-ci --name=$Distro_$Variant_$Arch
                 PROVISION_STATUS=$?
             else
                 # Write $Testing_System into file RESOURCES.txt
@@ -63,7 +63,7 @@
 
             if [ $PROVISION_STATUS -eq 0 ]; then
                 echo "Succeed to provison beaker system!"
-                pushd entitlement-validation/
+                pushd entitlement-tests/
                 . prepare.sh sat
                 PREPARE_STATUS=$?
                 echo PREPARE_STATUS=$PREPARE_STATUS
@@ -72,7 +72,7 @@
                     # Extend beaker system for advanced testing
                     extendtesttime.sh 99
                     # Run testing with nosetests
-                    pushd entitlement-validation/
+                    pushd entitlement-tests/
                     nosetests SAT5/Tests/*.py --with-xunit --nocapture --xunit-file=../nosetests.xml
                     TEST_STATUS=$?
                     echo TEST_STATUS=$TEST_STATUS

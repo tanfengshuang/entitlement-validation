@@ -19,7 +19,7 @@ get_ip() {
     else
         echo "ERROR: $ip_file does not exist, Failed to get the ip of beaker system!"
         exit 1
-fi
+    fi
 }
 
 prepare_cdn() {
@@ -28,7 +28,7 @@ prepare_cdn() {
 
     if [ "$PID" == "" ]; then
         # Get PID from manifest for current arch and varaint
-        python $WORKSPACE/entitlement-validation/analyze_testing.py pid
+        python $WORKSPACE/entitlement-tests/analyze_testing.py pid
         PID=`cat PID.txt`
     fi
 
@@ -41,11 +41,11 @@ prepare_cdn() {
     echo "CDN=$CDN"
     echo "Candlepin=$Candlepin"
     echo "Test_Type=$Test_Type"
-    echo "Rlease_Version=$Rlease_Version"
+    echo "Release_Version=$Release_Version"
 
-    cdn_test_case_path=$WORKSPACE/entitlement-validation/CDN/Tests/
-    cdn_test_suite=$WORKSPACE/entitlement-validation/test_cdn.py
-    cdn_case_template=$WORKSPACE/entitlement-validation/CDN/case_template/CDNEntitlement_template.py
+    cdn_test_case_path=$WORKSPACE/entitlement-tests/CDN/Tests/
+    cdn_test_suite=$WORKSPACE/entitlement-tests/test_cdn.py
+    cdn_case_template=$WORKSPACE/entitlement-tests/CDN/case_template/CDNEntitlement_template.py
 
     # Generate all test cases from template for cdn testing, and add test cases to test suite
     OLD_IFS="$IFS"
@@ -82,8 +82,8 @@ prepare_rhn() {
     echo "Distro=$Distro"
     echo "RHN=$RHN"
 
-    rhn_test_case=$WORKSPACE/entitlement-validation/RHN/Tests/RHNEntitlement.py
-    rhn_test_suite=$WORKSPACE/entitlement-validation/test_rhn.py
+    rhn_test_case=$WORKSPACE/entitlement-tests/RHN/Tests/RHNEntitlement.py
+    rhn_test_suite=$WORKSPACE/entitlement-tests/test_rhn.py
 
     # Replace VARIANT and ARCH in rhn test suite and test case
     sed -i -e "s/VARIANT/$Variant/g" -e "s/ARCH/$Arch/g" $rhn_test_case $rhn_test_suite
@@ -101,8 +101,8 @@ prepare_sat() {
     echo "Distro=$Distro"
     echo "SAT5_Server=$SAT5_Server"
 
-    sat5_test_case=$WORKSPACE/entitlement-validation/SAT5/Tests/SAT5Entitlement.py
-    sat5_test_suite=$WORKSPACE/entitlement-validation/test_sat5.py
+    sat5_test_case=$WORKSPACE/entitlement-tests/SAT5/Tests/SAT5Entitlement.py
+    sat5_test_suite=$WORKSPACE/entitlement-tests/test_sat5.py
 
     # Replace VARIANT and ARCH in rhn test suite and test case
     sed -i -e "s/VARIANT/$Variant/g" -e "s/ARCH/$Arch/g" $sat5_test_case $sat5_test_suite

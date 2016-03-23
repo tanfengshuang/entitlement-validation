@@ -28,7 +28,7 @@
             url: 'https://github.com/tanfengshuang/entitlement-validation'
             branches:
                 - origin/master
-            basedir: entitlement-validation
+            basedir: entitlement-tests
    builders:
         - shell: |
             #!/bin/bash
@@ -37,7 +37,7 @@
             export SAT5_Server=$SAT5_Server
             export RHEL_Variant=$RHEL_Variant
 
-            python $WORKSPACE/entitlement-validation/analyze_testing.py sat
+            python $WORKSPACE/entitlement-tests/analyze_testing.py sat
 
    publishers:
       - archive:

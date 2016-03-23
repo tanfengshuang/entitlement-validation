@@ -18,7 +18,7 @@
             url: 'https://github.com/tanfengshuang/entitlement-validation'
             branches:
                 - origin/master
-            basedir: entitlement-validation
+            basedir: entitlement-tests
     builders:
         - shell: |
             #!/bin/bash
@@ -43,11 +43,13 @@
             fi
 
             # Generate property file to inject environment variables
-            echo BUILD_TAG=$BUILD_TAG-$Test_Level-$CDN > polarion.prop
+            wget $Manifest_URL -O manifest.json
+            RHEL_Platform=`python -c """import json; manifest_content=json.load(open('manifest.json', 'r')); product_id=manifest_content['cdn']['products'].keys()[0]; RHEL_platform=manifest_content['cdn']['products'][product_id]['Platform Version'].split('.'); print RHEL_platform[0]+RHEL_platform[1]"""`
+            echo Polarion_Run_Name=RHELEntitlement-${RHEL_Platform}-${Variant}_${Arch}_${Test_Level}_${CDN} > polarion.prop
 
             # Copy polarion property file to path $WORKSPACE/
-            cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL6.txt $WORKSPACE/POLARION_PROPS_RHEL6
-            cp $WORKSPACE/entitlement-validation/CI/polarion/POLARION_PROPS_RHEL7.txt $WORKSPACE/POLARION_PROPS_RHEL7
+            cp $WORKSPACE/entitlement-tests/CI/polarion/POLARION_PROPS_RHEL6.txt $WORKSPACE/POLARION_PROPS_RHEL6
+            cp $WORKSPACE/entitlement-tests/CI/polarion/POLARION_PROPS_RHEL7.txt $WORKSPACE/POLARION_PROPS_RHEL7
 
             # Run kinit before provision to avoid the following errors
             # krbV.Krb5Error: (-1765328189, 'No credentials cache found')
@@ -60,13 +62,13 @@
             klist 
 
             # Modify bkr.json to provision suitable beaker system
-            bkr_path=$WORKSPACE/entitlement-validation/CI/config/bkr.json
+            bkr_path=$WORKSPACE/entitlement-tests/CI/config/bkr.json
             sed -i -e "s/DISTRO/$Distro/g" -e "s/VARIANT/$Variant/g" -e "s/ARCH/$Arch/g" $bkr_path
 
             if [ -z $Test_System ]; then
                 # Provision testing system in beaker
-                $WORKSPACE/ci-ops-central/bootstrap/provision_resources.sh --site=qeos --project_defaults=entitlement-validation/CI/config/project-defaults \
-                --topology=entitlement-validation/CI/config/bkr --ssh_keyfile=entitlement-validation/CI/keys/ent-ci --name=$Distro_$Variant_$Arch
+                $WORKSPACE/ci-ops-central/bootstrap/provision_resources.sh --site=qeos --project_defaults=entitlement-tests/CI/config/project-defaults \
+                --topology=entitlement-tests/CI/config/bkr --ssh_keyfile=entitlement-tests/CI/keys/ent-ci --name=$Distro_$Variant_$Arch
                 PROVISION_STATUS=$?
             else
                 # Write $Test_System into file RESOURCES.txt
@@ -76,7 +78,7 @@
 
             if [ "$PROVISION_STATUS" == 0 ]; then
                 echo "Succeed to provison beaker system!"
-                pushd entitlement-validation/
+                pushd entitlement-tests/
                 . prepare.sh cdn
                 PREPARE_STATUS=$?
                 echo PREPARE_STATUS=$PREPARE_STATUS
@@ -87,7 +89,7 @@
                         extendtesttime.sh 99
                     fi
                     # Run testing with nosetests
-                    pushd entitlement-validation/
+                    pushd entitlement-tests/
                     nosetests CDN/Tests/*.py --with-xunit --nocapture --xunit-file=../nosetests.xml
                     #nosetests CDN/Tests/*.py --with-xunit --xunit-file=../nosetests.xml --logging-level=INFO --logging-format='%(asctime)s %(levelname)5s|%(filename)22s:%(lineno)4d|: %(message)s' --logging-datefmt="%Y-%m-%d"
                     TEST_STATUS=$?
@@ -128,7 +130,7 @@
             include-stderr: true
             properties-file: $PROP_FILE_NAME
             properties-list: |
-                polarion.run.prefix=$BUILD_TAG
+                polarion.run.prefix=$Polarion_Run_Name
         - xunit:
             thresholdmode: 'number'
             thresholds:

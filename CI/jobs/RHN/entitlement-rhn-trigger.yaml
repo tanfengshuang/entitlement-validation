@@ -30,7 +30,7 @@
             url: 'https://github.com/tanfengshuang/entitlement-validation'
             branches:
                 - origin/master
-            basedir: entitlement-validation
+            basedir: entitlement-tests
    builders:
         - shell: |
             #!/bin/bash
@@ -39,7 +39,7 @@
             export RHN=$RHN
             export RHEL_Variant=$RHEL_Variant
 
-            python $WORKSPACE/entitlement-validation/analyze_testing.py rhn
+            python $WORKSPACE/entitlement-tests/analyze_testing.py rhn
 
    publishers:
       - archive:
